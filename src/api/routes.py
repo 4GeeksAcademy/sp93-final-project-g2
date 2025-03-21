@@ -6,15 +6,38 @@ from api.models import db, Users
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 
+import requests
+
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required
+from flask_jwt_extended import get_jwt
 
 api = Blueprint('api', __name__)
 CORS(api)  # Allow CORS requests to this API
 
 
-@api.route('/hello', methods=['POST', 'GET'])
-def handle_hello():
+@api.route("/login", methods=["POST"])
+def login():
     response_body = {}
-    response_body['message'] = "Hello! I'm a message that came from the backend, check the network tab on the google inspector and you will see the GET request"
+    data = request.json
+    username = data.get("username", None)
+    password = data.get("password", None)  
+    row = db.session.execute(db.select(Users).where(Users.username == username, Users.password == password, Users.is_active)).scalar()
+    print('row: ', row)
+    if not row:
+        response_body['message'] = "Bad username or password"
+        return response_body, 401
+    user = row.serialize()
+    print('user: ', user)
+    claims = {'user_id': user['id'],
+              'role': user['role']}
+    print("aca Claims", claims)
+
+    access_token = create_access_token(identity=username, additional_claims=claims )
+    response_body['message'] = f'User {user["username"]} logged'
+    response_body['access_token'] = access_token
+    response_body['results'] = user
     return response_body, 200
 
 

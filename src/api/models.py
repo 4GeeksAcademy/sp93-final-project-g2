@@ -123,7 +123,8 @@ class Users(db.Model):
     username = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(50), nullable=False)
     role = db.Column(db.Enum('Administrador', 'Gestor_de_pedidos', 'Receptor_de_pedidos', 'visitante', name='user_role'), nullable=False, default='visitante')
-
+    is_active = db.Column(db.Boolean, default=True)   
+     
     def __repr__(self):
             return f'<Users {self.username}>'
 
@@ -131,7 +132,8 @@ class Users(db.Model):
         return {"id": self.id,
                 "contacts_data_id": self.contacts_data_id,
                 "username": self.username,
-                "role": self.role}
+                "role": self.role,
+                "is_active": self.is_active}
     
 
 class Branches(db.Model):
