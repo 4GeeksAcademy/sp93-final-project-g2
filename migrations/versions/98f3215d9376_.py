@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: c3c28527f9a3
+Revision ID: 98f3215d9376
 Revises: 
-Create Date: 2025-03-21 11:24:12.399879
+Create Date: 2025-03-21 17:53:58.084256
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'c3c28527f9a3'
+revision = '98f3215d9376'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -42,6 +42,7 @@ def upgrade():
     sa.Column('whatsapp', sa.Integer(), nullable=True),
     sa.Column('first_name', sa.String(length=63), nullable=True),
     sa.Column('last_name', sa.String(length=63), nullable=True),
+    sa.Column('active', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['supplier_id'], ['suppliers.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -74,6 +75,7 @@ def upgrade():
     sa.Column('username', sa.String(length=50), nullable=False),
     sa.Column('password', sa.String(length=50), nullable=False),
     sa.Column('role', sa.Enum('Administrador', 'Gestor_de_pedidos', 'Receptor_de_pedidos', 'visitante', name='user_role'), nullable=False),
+    sa.Column('is_active', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['contacts_data_id'], ['contacts_data.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('username')
@@ -111,7 +113,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('suppliers_products_id', sa.Integer(), nullable=False),
     sa.Column('orders_id', sa.Integer(), nullable=False),
-    sa.Column('unit', sa.Integer(), nullable=False),
+    sa.Column('presentation', sa.Integer(), nullable=False),
     sa.Column('quantity', sa.Integer(), nullable=False),
     sa.Column('unit_price', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['orders_id'], ['orders.id'], ),
