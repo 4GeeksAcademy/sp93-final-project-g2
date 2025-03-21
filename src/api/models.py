@@ -92,4 +92,5 @@ class ContactsData(db.Model):
     mail = db.Column(db.String(255))
     whatsapp = db.Column(db.Integer)
     first_name = db.Column(db.String(63))
-    last_name = db.Column(db.String(63))                                    
+    last_name = db.Column(db.String(63))   
+                                 

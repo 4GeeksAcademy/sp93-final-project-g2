@@ -175,3 +175,88 @@ def subcategory_products(subcategories_id):
     response_body = {}
     response_body['message'] = f"Este es el get de subcategories_id {subcategories_id}"
     return response_body, 200
+
+
+@api.route('/contacts-data', methods=['GET', 'POST'])
+def contacts_data():
+    response_body = {}
+    if request.method == 'GET':
+        response_body['message'] = "Este es el get de contacts_data"
+        return response_body, 200
+    
+    if request.method == 'POST':
+        response_body['message'] = "Este es el post de contacts_data"
+        return response_body, 200
+
+
+@api.route('/contacts-data/<int:contacts_data_id>', methods=['GET', 'PUT', 'DELETE'])
+def contact(contacts_data_id):
+    response_body = {}
+    if request.method == 'GET':
+        response_body['message'] = f"Este es el get de contact {contacts_data_id}"
+        return response_body, 200
+    
+    if request.method == 'PUT':
+        response_body['message'] = f"Este es el put de contact {contacts_data_id}"
+        return response_body, 200
+    
+    if request.method == 'DELETE':
+        response_body['message'] = f"Este es el delete de contact {contacts_data_id}"
+        return response_body, 200
+ 
+
+@api.route('/users', methods=['GET', 'POST'])
+def users():
+    response_body = {}
+    if request.method == 'GET':
+        response_body['message'] = "Este es el get de users"
+        return response_body, 200
+    
+    if request.method == 'POST':
+        response_body['message'] = "Este es el post de users"
+        return response_body, 200
+    
+
+@api.route('/users/<int:users_id>', methods=['GET', 'PUT', 'DELETE'])
+def user(users_id):
+    response_body = {}
+    if request.method == 'GET':
+        response_body['message'] = f"Este es el get de user {users_id}"
+        return response_body, 200
+    
+    if request.method == 'PUT':
+        response_body['message'] = f"Este es el put de user {users_id}"
+        return response_body, 200
+    
+    if request.method == 'DELETE':
+        response_body['message'] = f"Este es el delete de user {users_id}"
+        return response_body, 200
+    
+
+@api.route('/branches', methods=['GET', 'POST'])
+def branches():
+    response_body = {}
+    if request.method == 'GET':
+        response_body['message'] = "Este es el get de branches"
+        return response_body, 200
+    
+    if request.method == 'POST':
+        response_body['message'] = "Este es el post de branches"
+        return response_body, 200
+    
+
+@api.route('/branches/<int:branches_id>', methods=['GET', 'PUT', 'DELETE'])
+def branch(branches_id):
+    response_body = {}
+    if request.method == 'GET':
+        response_body['message'] = f"Este es el get de branch {branches_id}"
+        return response_body, 200
+    
+    if request.method == 'PUT':
+        response_body['message'] = f"Este es el put de branch {branches_id}"
+        return response_body, 200
+    
+    if request.method == 'DELETE':
+        response_body['message'] = f"Este es el delete de branch {branches_id}"
+        return response_body, 200
+    
