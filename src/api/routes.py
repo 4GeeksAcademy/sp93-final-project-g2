@@ -259,4 +259,74 @@ def branch(branches_id):
     if request.method == 'DELETE':
         response_body['message'] = f"Este es el delete de branch {branches_id}"
         return response_body, 200
+
+
+@api.route('/orders', methods=['GET', 'POST'])
+def orders():
+    response_body = {}
+    if request.method == 'GET':
+        response_body['message'] = f"Este el get de orders"
+        return response_body, 200
     
+    if request.method == 'POST':
+        response_body['message'] = f"Este es el post de orders"
+        return response_body, 200
+
+
+@api.route('/orders/<int:orders_id>', methods=['GET', 'PUT', 'DELETE'])
+def order(orders_id):
+    response_body = {}
+    if request.method == 'GET':
+        response_body['message'] = f"Este el get del order {orders_id}"
+        return response_body, 200
+    
+    if request.method == 'PUT':
+        response_body['message'] = f"Este es el put del order {orders_id}"
+        return response_body, 200
+    
+    if request.method == 'DELETE':
+        response_body['message'] = f"Este es el delete del order {orders_id}"
+        return response_body, 200
+
+
+@api.route('/orders/filters', methods=['POST'])
+def order_filters():
+    response_body = {}
+    response_body['message'] = f"Este es el post de order_filter"
+    return response_body, 200
+
+
+@api.route('/orders/<int:orders_id>/send', methods=['POST'])
+def order_send(orders_id):
+    response_body = {}
+    response_body['message'] = f"Este es el post de order_send {orders_id}"
+    return response_body, 200
+
+
+@api.route('/products-orders', methods=['GET', 'POST'])
+def product_orders():
+    response_body = {}
+    if request.method == 'GET':
+        response_body['message'] = f"Este el get de product_orders"
+        return response_body, 200
+    
+    if request.method == 'POST':
+        response_body['message'] = f"Este es el post de product_orders"
+        return response_body, 200
+
+
+
+@api.route('/products-orders/<int:products_orders_id>', methods=['GET', 'PUT', 'DELETE'])
+def product_order(products_orders_id):
+    response_body = {}
+    if request.method == 'GET':
+        response_body['message'] = f"Este el get del product_order {products_orders_id}"
+        return response_body, 200
+    
+    if request.method == 'PUT':
+        response_body['message'] = f"Este es el put del products_orders_id {products_orders_id}"
+        return response_body, 200
+    
+    if request.method == 'DELETE':
+        response_body['message'] = f"Este es el delete del products_orders_id {products_orders_id}"
+        return response_body, 200
