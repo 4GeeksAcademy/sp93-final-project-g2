@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, Users
+from api.models import db, Users, Products
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 
@@ -24,21 +24,40 @@ def login():
     username = data.get("username", None)
     password = data.get("password", None)  
     row = db.session.execute(db.select(Users).where(Users.username == username, Users.password == password, Users.is_active)).scalar()
-    print('row: ', row)
     if not row:
         response_body['message'] = "Bad username or password"
         return response_body, 401
     user = row.serialize()
-    print('user: ', user)
     claims = {'user_id': user['id'],
               'role': user['role']}
-    print("aca Claims", claims)
-
+    
     access_token = create_access_token(identity=username, additional_claims=claims )
     response_body['message'] = f'User {user["username"]} logged'
     response_body['access_token'] = access_token
     response_body['results'] = user
     return response_body, 200
+
+
+@api.route("/profile/<int:user_id>", methods=["GET","PUT"])
+def profile(user_id):
+    response_body = {}
+    if request.method == 'GET':
+        row = Users.query.get(user_id)
+        response_body['message'] = "Datos del usuario"
+        response_body['results'] = row.serialize()
+        return response_body, 200
+
+    if request.method == 'PUT':
+        data = request.json
+        row = Users.query.get(user_id)
+        row.role= data.get('role', row.role)
+        row.username= data.get('username', row.username)
+        row.password= data.get('password', row.password)
+        row.is_active= data.get('is_active', row.is_active)
+        db.session.commit()
+        response_body['message'] = "Profile editado correctamente"
+        response_body['results'] = row.serialize()
+        return response_body, 200
 
 
 @api.route('/products', methods=['POST', 'GET'])
@@ -49,7 +68,15 @@ def products():
         return response_body, 200
     
     if request.method == 'POST':
+        data = request.json
+        row = Products(name=data.get('name', ''), description=data.get('description', ''))
+        
+        #db.session.add(row)
+        #db.session.commit()
+
+
         response_body['message'] = "Este es el post de products"
+        response_body['results'] = data
         return response_body, 200
 
 
@@ -232,27 +259,53 @@ def contact(contacts_data_id):
 def users():
     response_body = {}
     if request.method == 'GET':
-        response_body['message'] = "Este es el get de users"
+        rows = db.session.execute(db.select(Users)).scalars()
+        results = [row.serialize() for row in rows]
+        response_body['message'] = "Listado de todos los usuarios"
+        response_body['results'] = results
         return response_body, 200
-    
+
     if request.method == 'POST':
+        data = request.json
+        row = Users(username= data.get('username', ''), password=data.get('password', 1234))
+        db.session.add(row)
+        db.session.commit()
         response_body['message'] = "Este es el post de users"
+        response_body['results'] = row.serialize()
         return response_body, 200
     
 
 @api.route('/users/<int:users_id>', methods=['GET', 'PUT', 'DELETE'])
 def user(users_id):
     response_body = {}
+    response_body = {}
     if request.method == 'GET':
-        response_body['message'] = f"Este es el get de user {users_id}"
+        row = Users.query.get(users_id)
+        response_body['message'] = "Datos del usuario"
+        response_body['results'] = row.serialize()
         return response_body, 200
-    
+
     if request.method == 'PUT':
-        response_body['message'] = f"Este es el put de user {users_id}"
+        data = request.json
+        row = Users.query.get(users_id)
+        row.role= data.get('role', row.role)
+        row.username= data.get('username', row.username)
+        row.password= data.get('password', row.password)
+        row.is_active= data.get('is_active', row.is_active)
+        db.session.commit()
+        response_body['message'] = "Profile editado correctamente"
+        response_body['results'] = row.serialize()
         return response_body, 200
     
     if request.method == 'DELETE':
-        response_body['message'] = f"Este es el delete de user {users_id}"
+        row = db.session.execute(db.select(Users).where(Users.id == users_id)).scalar()
+        if row:
+            db.session.delete(row)
+            db.session.commit()
+            response_body['message'] = f"El user con id {users_id} ha sido eliminado con exito"
+            return response_body, 200
+        
+        response_body['message'] = f"El user con id {users_id} no se encuentra en la base de datos"
         return response_body, 200
     
 
@@ -336,7 +389,6 @@ def product_orders():
     if request.method == 'POST':
         response_body['message'] = f"Este es el post de product_orders"
         return response_body, 200
-
 
 
 @api.route('/products-orders/<int:products_orders_id>', methods=['GET', 'PUT', 'DELETE'])

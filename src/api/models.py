@@ -129,11 +129,15 @@ class Users(db.Model):
             return f'<Users {self.username}>'
 
     def serialize(self):
+        if self.role != 'visitante':
+                return {"id": self.id,
+                        "contacts_data_id": self.contacts_data_id,
+                        "username": self.username,
+                        "role": self.role,
+                        "is_active": self.is_active}
         return {"id": self.id,
-                "contacts_data_id": self.contacts_data_id,
                 "username": self.username,
-                "role": self.role,
-                "is_active": self.is_active}
+                "role": self.role}
     
 
 class Branches(db.Model):
