@@ -131,7 +131,12 @@ def suppliers():
         return response_body, 200
     
     if request.method == 'POST':
-        response_body['message'] = "Este es el post de suppliers"
+        data = request.json
+        row = Suppliers(name=data.get('name', ''), address=data.get('address', ''), cuit=data.get('cuit', ''))
+        db.session.add(row)
+        db.session.commit()
+        response_body['message'] = "Proveedor creado correctamente"
+        response_body['results'] = row.serialize()
         return response_body, 200
     
     
@@ -164,7 +169,12 @@ def suppliers_products():
         return response_body, 200
     
     if request.method == 'POST':
-        response_body['message'] = "Este es el post de suppliers-products"
+        data = request.json
+        row = SuppliersProducts(suppliers_id=data["suppliers_id"], products_id=data["products_id"], nickname=data["nickname"], price=data["price"])
+        db.session.add(row)
+        db.session.commit()
+        response_body['message'] = f"Producto añadido correctamente al proveedor"
+        response_body['results'] = row.serialize()
         return response_body, 200
 
 
@@ -199,12 +209,9 @@ def products():
     
     if request.method == 'POST':
         data = request.json
-        row = Products(name=data.get('name', ''), description=data.get('description', ''))
-        
-        #db.session.add(row)
-        #db.session.commit()
-
-
+        row = Products(name=data.get('name', ''), description=data.get('description', ''), sub_categories_id=data.get('sub_categories_id', None))
+        db.session.add(row)
+        db.session.commit()
         response_body['message'] = "Este es el post de products"
         response_body['results'] = data
         return response_body, 200
@@ -245,7 +252,12 @@ def categories():
         return response_body, 200
     
     if request.method == 'POST':
-        response_body['message'] = "Este es el post de categories"
+        data = request.json
+        row = Categories(name=data.get('name', ''), description=data.get('description', ''))
+        db.session.add(row)
+        db.session.commit()
+        response_body['message'] = "Categoría añadida correctamente"
+        response_body['results'] = row.serialize()
         return response_body, 200
     
 
@@ -285,7 +297,12 @@ def subcategories():
         return response_body, 200
     
     if request.method == 'POST':
-        response_body['message'] = "Este es el post de subcategories"
+        data = request.json
+        row = SubCategories(name=data.get('name', ''), description=data.get('description', ''), categories_id=data.get('categories_id', ''))
+        db.session.add(row)
+        db.session.commit()
+        response_body['message'] = "Subcategoría añadida correctamente"
+        response_body['results'] = row.serialize()
         return response_body, 200
     
 

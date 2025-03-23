@@ -20,6 +20,7 @@ class Suppliers(db.Model):
                 "address": self.address,
                 "cuit": self.cuit}
 
+
 class SuppliersProducts(db.Model):
     __tablename__ = "suppliers_products"
     id = db.Column(db.Integer, primary_key=True)
@@ -151,6 +152,7 @@ class Branches(db.Model):
     def serialize(self):
         return {"id": self.id,
                 "contacts_data_id": self.contacts_data_id}
+
 
 class Orders(db.Model):
     id = db.Column(db.Integer, primary_key=True)
