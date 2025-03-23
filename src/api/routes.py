@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, Users
+from api.models import db, Users, Products
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 
@@ -24,16 +24,13 @@ def login():
     username = data.get("username", None)
     password = data.get("password", None)  
     row = db.session.execute(db.select(Users).where(Users.username == username, Users.password == password, Users.is_active)).scalar()
-    print('row: ', row)
     if not row:
         response_body['message'] = "Bad username or password"
         return response_body, 401
     user = row.serialize()
-    print('user: ', user)
     claims = {'user_id': user['id'],
               'role': user['role']}
-    print("aca Claims", claims)
-
+    
     access_token = create_access_token(identity=username, additional_claims=claims )
     response_body['message'] = f'User {user["username"]} logged'
     response_body['access_token'] = access_token
@@ -41,38 +38,87 @@ def login():
     return response_body, 200
 
 
-@api.route('/products', methods=['POST', 'GET'])
-def products():
+@api.route('/users', methods=['GET', 'POST'])
+def users():
     response_body = {}
     if request.method == 'GET':
-        response_body['message'] = "Este es el get de products"
+        rows = db.session.execute(db.select(Users)).scalars()
+        results = [row.serialize() for row in rows]
+        response_body['message'] = "Listado de todos los usuarios"
+        response_body['results'] = results
+        return response_body, 200
+
+    if request.method == 'POST':
+        data = request.json
+        row = Users(username= data.get('username', ''), password=data.get('password', 1234))
+        db.session.add(row)
+        db.session.commit()
+        response_body['message'] = "Este es el post de users"
+        response_body['results'] = row.serialize()
+        return response_body, 200
+    
+
+@api.route('/users/<int:users_id>', methods=['GET', 'PUT', 'DELETE'])
+def user(users_id):
+    response_body = {}
+    response_body = {}
+    if request.method == 'GET':
+        row = Users.query.get(users_id)
+        response_body['message'] = "Datos del usuario"
+        response_body['results'] = row.serialize()
+        return response_body, 200
+
+    if request.method == 'PUT':
+        data = request.json
+        row = Users.query.get(users_id)
+        row.role= data.get('role', row.role)
+        row.username= data.get('username', row.username)
+        row.password= data.get('password', row.password)
+        row.is_active= data.get('is_active', row.is_active)
+        db.session.commit()
+        response_body['message'] = "Profile editado correctamente"
+        response_body['results'] = row.serialize()
+        return response_body, 200
+    
+    if request.method == 'DELETE':
+        row = db.session.execute(db.select(Users).where(Users.id == users_id)).scalar()
+        if row:
+            db.session.delete(row)
+            db.session.commit()
+            response_body['message'] = f"El user con id {users_id} ha sido eliminado con exito"
+            return response_body, 200
+        
+        response_body['message'] = f"El user con id {users_id} no se encuentra en la base de datos"
+        return response_body, 200
+    
+
+@api.route('/contacts-data', methods=['GET', 'POST'])
+def contacts_data():
+    response_body = {}
+    if request.method == 'GET':
+        response_body['message'] = "Este es el get de contacts_data"
         return response_body, 200
     
     if request.method == 'POST':
-        response_body['message'] = "Este es el post de products"
+        response_body['message'] = "Este es el post de contacts_data"
         return response_body, 200
 
 
-@api.route('/products/<int:product_id>', methods=['PUT', 'GET', 'DELETE'])
-def product(product_id):
+@api.route('/contacts-data/<int:contacts_data_id>', methods=['GET', 'PUT', 'DELETE'])
+def contact(contacts_data_id):
     response_body = {}
     if request.method == 'GET':
-        response_body['message'] = f"Este es el get de products del productID: {product_id}"
+        response_body['message'] = f"Este es el get de contact {contacts_data_id}"
         return response_body, 200
+    
     if request.method == 'PUT':
-        response_body['message'] = f"Este es el put de products del productID: {product_id}"
+        response_body['message'] = f"Este es el put de contact {contacts_data_id}"
         return response_body, 200
+    
     if request.method == 'DELETE':
-        response_body['message'] = f"Este es el delete de products del productID: {product_id}"
+        response_body['message'] = f"Este es el delete de contact {contacts_data_id}"
         return response_body, 200
-
-
-@api.route('/products/search', methods=['POST'])
-def search_products():
-    response_body = {}
-    response_body['message'] = "Este es el post de search_products"
-    return response_body, 200
-
+ 
 
 @api.route('/suppliers', methods=['POST', 'GET'])
 def suppliers():
@@ -129,6 +175,47 @@ def suppliers_product(suppliers_products_id):
         response_body['message'] = f"Este es el delete de suppliers-product {suppliers_products_id}"
         return response_body, 200
      
+
+@api.route('/products', methods=['POST', 'GET'])
+def products():
+    response_body = {}
+    if request.method == 'GET':
+        response_body['message'] = "Este es el get de products"
+        return response_body, 200
+    
+    if request.method == 'POST':
+        data = request.json
+        row = Products(name=data.get('name', ''), description=data.get('description', ''))
+        
+        #db.session.add(row)
+        #db.session.commit()
+
+
+        response_body['message'] = "Este es el post de products"
+        response_body['results'] = data
+        return response_body, 200
+
+
+@api.route('/products/<int:product_id>', methods=['PUT', 'GET', 'DELETE'])
+def product(product_id):
+    response_body = {}
+    if request.method == 'GET':
+        response_body['message'] = f"Este es el get de products del productID: {product_id}"
+        return response_body, 200
+    if request.method == 'PUT':
+        response_body['message'] = f"Este es el put de products del productID: {product_id}"
+        return response_body, 200
+    if request.method == 'DELETE':
+        response_body['message'] = f"Este es el delete de products del productID: {product_id}"
+        return response_body, 200
+
+
+@api.route('/products/search', methods=['POST'])
+def search_products():
+    response_body = {}
+    response_body['message'] = "Este es el post de search_products"
+    return response_body, 200
+
 
 @api.route('/categories', methods=['GET', 'POST'])
 def categories():
@@ -199,62 +286,6 @@ def subcategory_products(subcategories_id):
     response_body['message'] = f"Este es el get de subcategories_id {subcategories_id}"
     return response_body, 200
 
-
-@api.route('/contacts-data', methods=['GET', 'POST'])
-def contacts_data():
-    response_body = {}
-    if request.method == 'GET':
-        response_body['message'] = "Este es el get de contacts_data"
-        return response_body, 200
-    
-    if request.method == 'POST':
-        response_body['message'] = "Este es el post de contacts_data"
-        return response_body, 200
-
-
-@api.route('/contacts-data/<int:contacts_data_id>', methods=['GET', 'PUT', 'DELETE'])
-def contact(contacts_data_id):
-    response_body = {}
-    if request.method == 'GET':
-        response_body['message'] = f"Este es el get de contact {contacts_data_id}"
-        return response_body, 200
-    
-    if request.method == 'PUT':
-        response_body['message'] = f"Este es el put de contact {contacts_data_id}"
-        return response_body, 200
-    
-    if request.method == 'DELETE':
-        response_body['message'] = f"Este es el delete de contact {contacts_data_id}"
-        return response_body, 200
- 
-
-@api.route('/users', methods=['GET', 'POST'])
-def users():
-    response_body = {}
-    if request.method == 'GET':
-        response_body['message'] = "Este es el get de users"
-        return response_body, 200
-    
-    if request.method == 'POST':
-        response_body['message'] = "Este es el post de users"
-        return response_body, 200
-    
-
-@api.route('/users/<int:users_id>', methods=['GET', 'PUT', 'DELETE'])
-def user(users_id):
-    response_body = {}
-    if request.method == 'GET':
-        response_body['message'] = f"Este es el get de user {users_id}"
-        return response_body, 200
-    
-    if request.method == 'PUT':
-        response_body['message'] = f"Este es el put de user {users_id}"
-        return response_body, 200
-    
-    if request.method == 'DELETE':
-        response_body['message'] = f"Este es el delete de user {users_id}"
-        return response_body, 200
-    
 
 @api.route('/branches', methods=['GET', 'POST'])
 def branches():
@@ -336,7 +367,6 @@ def product_orders():
     if request.method == 'POST':
         response_body['message'] = f"Este es el post de product_orders"
         return response_body, 200
-
 
 
 @api.route('/products-orders/<int:products_orders_id>', methods=['GET', 'PUT', 'DELETE'])
