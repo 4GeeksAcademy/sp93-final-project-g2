@@ -50,7 +50,7 @@ class Products(db.Model):
     image = db.Column(db.String(500))
 
     def __repr__(self):
-            return f'<Products {self.name}>'
+            return f'self.name'
 
     def serialize(self):
         return {"id": self.id,
@@ -69,7 +69,7 @@ class SubCategories(db.Model):
     categories_to = db.relationship('Categories', foreign_keys=[categories_id], backref=db.backref('categories_to', lazy='select'))
 
     def __repr__(self):
-            return f'<SubCategories {self.name}>'
+            return f'{self.name}'
 
     def serialize(self):
         return {"id": self.id,
@@ -84,7 +84,7 @@ class Categories(db.Model):
     description = db.Column(db.String(500))
 
     def __repr__(self):
-            return f'<Categories {self.name}>'
+            return f'{self.name}'
 
     def serialize(self):
         return {"id": self.id,
