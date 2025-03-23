@@ -12,7 +12,7 @@ class Suppliers(db.Model):
     cuit = db.Column(db.Integer, unique=True, nullable=False)
     
     def __repr__(self):
-            return f'<Suppliers {self.name}>'
+            return f'{self.name}'
 
     def serialize(self):
         return {"id": self.id,
@@ -50,7 +50,7 @@ class Products(db.Model):
     image = db.Column(db.String(500))
 
     def __repr__(self):
-            return f'self.name'
+            return f'{self.name}'
 
     def serialize(self):
         return {"id": self.id,

@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, Users, Products
+from api.models import db, Users, Products, Categories, SubCategories, Suppliers, SuppliersProducts
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 
@@ -124,7 +124,10 @@ def contact(contacts_data_id):
 def suppliers():
     response_body = {}
     if request.method == 'GET':
-        response_body['message'] = "Este es el get de suppliers"
+        rows = db.session.execute(db.select(Suppliers)).scalars()
+        results = [row.serialize() for row in rows]
+        response_body['message'] = "Listado de proveedores"
+        response_body['results'] = results
         return response_body, 200
     
     if request.method == 'POST':
@@ -136,7 +139,9 @@ def suppliers():
 def supplier(supplier_id):
     response_body = {}
     if request.method == 'GET':
+        row = Suppliers.query.get(supplier_id)
         response_body['message'] = f"Este es el get de supplier_id {supplier_id}"
+        response_body['results'] = row.serialize()
         return response_body, 200
     
     if request.method == 'PUT':
@@ -152,7 +157,10 @@ def supplier(supplier_id):
 def suppliers_products():
     response_body = {}
     if request.method == 'GET':
-        response_body['message'] = "Este es el get de suppliers-products"
+        rows = db.session.execute(db.select(SuppliersProducts)).scalars()
+        results = [row.serialize() for row in rows]
+        response_body['message'] = "Listado de productos de los proveedores"
+        response_body['results'] = results
         return response_body, 200
     
     if request.method == 'POST':
@@ -164,7 +172,10 @@ def suppliers_products():
 def suppliers_product(suppliers_products_id):
     response_body = {}
     if request.method == 'GET':
+        row = SuppliersProducts.query.get(suppliers_products_id)
+        print("row", row)
         response_body['message'] = f"Este es el get de suppliers-product {suppliers_products_id}"
+        response_body['results'] = row.serialize()
         return response_body, 200
     
     if request.method == 'PUT':
@@ -180,7 +191,10 @@ def suppliers_product(suppliers_products_id):
 def products():
     response_body = {}
     if request.method == 'GET':
+        rows = db.session.execute(db.select(Products)).scalars()
+        result = [row.serialize() for row in rows]
         response_body['message'] = "Este es el get de products"
+        response_body ['results'] = result
         return response_body, 200
     
     if request.method == 'POST':
@@ -200,7 +214,10 @@ def products():
 def product(product_id):
     response_body = {}
     if request.method == 'GET':
+        row = db.session.execute(db.select(Products).where(Products.id == product_id)).scalar()
+        result = row.serialize()
         response_body['message'] = f"Este es el get de products del productID: {product_id}"
+        response_body['results'] = result
         return response_body, 200
     if request.method == 'PUT':
         response_body['message'] = f"Este es el put de products del productID: {product_id}"
@@ -221,7 +238,10 @@ def search_products():
 def categories():
     response_body = {}
     if request.method == 'GET':
+        rows = db.session.execute(db.select(Categories)).scalars()
+        results = [row.serialize() for row in rows]
         response_body['message'] = "Este es el get de categories"
+        response_body['results'] = results
         return response_body, 200
     
     if request.method == 'POST':
@@ -233,7 +253,9 @@ def categories():
 def category(categories_id):
     response_body = {}
     if request.method == 'GET':
+        row = Categories.query.get(categories_id)
         response_body['message'] = f"Este es el get de categories_id {categories_id}"
+        response_body['result'] = row.serialize()
         return response_body, 200
     
     if request.method == 'PUT':
@@ -256,7 +278,10 @@ def category_subcategory(categories_id):
 def subcategories():
     response_body = {}
     if request.method == 'GET':
+        rows = db.session.execute(db.select(SubCategories)).scalars()
+        results = [row.serialize() for row in rows]
         response_body['message'] = "Este es el get de subcategories"
+        response_body['results'] = results
         return response_body, 200
     
     if request.method == 'POST':
@@ -268,7 +293,9 @@ def subcategories():
 def subcategory(subcategories_id):
     response_body = {}
     if request.method == 'GET':
+        row = SubCategories.query.get(subcategories_id)
         response_body['message'] = f"Este es el get de subcategories_id {subcategories_id}"
+        response_body['results'] = row.serialize()
         return response_body, 200
     
     if request.method == 'PUT':
