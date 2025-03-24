@@ -9,7 +9,7 @@ class Suppliers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     address = db.Column(db.String(200), nullable=False)
-    cuit = db.Column(db.Integer, unique=True, nullable=False)
+    cuit = db.Column(db.String(63), unique=True, nullable=False)
     
     def __repr__(self):
             return f'{self.name}'
@@ -158,7 +158,7 @@ class Orders(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     contacts_data_id = db.Column(db.Integer, db.ForeignKey('contacts_data.id'))
     contacts_data_to = db.relationship('ContactsData', foreign_keys=[contacts_data_id], backref=db.backref('contact_data_orders_to', lazy='select'))
-    order_number = db.Column(db.Integer, nullable=False, unique=True)
+    order_number = db.Column(db.Integer, nullable=True, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user_to = db.relationship('Users', foreign_keys=[user_id], backref=db.backref('users_orders_to', lazy='select'))
     start_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
@@ -194,10 +194,10 @@ class ContactsData(db.Model):
     order_method = db.Column(db.Enum("whatsapp", "mail", "telefono", name='order_method'))
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
     supplier_to = db.relationship('Suppliers', foreign_keys=[supplier_id], backref=db.backref('suplier_contact_data_to', lazy='select'))
-    phone_number = db.Column(db.Integer)
+    phone_number = db.Column(db.String(63))
     address = db.Column(db.String(255))
     mail = db.Column(db.String(255))
-    whatsapp = db.Column(db.Integer)
+    whatsapp = db.Column(db.String(63))
     first_name = db.Column(db.String(63))
     last_name = db.Column(db.String(63))
     active = db.Column(db.Boolean, default=True) 
