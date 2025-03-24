@@ -9,7 +9,7 @@ from api.utils import APIException, generate_sitemap
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
-from api.models import db, Users, Products, Categories, SubCategories
+from api.models import db, Users, Products, Categories, SubCategories, Suppliers, SuppliersProducts, ContactsData, Branches, Orders, ProductsOrders
 
 from flask_jwt_extended import JWTManager
 
@@ -64,9 +64,13 @@ def seed():
         db.drop_all()
         db.create_all()
 
-        users = [
-            Users(username="admin", password=1234, role="Administrador"),
-            Users(username="user1", password=1234)
+        
+        suppliers = [
+            Suppliers(name='Fuentes de Naturaleza', address='Avenida de sonrisas 24', cuit='302412267280'),
+            Suppliers(name='MoJa i me', address='Calle cortada 10', cuit='272412567240'),
+            Suppliers(name='Las Carnes de Juancito', address='Pasillo 34', cuit='40390239029'),
+            Suppliers(name='Las Verduras', address='Pasillo 347', cuit='41390239029'),
+            Suppliers(name='Carnitas', address='Avenida 2 3472', cuit='5637289190')
         ]
         categories = [
             Categories(name="Carniceria", description="Productos Carnicos"), #0
@@ -74,7 +78,7 @@ def seed():
             Categories(name="Bebidas CON alcohol", description="Bebidas CON alcohol"), #2
             Categories(name="Bebidas SIN alcohol", description="Bebidas SIN alcohol") #3
         ]
-        db.session.add_all(users + categories)
+        db.session.add_all( categories + suppliers)
         db.session.commit()
 
         subCategories = [
@@ -94,27 +98,86 @@ def seed():
 
         products = [
             # Carniceria
-            Products(name="Hamburguesa", description='medallon de carne de novillo', sub_categories_id=subCategories[0].id),
-            Products(name="Salchichas", sub_categories_id=subCategories[0].id),
-            Products(name="Vacio", sub_categories_id=subCategories[1].id),
-            Products(name="Matambre", sub_categories_id=subCategories[2].id),
-            Products(name="Pechuga", sub_categories_id=subCategories[3].id),
+            Products(name="Hamburguesa", description='medallon de carne de novillo', sub_categories_id=subCategories[0].id), #0
+            Products(name="Salchichas", sub_categories_id=subCategories[0].id), #1
+            Products(name="Vacio", sub_categories_id=subCategories[1].id), #2
+            Products(name="Matambre", sub_categories_id=subCategories[2].id), #3
+            Products(name="Pechuga", sub_categories_id=subCategories[3].id), #4
             # Verduleria
-            Products(name="Manzana", description='Manzana x bolsa de 10 kg', sub_categories_id=subCategories[4].id),
-            Products(name="Pera", description='Pera x bolsa de 10 kg', sub_categories_id=subCategories[4].id),
-            Products(name="Tomate", description='tomate por kg', sub_categories_id=subCategories[5].id),
-            Products(name="Lechuga", description='Lechuga por paquete', sub_categories_id=subCategories[5].id),
+            Products(name="Manzana", description='Manzana x bolsa de 10 kg', sub_categories_id=subCategories[4].id), #5
+            Products(name="Pera", description='Pera x bolsa de 10 kg', sub_categories_id=subCategories[4].id), #6
+            Products(name="Tomate", description='tomate por kg', sub_categories_id=subCategories[5].id), #7
+            Products(name="Lechuga", description='Lechuga por paquete', sub_categories_id=subCategories[5].id), #8
             # Bebidas CON alcohol
-            Products(name="Estrella", description='Cerveza española', sub_categories_id=subCategories[6].id),
-            Products(name="San Felipe", description='vino sanjuanino', sub_categories_id=subCategories[7].id),
+            Products(name="Estrella", description='Cerveza española', sub_categories_id=subCategories[6].id), #9
+            Products(name="San Felipe", description='vino sanjuanino', sub_categories_id=subCategories[7].id), #10
             # Bebidas CON alcohol
-            Products(name="Coca Cola", sub_categories_id=subCategories[8].id),
-            Products(name="Jugo de Naranja", description='jugo diluido', sub_categories_id=subCategories[9].id),
+            Products(name="Coca Cola", sub_categories_id=subCategories[8].id), #11
+            Products(name="Jugo de Naranja", description='jugo diluido', sub_categories_id=subCategories[9].id), #12
         ]
 
         db.session.add_all(products)
         db.session.commit()
 
+        supliersProducts = [
+            SuppliersProducts(suppliers_id=1, products_id=7, nickname='Tomate redondo', price=0.5), #0
+            SuppliersProducts(suppliers_id=1, products_id=7, nickname='Tomate perita', price=0.7), #1
+            SuppliersProducts(suppliers_id=4, products_id=7, nickname='Tomate Rojo', price=0.65), #2
+            SuppliersProducts(suppliers_id=2, products_id=9, nickname='Cerveza Estrella', price=1), #3
+            SuppliersProducts(suppliers_id=3, products_id=1, nickname='Medallon x10', price=5), #4
+            SuppliersProducts(suppliers_id=5, products_id=1, nickname='Carne circular por unidad', price=1) #5
+        ]
+        db.session.add_all(supliersProducts)
+        db.session.commit()
+        contactsData = [
+            ContactsData(order_method='whatsapp', supplier_id=1, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Juan', last_name='Proveedor 1'), #0
+            ContactsData(order_method='mail', supplier_id=2, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Pedro', last_name='Proveedor 2'), #1
+            ContactsData(order_method='telefono', supplier_id=3, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Pablo', last_name='Proveedor 3'), #2
+            ContactsData(order_method='whatsapp', supplier_id=4, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Margarita', last_name='Proveedor 4'), #3
+            ContactsData(order_method='mail', supplier_id=5, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Juan', last_name='Proveedor 5'), #4
+            ContactsData(order_method='none', phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Javi', last_name='ElAdmin'), #5
+            ContactsData(order_method='none', phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Jaime', last_name='ElUser'), #6
+            ContactsData(order_method='none', phone_number='234802343', address='calle 10', mail='mail@mail.com', whatsapp='31894279', first_name='Sucursal 1', last_name='Palermo'), #7
+            ContactsData(order_method='none', phone_number='234802343', address='calle 12', mail='mail@mail.com', whatsapp='31894279', first_name='Sucursal 2', last_name='La Boca'), #8
+            ContactsData(order_method='none', phone_number='234802343', address='calle 16', mail='mail@mail.com', whatsapp='31894279', first_name='Sucursal 3', last_name='Recoleta') #9
+        
+        ]
+        db.session.add_all(contactsData)
+        db.session.commit()
+
+        users = [
+            Users(username="admin", password=1234, role="Administrador", contacts_data_id=contactsData[5].id),
+            Users(username="user1", password=1234, contacts_data_id=contactsData[6].id)
+        ]
+        db.session.add_all(users)
+        db.session.commit()
+
+        branches = [
+            Branches(contacts_data_id=contactsData[7].id),
+            Branches(contacts_data_id=contactsData[8].id),
+            Branches(contacts_data_id=contactsData[9].id)
+        ]
+
+        db.session.add_all(branches)
+        db.session.commit()
+       
+        orders = [
+            Orders(contacts_data_id=contactsData[0].id,order_number='123',user_id=users[0].id, payment_method='credito', amount=10, branch_id=branches[0].id),
+            Orders(contacts_data_id=contactsData[1].id,order_number='124',user_id=users[0].id, payment_method='efectivo', amount=20, branch_id=branches[1].id),
+            Orders(contacts_data_id=contactsData[2].id,order_number='125',user_id=users[1].id, payment_method='transferencia', amount=30.5, branch_id=branches[0].id),
+            Orders(contacts_data_id=contactsData[2].id,order_number='126',user_id=users[0].id, payment_method='efectivo', amount=200, branch_id=branches[2].id),
+        ]
+
+        db.session.add_all(orders)
+        db.session.commit()
+
+        productOrders = [
+            ProductsOrders(suppliers_products_id=supliersProducts[0].id, orders_id=orders[0].id, presentation=1, quantity=1, unit_price=1 ),
+            ProductsOrders(suppliers_products_id=supliersProducts[3].id, orders_id=orders[1].id, presentation=1, quantity=1, unit_price=1 ),
+            ProductsOrders(suppliers_products_id=supliersProducts[5].id, orders_id=orders[2].id, presentation=1, quantity=1, unit_price=1 )
+        ]
+        db.session.add_all(productOrders)
+        db.session.commit()
         print("Seed cargado")
 
 

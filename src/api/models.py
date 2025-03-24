@@ -29,7 +29,7 @@ class SuppliersProducts(db.Model):
     products_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
     products_to = db.relationship('Products', foreign_keys=[products_id], backref=db.backref('products_supplier_to', lazy='select'))
     nickname = db.Column(db.String(50))
-    price = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Float, nullable=False)
 
     def __repr__(self):
             return f'<SuppliersProducts {self.nickname}>'
@@ -101,8 +101,8 @@ class ProductsOrders(db.Model):
     orders_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)
     orders_to = db.relationship('Orders', foreign_keys=[orders_id], backref=db.backref('orders_products_to', lazy='select'))
     presentation = db.Column(db.Integer, nullable=False) #Evaluar si lo hacemos enum o tabla, es para especificar por ej kilogramos, gramos, bultos, paquete, unidad etc
-    quantity = db.Column(db.Integer, nullable=False)
-    unit_price = db.Column(db.Integer, nullable=False)
+    quantity = db.Column(db.Float, nullable=False)
+    unit_price = db.Column(db.Float, nullable=False)
 
     def __repr__(self):
             return f'<ProductsOrders {self.id}>'
@@ -113,7 +113,6 @@ class ProductsOrders(db.Model):
                 "orders_id": self.orders_id,
                 "presentation": self.presentation,
                 "quantity": self.quantity,
-                "orders_id": self.orders_id,
                 "unit_price": self.unit_price}
     
 
@@ -158,7 +157,7 @@ class Orders(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     contacts_data_id = db.Column(db.Integer, db.ForeignKey('contacts_data.id'))
     contacts_data_to = db.relationship('ContactsData', foreign_keys=[contacts_data_id], backref=db.backref('contact_data_orders_to', lazy='select'))
-    order_number = db.Column(db.Integer, nullable=True, unique=True)
+    order_number = db.Column(db.String(63), nullable=True, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user_to = db.relationship('Users', foreign_keys=[user_id], backref=db.backref('users_orders_to', lazy='select'))
     start_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
@@ -191,7 +190,7 @@ class Orders(db.Model):
 
 class ContactsData(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    order_method = db.Column(db.Enum("whatsapp", "mail", "telefono", name='order_method'))
+    order_method = db.Column(db.Enum("whatsapp", "mail", "telefono", "none", name='order_method'))
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
     supplier_to = db.relationship('Suppliers', foreign_keys=[supplier_id], backref=db.backref('suplier_contact_data_to', lazy='select'))
     phone_number = db.Column(db.String(63))
