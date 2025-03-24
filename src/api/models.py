@@ -75,6 +75,7 @@ class SubCategories(db.Model):
     description = db.Column(db.String(500))
     categories_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
     categories_to = db.relationship('Categories', foreign_keys=[categories_id], backref=db.backref('categories_to', lazy='select'))
+    is_active = db.Column(db.Boolean, default=True)
 
     def __repr__(self):
             return f'{self.name}'
@@ -83,13 +84,15 @@ class SubCategories(db.Model):
         return {"id": self.id,
                 "name": self.name,
                 "description": self.description,
-                "categories_id": self.categories_id}
+                "categories_id": self.categories_id,
+                "is_active": self.is_active}
     
 
 class Categories(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String(500))
+    is_active = db.Column(db.Boolean, default=True)
 
     def __repr__(self):
             return f'{self.name}'
@@ -97,7 +100,8 @@ class Categories(db.Model):
     def serialize(self):
         return {"id": self.id,
                 "name": self.name,
-                "description": self.description}
+                "description": self.description,
+                "is_active": self.is_active}
     
 
 class ProductsOrders(db.Model):
@@ -153,13 +157,15 @@ class Branches(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     contacts_data_id = db.Column(db.Integer, db.ForeignKey('contacts_data.id'))
     contacts_data_to = db.relationship('ContactsData', foreign_keys=[contacts_data_id], backref=db.backref('contact_data_branches_to', lazy='select'))
+    is_active = db.Column(db.Boolean, default=True)
 
     def __repr__(self):
             return f'<Branches {self.id}>'
 
     def serialize(self):
         return {"id": self.id,
-                "contacts_data_id": self.contacts_data_id}
+                "contacts_data_id": self.contacts_data_id,
+                "is_active": self.is_active}
 
 
 class Orders(db.Model):
@@ -178,6 +184,7 @@ class Orders(db.Model):
     amount = db.Column(db.Float)
     branch_id = db.Column(db.Integer, db.ForeignKey('branches.id'))
     branch_to = db.relationship('Branches', foreign_keys=[branch_id], backref=db.backref('branch_orders_to', lazy='select'))
+    is_active = db.Column(db.Boolean, default=True)
 
     def __repr__(self):
             return f'<Orders {self.id}>'
@@ -194,7 +201,8 @@ class Orders(db.Model):
                 "status": self.status,
                 "payment_method": self.payment_method,
                 "amount": self.amount,
-                "branch_id": self.branch_id}
+                "branch_id": self.branch_id,
+                "is_active": self.is_active}
     
 
 class ContactsData(db.Model):

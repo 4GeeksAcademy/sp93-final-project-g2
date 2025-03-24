@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: fa179c03da19
+Revision ID: 7e06592e4964
 Revises: 
-Create Date: 2025-03-24 19:09:21.650457
+Create Date: 2025-03-24 20:03:40.422155
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'fa179c03da19'
+revision = '7e06592e4964'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -22,6 +22,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=50), nullable=False),
     sa.Column('description', sa.String(length=500), nullable=True),
+    sa.Column('is_active', sa.Boolean(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('suppliers',
@@ -52,12 +53,14 @@ def upgrade():
     sa.Column('name', sa.String(length=50), nullable=False),
     sa.Column('description', sa.String(length=500), nullable=True),
     sa.Column('categories_id', sa.Integer(), nullable=False),
+    sa.Column('is_active', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['categories_id'], ['categories.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('branches',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('contacts_data_id', sa.Integer(), nullable=True),
+    sa.Column('is_active', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['contacts_data_id'], ['contacts_data.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -95,6 +98,7 @@ def upgrade():
     sa.Column('payment_method', sa.Enum('transferencia', 'efectivo', 'debito', 'credito', 'cheque', name='payment_method'), nullable=True),
     sa.Column('amount', sa.Float(), nullable=True),
     sa.Column('branch_id', sa.Integer(), nullable=True),
+    sa.Column('is_active', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['branch_id'], ['branches.id'], ),
     sa.ForeignKeyConstraint(['contacts_data_id'], ['contacts_data.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),

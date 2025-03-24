@@ -299,7 +299,7 @@ def categories():
         response_body['message'] = "Categoría añadida correctamente"
         response_body['results'] = row.serialize()
         return response_body, 200
-    
+     
 
 @api.route('/categories/<int:categories_id>', methods=['GET', 'PUT', 'DELETE'])
 def category(categories_id):
@@ -315,7 +315,15 @@ def category(categories_id):
         return response_body, 200
     
     if request.method == 'DELETE':
-        response_body['message'] = f"Este es el delete de categories_id {categories_id}"
+        row = Categories.query.get(categories_id)
+
+        if row and row.is_active:
+            row.is_active = False
+            db.session.commit()
+            response_body['message'] = f"La categoría con id {categories_id} ha sido eliminada correctamente."
+            return response_body, 200
+    
+        response_body['message'] = f"La categoría con id {categories_id} no se encuentra en la base de datos."
         return response_body, 200
     
 
@@ -360,7 +368,15 @@ def subcategory(subcategories_id):
         return response_body, 200
     
     if request.method == 'DELETE':
-        response_body['message'] = f"Este es el delete de subcategories_id {subcategories_id}"
+        row = SubCategories.query.get(subcategories_id)
+
+        if row and row.is_active:
+            row.is_active = False
+            db.session.commit()
+            response_body['message'] = f"La subcategoría con id {subcategories_id} ha sido eliminada correctamente."
+            return response_body, 200
+    
+        response_body['message'] = f"La subcategoría con id {subcategories_id} no se encuentra en la base de datos."
         return response_body, 200
     
 
@@ -405,7 +421,15 @@ def branch(branches_id):
         return response_body, 200
     
     if request.method == 'DELETE':
-        response_body['message'] = f"Este es el delete de branch {branches_id}"
+        row = Branches.query.get(branches_id)
+
+        if row and row.is_active:
+            row.is_active = False
+            db.session.commit()
+            response_body['message'] = f"La sucursal con id {branches_id} ha sido eliminada correctamente."
+            return response_body, 200
+    
+        response_body['message'] = f"La sucursal con id {branches_id} no se encuentra en la base de datos."
         return response_body, 200
 
 
@@ -445,7 +469,15 @@ def order(orders_id):
         return response_body, 200
     
     if request.method == 'DELETE':
-        response_body['message'] = f"Este es el delete del order {orders_id}"
+        row = Orders.query.get(orders_id)
+
+        if row and row.is_active:
+            row.is_active = False
+            db.session.commit()
+            response_body['message'] = f"El pedido con id {orders_id} ha sido eliminado correctamente."
+            return response_body, 200
+    
+        response_body['message'] = f"El pedido con id {orders_id} no se encuentra en la base de datos."
         return response_body, 200
 
 
@@ -499,5 +531,13 @@ def product_order(products_orders_id):
         return response_body, 200
     
     if request.method == 'DELETE':
-        response_body['message'] = f"Este es el delete del products_orders_id {products_orders_id}"
+        row = ProductsOrders.query.get(products_orders_id)
+
+        if row and row.is_active:
+            row.is_active = False
+            db.session.commit()
+            response_body['message'] = f"El pedido de producto con id {products_orders_id} ha sido eliminado correctamente."
+            return response_body, 200
+    
+        response_body['message'] = f"El pedido de producto con id {products_orders_id} no se encuentra en la base de datos."
         return response_body, 200
