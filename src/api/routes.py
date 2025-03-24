@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, Users, Products, Categories, SubCategories, Suppliers, SuppliersProducts
+from api.models import db, Users, Products, Categories, SubCategories, Suppliers, SuppliersProducts, ContactsData, Branches, Orders, ProductsOrders
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 
@@ -61,7 +61,6 @@ def users():
 @api.route('/users/<int:users_id>', methods=['GET', 'PUT', 'DELETE'])
 def user(users_id):
     response_body = {}
-    response_body = {}
     if request.method == 'GET':
         row = Users.query.get(users_id)
         response_body['message'] = "Datos del usuario"
@@ -96,19 +95,29 @@ def user(users_id):
 def contacts_data():
     response_body = {}
     if request.method == 'GET':
-        response_body['message'] = "Este es el get de contacts_data"
+        rows = db.session.execute(db.select(ContactsData)).scalars()
+        result = [row.serialize() for row in rows]
+        response_body['message'] = "Datos de contacto"
+        response_body['results'] = result
         return response_body, 200
     
     if request.method == 'POST':
-        response_body['message'] = "Este es el post de contacts_data"
+        data = request.json
+        row = ContactsData(order_method=data.get('order_method', 'whatsapp'), supplier_id=data.get('supplier_id', None), phone_number=data.get('phone_number', None),
+                            address=data.get('address', None), mail=data.get('mail', None), whatsapp=data.get('whatsapp', None), first_name=data.get('first_name', None), last_name=data.get('last_name', None))
+        db.session.add(row)
+        db.session.commit()
+        response_body['message'] = "Datos de contacto creados."
+        response_body['results'] = row.serialize()
         return response_body, 200
-
 
 @api.route('/contacts-data/<int:contacts_data_id>', methods=['GET', 'PUT', 'DELETE'])
 def contact(contacts_data_id):
     response_body = {}
     if request.method == 'GET':
-        response_body['message'] = f"Este es el get de contact {contacts_data_id}"
+        row = ContactsData.query.get(contacts_data_id)
+        response_body['message'] = "Datos de contacto"
+        response_body['results'] = row.serialize()
         return response_body, 200
     
     if request.method == 'PUT':
@@ -335,11 +344,19 @@ def subcategory_products(subcategories_id):
 def branches():
     response_body = {}
     if request.method == 'GET':
-        response_body['message'] = "Este es el get de branches"
+        rows = db.session.execute(db.select(Branches)).scalars()
+        result = [row.serialize() for row in rows]
+        response_body['message'] = "Sucursales"
+        response_body['results'] = result
         return response_body, 200
     
     if request.method == 'POST':
-        response_body['message'] = "Este es el post de branches"
+        data = request.json
+        row = Branches(contacts_data_id=data.get('contacts_data_id', None))
+        db.session.add(row)
+        db.session.commit()
+        response_body['message'] = "Sucursal creada."
+        response_body['results'] = row.serialize()
         return response_body, 200
     
 
@@ -347,7 +364,9 @@ def branches():
 def branch(branches_id):
     response_body = {}
     if request.method == 'GET':
-        response_body['message'] = f"Este es el get de branch {branches_id}"
+        row = Branches.query.get(branches_id)
+        response_body['message'] = "Sucursal."
+        response_body['results'] = row.serialize()
         return response_body, 200
     
     if request.method == 'PUT':
@@ -363,19 +382,31 @@ def branch(branches_id):
 def orders():
     response_body = {}
     if request.method == 'GET':
-        response_body['message'] = f"Este el get de orders"
+        rows = db.session.execute(db.select(Orders)).scalars()
+        result = [row.serialize() for row in rows]
+        response_body['message'] = "Pedidos"
+        response_body['results'] = result
         return response_body, 200
     
     if request.method == 'POST':
-        response_body['message'] = f"Este es el post de orders"
+        data = request.json
+        row = Orders(contacts_data_id=data.get('contacts_data_id', None),order_number=data.get('order_number', None),user_id=data.get('user_id', None),
+                     end_date=data.get('end_date', None),delivery_date=data.get('delivery_date', None),status=data.get('status', 'borrador'),
+                     payment_method=data.get('payment_method', 'transferencia'),amount=data.get('amount', None),branch_id=data.get('branch_id', None))
+        db.session.add(row)
+        db.session.commit()
+        response_body['message'] = "Pedido creado."
+        response_body['results'] = row.serialize()
         return response_body, 200
-
+    
 
 @api.route('/orders/<int:orders_id>', methods=['GET', 'PUT', 'DELETE'])
 def order(orders_id):
     response_body = {}
     if request.method == 'GET':
-        response_body['message'] = f"Este el get del order {orders_id}"
+        row = Orders.query.get(orders_id)
+        response_body['message'] = "Pedido"
+        response_body['results'] = row.serialize()
         return response_body, 200
     
     if request.method == 'PUT':
@@ -405,19 +436,31 @@ def order_send(orders_id):
 def product_orders():
     response_body = {}
     if request.method == 'GET':
-        response_body['message'] = f"Este el get de product_orders"
+        rows = db.session.execute(db.select(ProductsOrders)).scalars()
+        result = [row.serialize () for row in rows]
+        response_body['message'] = "Product orders."
+        response_body['results'] = result
         return response_body, 200
     
     if request.method == 'POST':
-        response_body['message'] = f"Este es el post de product_orders"
+        data = request.json
+        row = ProductsOrders(suppliers_products_id=data['suppliers_products_id'], orders_id=data['orders_id'],
+                             presentation=data.get('presentation', 1), quantity=data.get('quantity', 1),
+                             unit_price=data.get('unit_price', 1))
+        db.session.add(row)
+        db.session.commit()
+        response_body['message'] = "Producto agregado correctamente a la orden."
+        response_body['results'] = row.serialize()
         return response_body, 200
-
+    
 
 @api.route('/products-orders/<int:products_orders_id>', methods=['GET', 'PUT', 'DELETE'])
 def product_order(products_orders_id):
     response_body = {}
     if request.method == 'GET':
-        response_body['message'] = f"Este el get del product_order {products_orders_id}"
+        row = ProductsOrders.query.get(products_orders_id)
+        response_body['message'] = "Producto"
+        response_body['result'] = row.serialize()
         return response_body, 200
     
     if request.method == 'PUT':
