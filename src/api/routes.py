@@ -125,9 +125,16 @@ def contact(contacts_data_id):
         return response_body, 200
     
     if request.method == 'DELETE':
-        response_body['message'] = f"Este es el delete de contact {contacts_data_id}"
+        row = db.session.execute(db.select(ContactsData).where(ContactsData.id == contacts_data_id)).scalar()
+        if row:
+            db.session.delete(row)
+            db.session.commit()
+            response_body['message'] = f"Los datos de contacto con id {contacts_data_id} han sido eliminados con éxito."
+            return response_body, 200
+    
+        response_body['message'] = f"Los datos de contacto con id {contacts_data_id} no se encuentran en la base de datos."
         return response_body, 200
- 
+
 
 @api.route('/suppliers', methods=['POST', 'GET'])
 def suppliers():
@@ -163,7 +170,14 @@ def supplier(supplier_id):
         return response_body, 200
     
     if request.method == 'DELETE':
-        response_body['message'] = f"Este es el delete de supplier_id {supplier_id}"
+        row = db.session.execute(db.select(Suppliers).where(Suppliers.id == supplier_id)).scalar()
+        if row and row.is_active:
+            row.is_active = False
+            db.session.commit()
+            response_body['message'] = f"El proveedor con id {supplier_id} ha sido eliminado correctamente."
+            return response_body, 200
+    
+        response_body['message'] = f"El proveedor con id {supplier_id} no se encuentra en la base de datos."
         return response_body, 200
     
 
@@ -202,8 +216,17 @@ def suppliers_product(suppliers_products_id):
         return response_body, 200
     
     if request.method == 'DELETE':
-        response_body['message'] = f"Este es el delete de suppliers-product {suppliers_products_id}"
+        row = SuppliersProducts.query.get(suppliers_products_id)
+
+        if row and row.is_active:
+            row.is_active = False
+            db.session.commit()
+            response_body['message'] = f"El producto con id {suppliers_products_id} ha sido eliminado correctamente."
+            return response_body, 200
+    
+        response_body['message'] = f"El producto con id {suppliers_products_id} no se encuentra en la base de datos."
         return response_body, 200
+
      
 
 @api.route('/products', methods=['POST', 'GET'])
@@ -239,7 +262,15 @@ def product(product_id):
         response_body['message'] = f"Este es el put de products del productID: {product_id}"
         return response_body, 200
     if request.method == 'DELETE':
-        response_body['message'] = f"Este es el delete de products del productID: {product_id}"
+        row = Products.query.get(product_id)
+
+        if row and row.is_active:
+            row.is_active = False
+            db.session.commit()
+            response_body['message'] = f"El producto con id {product_id} ha sido eliminado correctamente."
+            return response_body, 200
+    
+        response_body['message'] = f"El producto con id {product_id} no se encuentra en la base de datos."
         return response_body, 200
 
 
