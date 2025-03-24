@@ -10,6 +10,7 @@ class Suppliers(db.Model):
     name = db.Column(db.String(50), nullable=False)
     address = db.Column(db.String(200), nullable=False)
     cuit = db.Column(db.String(63), unique=True, nullable=False)
+    is_active = db.Column(db.Boolean, default=True)
     
     def __repr__(self):
             return f'{self.name}'
@@ -18,7 +19,8 @@ class Suppliers(db.Model):
         return {"id": self.id,
                 "name": self.name,
                 "address": self.address,
-                "cuit": self.cuit}
+                "cuit": self.cuit,
+                "is_active": self.is_active}
 
 
 class SuppliersProducts(db.Model):
@@ -30,6 +32,8 @@ class SuppliersProducts(db.Model):
     products_to = db.relationship('Products', foreign_keys=[products_id], backref=db.backref('products_supplier_to', lazy='select'))
     nickname = db.Column(db.String(50))
     price = db.Column(db.Float, nullable=False)
+    is_active = db.Column(db.Boolean, default=True)
+
 
     def __repr__(self):
             return f'<SuppliersProducts {self.nickname}>'
@@ -39,7 +43,8 @@ class SuppliersProducts(db.Model):
                 "suppliers_id": self.suppliers_id,
                 "products_id": self.products_id,
                 "nickname": self.nickname,
-                "price": self.price}
+                "price": self.price,
+                "is_active": self.is_active}
 
 
 class Products(db.Model):
@@ -49,6 +54,7 @@ class Products(db.Model):
     sub_categories_id = db.Column(db.Integer, db.ForeignKey('sub_categories.id'), nullable=False)
     sub_categories_to = db.relationship('SubCategories', foreign_keys=[sub_categories_id], backref=db.backref('sub_categories_to', lazy='select'))
     image = db.Column(db.String(500))
+    is_active = db.Column(db.Boolean, default=True)
 
     def __repr__(self):
             return f'{self.name}'
@@ -58,7 +64,8 @@ class Products(db.Model):
                 "name": self.name,
                 "description": self.description,
                 "sub_categories_id": self.sub_categories_id,
-                "image": self.image}
+                "image": self.image,
+                "is_active": self.is_active}
     
 
 class SubCategories(db.Model):
@@ -103,6 +110,7 @@ class ProductsOrders(db.Model):
     presentation = db.Column(db.Integer, nullable=False) #Evaluar si lo hacemos enum o tabla, es para especificar por ej kilogramos, gramos, bultos, paquete, unidad etc
     quantity = db.Column(db.Float, nullable=False)
     unit_price = db.Column(db.Float, nullable=False)
+    is_active = db.Column(db.Boolean, default=True)
 
     def __repr__(self):
             return f'<ProductsOrders {self.id}>'
@@ -113,7 +121,8 @@ class ProductsOrders(db.Model):
                 "orders_id": self.orders_id,
                 "presentation": self.presentation,
                 "quantity": self.quantity,
-                "unit_price": self.unit_price}
+                "unit_price": self.unit_price,
+                "is_active": self.is_active}
     
 
 class Users(db.Model):
