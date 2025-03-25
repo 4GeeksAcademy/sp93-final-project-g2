@@ -8,6 +8,7 @@ import { Footer } from "./component/Footer.jsx";
 import { Home } from "./pages/Home.jsx";
 import { Error404 } from "./pages/Error404.jsx";
 import Login from "./pages/Login.jsx";
+import Profile from "./pages/Profile.jsx"; // Importando el perfil
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
@@ -21,6 +22,7 @@ const Layout = () => {
                     <Routes>
                         <Route element={<Home />} path="/" />
                         <Route element={<Login />} path="/login" /> 
+                        <Route element={<Profile />} path="/profile" />
                         <Route element={<Error404 />} path="*" />
                     </Routes>
                     <Footer />
@@ -31,3 +33,4 @@ const Layout = () => {
 };
 
 export default injectContext(Layout);
+
