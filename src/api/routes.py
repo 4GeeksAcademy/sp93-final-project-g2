@@ -5,6 +5,7 @@ from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, Users, Products, Categories, SubCategories, Suppliers, SuppliersProducts, ContactsData, Branches, Orders, ProductsOrders
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
+from sqlalchemy.orm import joinedload
 
 import requests
 
@@ -459,9 +460,29 @@ def orders():
 def order(orders_id):
     response_body = {}
     if request.method == 'GET':
-        row = Orders.query.get(orders_id)
+        row = Orders.query.options(joinedload(Orders.orders_products_to)
+                                    .joinedload(ProductsOrders.suppliers_products_to)
+                                    .joinedload(SuppliersProducts.suppliers_to),
+                                    joinedload(Orders.contacts_data_to),
+                                    joinedload(Orders.user_to),
+                                    joinedload(Orders.branch_to)
+                                   ).get(orders_id)
+        if not row:
+            return {"message": "Orden no encontrada"}, 404
+
+        order = row.serialize()
+        order['products'] = [product.serialize() for product in row.orders_products_to]
+        order["supplier_name"] = row.orders_products_to[0].suppliers_products_to.suppliers_to.name
+        order["contact_data"] = row.contacts_data_to.serialize()
+        order["user"] = row.user_to.serialize()
+        order["branch"] = row.branch_to.serialize()
+        # OPCION QUE NO ME GUSTA PORQUE HACE DOS CONSULTAS A LA BASE
+        # row = Orders.query.get(orders_id)
+        # order = row.serialize()
+        # order_products = db.session.execute(db.select(ProductsOrders).where(ProductsOrders.orders_id == orders_id)).scalars()
+        # order['products'] = [order_product.serialize() for order_product in order_products ]
         response_body['message'] = "Pedido"
-        response_body['results'] = row.serialize()
+        response_body['results'] = order
         return response_body, 200
     
     if request.method == 'PUT':
