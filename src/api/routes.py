@@ -40,6 +40,7 @@ def login():
 
 
 @api.route('/users', methods=['GET', 'POST'])
+@jwt_required()
 def users():
     response_body = {}
     if request.method == 'GET':
@@ -93,6 +94,7 @@ def user(users_id):
     
 
 @api.route('/contacts-data', methods=['GET', 'POST'])
+@jwt_required()
 def contacts_data():
     response_body = {}
     if request.method == 'GET':
@@ -112,7 +114,9 @@ def contacts_data():
         response_body['results'] = row.serialize()
         return response_body, 200
 
+
 @api.route('/contacts-data/<int:contacts_data_id>', methods=['GET', 'PUT', 'DELETE'])
+# Aquí debo recibir el token para ver si tiene permiso o no de hacer esto.
 def contact(contacts_data_id):
     response_body = {}
     if request.method == 'GET':
@@ -122,6 +126,7 @@ def contact(contacts_data_id):
         return response_body, 200
     
     if request.method == 'PUT':
+        # Aquí debo verificar que el user_id que tengo en el token "pueda" modificar los datos de este contacto. 
         response_body['message'] = f"Este es el put de contact {contacts_data_id}"
         return response_body, 200
     
@@ -137,7 +142,8 @@ def contact(contacts_data_id):
         return response_body, 200
 
 
-@api.route('/suppliers', methods=['POST', 'GET'])
+@api.route('/suppliers', methods=['GET', 'POST'])
+@jwt_required()
 def suppliers():
     response_body = {}
     if request.method == 'GET':
@@ -148,6 +154,7 @@ def suppliers():
         return response_body, 200
     
     if request.method == 'POST':
+        # Debo verificar si el rol que viene en el token es admin.
         data = request.json
         row = Suppliers(name=data.get('name', ''), address=data.get('address', ''), cuit=data.get('cuit', ''))
         db.session.add(row)
@@ -389,6 +396,7 @@ def subcategory_products(subcategories_id):
 
 
 @api.route('/branches', methods=['GET', 'POST'])
+@jwt_required()
 def branches():
     response_body = {}
     if request.method == 'GET':
@@ -435,10 +443,15 @@ def branch(branches_id):
 
 
 @api.route('/orders', methods=['GET', 'POST'])
+@jwt_required()
 def orders():
     response_body = {}
+    current_user = get_jwt()
+    print("current_user", current_user)
+    user_id = current_user['user_id']
     if request.method == 'GET':
-        rows = db.session.execute(db.select(Orders)).scalars()
+        rows = db.session.execute(db.select(Orders).where(Orders.user_id == user_id)).scalars()
+        #rows = db.session.execute(db.select(Orders)).scalars()
         result = [row.serialize() for row in rows]
         response_body['message'] = "Pedidos"
         response_body['results'] = result
@@ -503,6 +516,7 @@ def order(orders_id):
 
 
 @api.route('/orders/filters', methods=['POST'])
+@jwt_required()
 def order_filters():
     response_body = {}
     response_body['message'] = f"Este es el post de order_filter"
@@ -510,6 +524,7 @@ def order_filters():
 
 
 @api.route('/orders/<int:orders_id>/send', methods=['POST'])
+@jwt_required()
 def order_send(orders_id):
     response_body = {}
     response_body['message'] = f"Este es el post de order_send {orders_id}"
@@ -517,6 +532,7 @@ def order_send(orders_id):
 
 
 @api.route('/products-orders', methods=['GET', 'POST'])
+@jwt_required()
 def product_orders():
     response_body = {}
     if request.method == 'GET':
@@ -533,7 +549,7 @@ def product_orders():
                              unit_price=data.get('unit_price', 1))
         db.session.add(row)
         db.session.commit()
-        response_body['message'] = "Producto agregado correctamente a la orden."
+        response_body['message'] = "Producto agregado correctamente."
         response_body['results'] = row.serialize()
         return response_body, 200
     
