@@ -44,14 +44,9 @@ def login():
 def users():
     response_body = {}
     if request.method == 'GET':
-        rows = Users.query.options(joinedload(Users.contacts_data_to))
-        results = []
-        for row in rows:
-            data = row.serialize()
-            data['contact_data'] = row.contacts_data_to.serialize()
-            results.append(data)
-        response_body['message'] = "Listado de todos los usuarios"
-        response_body['results'] = results
+        rows = Users.query.all()
+        response_body['message'] = "Usuarios"
+        response_body['results'] = [row.serialize() for row in rows]
         return response_body, 200
 
     if request.method == 'POST':
@@ -65,45 +60,49 @@ def users():
     
 
 @api.route('/users/<int:users_id>', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
 def user(users_id):
     response_body = {}
-    if request.method == 'GET':
-        row = Users.query.options(joinedload(Users.contacts_data_to)).get(users_id)
-        response_body['prueba'] = row.contacts_data_to.serialize()
-        response_body['message'] = "Datos del usuario"
-        response_body['results'] = row.serialize()
-        return response_body, 200
+    claims = get_jwt()
+    if claims['role'] == 'Administrador' or claims['user_id'] == users_id:
+        if request.method == 'GET':
+            row = Users.query.get(users_id)
+            response_body['message'] = "Datos del usuario"
+            response_body['results'] = row.serialize()
+            return response_body, 200
 
-    if request.method == 'PUT':
-        data = request.json
-        row = Users.query.get(users_id)
-        row.role= data.get('role', row.role)
-        row.username= data.get('username', row.username)
-        row.password= data.get('password', row.password)
-        row.is_active= data.get('is_active', row.is_active)
-        db.session.commit()
-        response_body['message'] = "Profile editado correctamente"
-        response_body['results'] = row.serialize()
-        return response_body, 200
-    
-    if request.method == 'DELETE':
-        row = db.session.execute(db.select(Users).where(Users.id == users_id)).scalar()
-        if row:
-            db.session.delete(row)
+        if request.method == 'PUT':
+            data = request.json
+            row = Users.query.get(users_id)
+            row.role= data.get('role', row.role)
+            row.username= data.get('username', row.username)
+            row.password= data.get('password', row.password)
+            row.is_active= data.get('is_active', row.is_active)
             db.session.commit()
-            response_body['message'] = f"El user con id {users_id} ha sido eliminado con exito"
+            response_body['message'] = "Profile editado correctamente"
+            response_body['results'] = row.serialize()
             return response_body, 200
         
-        response_body['message'] = f"El user con id {users_id} no se encuentra en la base de datos"
-        return response_body, 200
-    
+        if request.method == 'DELETE' and claims['role'] == 'Administrador':
+            row = Users.query.get(users_id)
+            if row:
+                db.session.delete(row)
+                db.session.commit()
+                response_body['message'] = f"El user con id {users_id} ha sido eliminado con exito"
+                return response_body, 200
+            
+            response_body['message'] = f"El user con id {users_id} no se encuentra en la base de datos"
+            return response_body, 200
+
+    response_body['message'] = "El usuario no esta autorizado a realizar esta accion"
+    return response_body, 200 
 
 @api.route('/contacts-data', methods=['GET', 'POST'])
 @jwt_required()
 def contacts_data():
     response_body = {}
     if request.method == 'GET':
-        rows = db.session.execute(db.select(ContactsData)).scalars()
+        rows = ContactsData.query.all()
         result = [row.serialize() for row in rows]
         response_body['message'] = "Datos de contacto"
         response_body['results'] = result
