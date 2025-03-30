@@ -40,12 +40,16 @@ def login():
 
 
 @api.route('/users', methods=['GET', 'POST'])
-@jwt_required()
+#@jwt_required()
 def users():
     response_body = {}
     if request.method == 'GET':
-        rows = db.session.execute(db.select(Users)).scalars()
-        results = [row.serialize() for row in rows]
+        rows = Users.query.options(joinedload(Users.contacts_data_to))
+        results = []
+        for row in rows:
+            data = row.serialize()
+            data['contact_data'] = row.contacts_data_to.serialize()
+            results.append(data)
         response_body['message'] = "Listado de todos los usuarios"
         response_body['results'] = results
         return response_body, 200
@@ -64,7 +68,8 @@ def users():
 def user(users_id):
     response_body = {}
     if request.method == 'GET':
-        row = Users.query.get(users_id)
+        row = Users.query.options(joinedload(Users.contacts_data_to)).get(users_id)
+        response_body['prueba'] = row.contacts_data_to.serialize()
         response_body['message'] = "Datos del usuario"
         response_body['results'] = row.serialize()
         return response_body, 200
@@ -143,12 +148,19 @@ def contact(contacts_data_id):
 
 
 @api.route('/suppliers', methods=['GET', 'POST'])
-@jwt_required()
+#@jwt_required()
 def suppliers():
     response_body = {}
     if request.method == 'GET':
-        rows = db.session.execute(db.select(Suppliers)).scalars()
-        results = [row.serialize() for row in rows]
+        rows = Suppliers.query.options(joinedload(Suppliers.supplier_contact_data_to))
+        results = []
+        for row in rows:
+            data = row.serialize()
+            print('data', data)
+            data['supplier_contact_data'] = [contact.serialize() for contact in row.supplier_contact_data_to]
+            results.append(data)
+        #rows = db.session.execute(db.select(Suppliers)).scalars()
+        #results = [row.serialize() for row in rows]
         response_body['message'] = "Listado de proveedores"
         response_body['results'] = results
         return response_body, 200
@@ -450,8 +462,7 @@ def orders():
     print("current_user", current_user)
     user_id = current_user['user_id']
     if request.method == 'GET':
-        rows = db.session.execute(db.select(Orders).where(Orders.user_id == user_id)).scalars()
-        #rows = db.session.execute(db.select(Orders)).scalars()
+        rows = db.session.execute(db.select(Orders)).scalars()
         result = [row.serialize() for row in rows]
         response_body['message'] = "Pedidos"
         response_body['results'] = result

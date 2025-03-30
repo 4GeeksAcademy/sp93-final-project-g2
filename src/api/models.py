@@ -149,8 +149,10 @@ class Users(db.Model):
                         "role": self.role,
                         "is_active": self.is_active}
         return {"id": self.id,
+                "contacts_data_id": self.contacts_data_id,
                 "username": self.username,
-                "role": self.role}
+                "role": self.role,
+                "data_content": self.contacts_data_to.serialize()}
     
 
 class Branches(db.Model):
@@ -209,7 +211,7 @@ class ContactsData(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     order_method = db.Column(db.Enum("whatsapp", "mail", "telefono", "none", name='order_method'))
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
-    supplier_to = db.relationship('Suppliers', foreign_keys=[supplier_id], backref=db.backref('suplier_contact_data_to', lazy='select'))
+    supplier_to = db.relationship('Suppliers', foreign_keys=[supplier_id], backref=db.backref('supplier_contact_data_to', lazy='select'))
     phone_number = db.Column(db.String(63))
     address = db.Column(db.String(255))
     mail = db.Column(db.String(255))
