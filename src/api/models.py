@@ -20,7 +20,16 @@ class Suppliers(db.Model):
                 "name": self.name,
                 "address": self.address,
                 "cuit": self.cuit,
+                "is_active": self.is_active,
+                "contacts": [row.serialize() for row in self.supplier_contact_data_to]}
+
+    def get_supplier(self):
+        return {"id": self.id,
+                "name": self.name,
+                "address": self.address,
+                "cuit": self.cuit,
                 "is_active": self.is_active}
+
 
 
 class SuppliersProducts(db.Model):
@@ -140,7 +149,7 @@ class Users(db.Model):
      
     def __repr__(self):
             return f'<Users {self.username}>'
-
+    
     def serialize(self):
         if self.role != 'visitante':
                 return {"id": self.id,
@@ -217,7 +226,7 @@ class ContactsData(db.Model):
     whatsapp = db.Column(db.String(63))
     first_name = db.Column(db.String(63))
     last_name = db.Column(db.String(63))
-    active = db.Column(db.Boolean, default=True) 
+    is_active = db.Column(db.Boolean, default=True) 
 
     def __repr__(self):
             return f'<ContactsData {self.id}>'
@@ -232,5 +241,6 @@ class ContactsData(db.Model):
                 "whatsapp": self.whatsapp,
                 "first_name": self.first_name,
                 "last_name": self.last_name,
-                "active": self.active}
-    
+                "active": self.active,
+                "supplier": self.supplier_to.get_supplier() if self.supplier_id else {}} 
+ 

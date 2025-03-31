@@ -24,7 +24,7 @@ def login():
     data = request.json
     username = data.get("username", None)
     password = data.get("password", None)  
-    row = db.session.execute(db.select(Users).where(Users.username == username, Users.password == password, Users.is_active)).scalar()
+    row = Users.query.filter((Users.username == username) & (Users.password == password) & (Users.is_active)).first()
     if not row:
         response_body['message'] = "Bad username or password"
         return response_body, 401
@@ -43,18 +43,19 @@ def login():
 @jwt_required()
 def users():
     response_body = {}
+    claims = get_jwt()
     if request.method == 'GET':
         rows = Users.query.all()
         response_body['message'] = "Usuarios"
         response_body['results'] = [row.serialize() for row in rows]
         return response_body, 200
 
-    if request.method == 'POST':
+    if request.method == 'POST' and claims['role'] == 'Administrador':
         data = request.json
         row = Users(username= data.get('username', ''), password=data.get('password', 1234))
         db.session.add(row)
         db.session.commit()
-        response_body['message'] = "Este es el post de users"
+        response_body['message'] = "Usuario cargado correctamente"
         response_body['results'] = row.serialize()
         return response_body, 200
     
@@ -64,6 +65,7 @@ def users():
 def user(users_id):
     response_body = {}
     claims = get_jwt()
+    print('claims', claims)
     if claims['role'] == 'Administrador' or claims['user_id'] == users_id:
         if request.method == 'GET':
             row = Users.query.get(users_id)
@@ -84,9 +86,8 @@ def user(users_id):
             return response_body, 200
         
         if request.method == 'DELETE' and claims['role'] == 'Administrador':
-            row = Users.query.get(users_id)
-            if row:
-                db.session.delete(row)
+            row = Users.query.filter_by(id=users_id).delete()
+            if row != 0:
                 db.session.commit()
                 response_body['message'] = f"El user con id {users_id} ha sido eliminado con exito"
                 return response_body, 200
@@ -97,30 +98,34 @@ def user(users_id):
     response_body['message'] = "El usuario no esta autorizado a realizar esta accion"
     return response_body, 200 
 
+
 @api.route('/contacts-data', methods=['GET', 'POST'])
 @jwt_required()
 def contacts_data():
     response_body = {}
-    if request.method == 'GET':
-        rows = ContactsData.query.all()
-        result = [row.serialize() for row in rows]
-        response_body['message'] = "Datos de contacto"
-        response_body['results'] = result
-        return response_body, 200
-    
-    if request.method == 'POST':
-        data = request.json
-        row = ContactsData(order_method=data.get('order_method', 'whatsapp'), supplier_id=data.get('supplier_id', None), phone_number=data.get('phone_number', None),
-                            address=data.get('address', None), mail=data.get('mail', None), whatsapp=data.get('whatsapp', None), first_name=data.get('first_name', None), last_name=data.get('last_name', None))
-        db.session.add(row)
-        db.session.commit()
-        response_body['message'] = "Datos de contacto creados."
-        response_body['results'] = row.serialize()
-        return response_body, 200
-
+    claims = get_jwt()
+    if claims['role'] != 'visitante':
+        if request.method == 'GET':
+            rows = ContactsData.query.all()
+            result = [row.serialize() for row in rows]
+            response_body['message'] = "Datos de contacto"
+            response_body['results'] = result
+            return response_body, 200
+        
+        if request.method == 'POST':
+            data = request.json
+            row = ContactsData(order_method=data.get('order_method', 'whatsapp'), supplier_id=data.get('supplier_id', None), phone_number=data.get('phone_number', None),
+                                address=data.get('address', None), mail=data.get('mail', None), whatsapp=data.get('whatsapp', None), first_name=data.get('first_name', None), last_name=data.get('last_name', None))
+            db.session.add(row)
+            db.session.commit()
+            response_body['message'] = "Datos de contacto creados."
+            response_body['results'] = row.serialize()
+            return response_body, 200
+    response_body['message'] = "El usuario no esta autorizado a realizar esta accion"
+    return response_body, 200 
 
 @api.route('/contacts-data/<int:contacts_data_id>', methods=['GET', 'PUT', 'DELETE'])
-# Aquí debo recibir el token para ver si tiene permiso o no de hacer esto.
+@jwt_required()
 def contact(contacts_data_id):
     response_body = {}
     claims = get_jwt()
@@ -154,13 +159,16 @@ def contact(contacts_data_id):
         
             response_body['message'] = f"Los datos de contacto con id {contacts_data_id} no se encuentran en la base de datos."
             return response_body, 200
-
+    
+    response_body['message'] = "El usuario no esta autorizado a realizar esta accion"
+    return response_body, 200
 
 @api.route('/suppliers', methods=['GET', 'POST'])
 @jwt_required()
 def suppliers():
     response_body = {}
     if request.method == 'GET':
+        
         rows = Suppliers.query.options(joinedload(Suppliers.supplier_contact_data_to))
         results = []
         for row in rows:
@@ -168,8 +176,6 @@ def suppliers():
             print('data', data)
             data['supplier_contact_data'] = [contact.serialize() for contact in row.supplier_contact_data_to]
             results.append(data)
-        #rows = db.session.execute(db.select(Suppliers)).scalars()
-        #results = [row.serialize() for row in rows]
         response_body['message'] = "Listado de proveedores"
         response_body['results'] = results
         return response_body, 200
