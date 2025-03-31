@@ -188,7 +188,6 @@ class Orders(db.Model):
     start_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     end_date = db.Column(db.DateTime)
     delivery_date = db.Column(db.DateTime)
-    active = db.Column(db.Boolean, default=True)
     status = db.Column(db.Enum('pendiente', 'cancelado', 'recibido', 'borrador', 'reprogramado', name='order_status'), nullable=False, default='borrador')
     payment_method = db.Column(db.Enum('transferencia', 'efectivo', 'debito', 'credito', 'cheque', name='payment_method'))
     amount = db.Column(db.Float)
@@ -207,7 +206,7 @@ class Orders(db.Model):
                 "start_date": self.start_date,
                 "end_date": self.end_date,
                 "delivery_date": self.delivery_date,
-                "active": self.active,
+                "is_active": self.is_active,
                 "status": self.status,
                 "payment_method": self.payment_method,
                 "amount": self.amount,
@@ -241,6 +240,6 @@ class ContactsData(db.Model):
                 "whatsapp": self.whatsapp,
                 "first_name": self.first_name,
                 "last_name": self.last_name,
-                "active": self.active,
+                "is_active": self.is_active,
                 "supplier": self.supplier_to.get_supplier() if self.supplier_id else {}} 
  
