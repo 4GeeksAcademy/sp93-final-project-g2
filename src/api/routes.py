@@ -145,7 +145,7 @@ def contact(contacts_data_id):
             row.whatsapp = data.get('whatsapp', row.whatsapp)
             row.first_name = data.get('first_name', row.first_name)
             row.last_name = data.get('last_name', row.last_name)
-            row.active = data.get('active', row.active)
+            row.is_active = data.get('is_active', row.is_active)
             response_body['message'] = f"Datos del contacto {contacts_data_id} actualizados correctamente"
             return response_body, 200
         
@@ -565,7 +565,7 @@ def order(orders_id):
             row.start_date = data.get('start_date', row.start_date)
             row.end_date = data.get('end_date', row.end_date)
             row.delivery_date = data.get('delivery_date', row.delivery_date)
-            row.active = data.get('active', row.active)
+            row.is_active = data.get('is_active', row.is_active)
             row.status = data.get('status', row.status)
             row.payment_method = data.get('payment_method', row.payment_method)
             row.amount = data.get('amount', row.amount)
