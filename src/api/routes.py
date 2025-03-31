@@ -40,7 +40,7 @@ def login():
 
 
 @api.route('/users', methods=['GET', 'POST'])
-#@jwt_required()
+@jwt_required()
 def users():
     response_body = {}
     if request.method == 'GET':
@@ -123,31 +123,41 @@ def contacts_data():
 # Aquí debo recibir el token para ver si tiene permiso o no de hacer esto.
 def contact(contacts_data_id):
     response_body = {}
-    if request.method == 'GET':
-        row = ContactsData.query.get(contacts_data_id)
-        response_body['message'] = "Datos de contacto"
-        response_body['results'] = row.serialize()
-        return response_body, 200
-    
-    if request.method == 'PUT':
-        # Aquí debo verificar que el user_id que tengo en el token "pueda" modificar los datos de este contacto. 
-        response_body['message'] = f"Este es el put de contact {contacts_data_id}"
-        return response_body, 200
-    
-    if request.method == 'DELETE':
-        row = db.session.execute(db.select(ContactsData).where(ContactsData.id == contacts_data_id)).scalar()
-        if row:
-            db.session.delete(row)
-            db.session.commit()
-            response_body['message'] = f"Los datos de contacto con id {contacts_data_id} han sido eliminados con éxito."
+    claims = get_jwt()
+    if claims['role'] == 'Administrador' or claims['user_id'] == contacts_data_id:
+        if request.method == 'GET':
+            row = ContactsData.query.get(contacts_data_id)
+            response_body['message'] = "Datos de contacto"
+            response_body['results'] = row.serialize()
             return response_body, 200
-    
-        response_body['message'] = f"Los datos de contacto con id {contacts_data_id} no se encuentran en la base de datos."
-        return response_body, 200
+        
+        if request.method == 'PUT':
+            data = request.json
+            row = ContactsData.query.get(contacts_data_id)
+            row.phone_number = data.get('phone_number', row.phone_number)
+            row.address = data.get('address', row.address)
+            row.mail = data.get('mail', row.mail)
+            row.whatsapp = data.get('whatsapp', row.whatsapp)
+            row.first_name = data.get('first_name', row.first_name)
+            row.last_name = data.get('last_name', row.last_name)
+            row.active = data.get('active', row.active)
+            response_body['message'] = f"Datos del contacto {contacts_data_id} actualizados correctamente"
+            return response_body, 200
+        
+        if request.method == 'DELETE' and claims['role'] == 'Administrador':
+            row = ContactsData.query.get(contacts_data_id)
+            if row:
+                db.session.delete(row)
+                db.session.commit()
+                response_body['message'] = f"Los datos de contacto con id {contacts_data_id} han sido eliminados con éxito."
+                return response_body, 200
+        
+            response_body['message'] = f"Los datos de contacto con id {contacts_data_id} no se encuentran en la base de datos."
+            return response_body, 200
 
 
 @api.route('/suppliers', methods=['GET', 'POST'])
-#@jwt_required()
+@jwt_required()
 def suppliers():
     response_body = {}
     if request.method == 'GET':
@@ -252,7 +262,7 @@ def suppliers_product(suppliers_products_id):
 def products():
     response_body = {}
     if request.method == 'GET':
-        rows = db.session.execute(db.select(Products)).scalars()
+        rows = Products.query.all()
         result = [row.serialize() for row in rows]
         response_body['message'] = "Este es el get de products"
         response_body ['results'] = result
@@ -271,26 +281,33 @@ def products():
 @api.route('/products/<int:product_id>', methods=['PUT', 'GET', 'DELETE'])
 def product(product_id):
     response_body = {}
-    if request.method == 'GET':
-        row = db.session.execute(db.select(Products).where(Products.id == product_id)).scalar()
-        result = row.serialize()
-        response_body['message'] = f"Este es el get de products del productID: {product_id}"
-        response_body['results'] = result
-        return response_body, 200
-    if request.method == 'PUT':
-        response_body['message'] = f"Este es el put de products del productID: {product_id}"
-        return response_body, 200
-    if request.method == 'DELETE':
-        row = Products.query.get(product_id)
-
-        if row and row.is_active:
-            row.is_active = False
-            db.session.commit()
-            response_body['message'] = f"El producto con id {product_id} ha sido eliminado correctamente."
+    claims = get_jwt()
+    if claims['role'] == 'Administrador' or claims['product_id'] == product_id:
+        if request.method == 'GET':
+            row = Products.query.get(product_id)
+            result = row.serialize()
+            response_body['message'] = f"Características del producto: {product_id}"
+            response_body['results'] = result
             return response_body, 200
-    
-        response_body['message'] = f"El producto con id {product_id} no se encuentra en la base de datos."
-        return response_body, 200
+        if request.method == 'PUT':
+            data = request.json
+            row = Products.query.get(product_id)
+            row.name = data.get('name', row.name)
+            row.description = data.get('description', row.description)
+            row.is_active = data.get('is_active', row.is_active)
+            response_body['message'] = f"Este es el put de products del productID: {product_id}"
+            return response_body, 200
+        if request.method == 'DELETE' and claims['role'] == 'Administrador':
+            row = Products.query.get(product_id)
+
+            if row and row.is_active:
+                row.is_active = False
+                db.session.commit()
+                response_body['message'] = f"El producto con id {product_id} ha sido eliminado correctamente."
+                return response_body, 200
+        
+            response_body['message'] = f"El producto con id {product_id} no se encuentra en la base de datos."
+            return response_body, 200
 
 
 @api.route('/products/search', methods=['POST'])
@@ -304,7 +321,7 @@ def search_products():
 def categories():
     response_body = {}
     if request.method == 'GET':
-        rows = db.session.execute(db.select(Categories)).scalars()
+        rows = Categories.query.all()
         results = [row.serialize() for row in rows]
         response_body['message'] = "Este es el get de categories"
         response_body['results'] = results
@@ -323,41 +340,50 @@ def categories():
 @api.route('/categories/<int:categories_id>', methods=['GET', 'PUT', 'DELETE'])
 def category(categories_id):
     response_body = {}
-    if request.method == 'GET':
-        row = Categories.query.get(categories_id)
-        response_body['message'] = f"Este es el get de categories_id {categories_id}"
-        response_body['result'] = row.serialize()
-        return response_body, 200
-    
-    if request.method == 'PUT':
-        response_body['message'] = f"Este es el put de categories_id {categories_id}"
-        return response_body, 200
-    
-    if request.method == 'DELETE':
-        row = Categories.query.get(categories_id)
-
-        if row and row.is_active:
-            row.is_active = False
-            db.session.commit()
-            response_body['message'] = f"La categoría con id {categories_id} ha sido eliminada correctamente."
+    claims = get_jwt()
+    if claims['role'] == 'Administrador' or claims['categories_id'] == categories_id:
+        if request.method == 'GET':
+            row = Categories.query.get(categories_id)
+            response_body['message'] = f"Este es el get de categories_id {categories_id}"
+            response_body['result'] = row.serialize()
             return response_body, 200
-    
-        response_body['message'] = f"La categoría con id {categories_id} no se encuentra en la base de datos."
-        return response_body, 200
-    
+        
+        if request.method == 'PUT':
+            data = request.json
+            row = Categories.query.get(categories_id)
+            row.name = data.get('name', row.name)
+            row.description = data.get('description', row.description)
+            row.is_active = data.get('is_active', row.is_active)
+            response_body['message'] = f"La categoría {categories_id} ha sido actualizada correctamente"
+            return response_body, 200
+        
+        if request.method == 'DELETE' and claims['role'] == 'Administrador':
+            row = Categories.query.get(categories_id)
+
+            if row and row.is_active:
+                row.is_active = False
+                db.session.commit()
+                response_body['message'] = f"La categoría con id {categories_id} ha sido eliminada correctamente."
+                return response_body, 200
+        
+            response_body['message'] = f"La categoría con id {categories_id} no se encuentra en la base de datos."
+            return response_body, 200
+        
 
 @api.route('/categories/<int:categories_id>/subcategories', methods=['GET'])
 def category_subcategory(categories_id):
     response_body = {}
-    response_body['message'] = f"Este es el get de category_subcategory {categories_id}"
-    return response_body, 200
+    claims = get_jwt()
+    if claims['role'] == 'Administrador' or claims['categories_id'] == categories_id:
+        response_body['message'] = f"Este es el get de category_subcategory {categories_id}"
+        return response_body, 200
 
 
 @api.route('/subcategories', methods=['GET', 'POST'])
 def subcategories():
     response_body = {}
     if request.method == 'GET':
-        rows = db.session.execute(db.select(SubCategories)).scalars()
+        rows = SubCategories.query.all()
         results = [row.serialize() for row in rows]
         response_body['message'] = "Este es el get de subcategories"
         response_body['results'] = results
@@ -376,34 +402,43 @@ def subcategories():
 @api.route('/subcategories/<int:subcategories_id>', methods=['GET', 'PUT', 'DELETE'])
 def subcategory(subcategories_id):
     response_body = {}
-    if request.method == 'GET':
-        row = SubCategories.query.get(subcategories_id)
-        response_body['message'] = f"Este es el get de subcategories_id {subcategories_id}"
-        response_body['results'] = row.serialize()
-        return response_body, 200
-    
-    if request.method == 'PUT':
-        response_body['message'] = f"Este es el put de subcategories_id {subcategories_id}"
-        return response_body, 200
-    
-    if request.method == 'DELETE':
-        row = SubCategories.query.get(subcategories_id)
-
-        if row and row.is_active:
-            row.is_active = False
-            db.session.commit()
-            response_body['message'] = f"La subcategoría con id {subcategories_id} ha sido eliminada correctamente."
+    claims = get_jwt()
+    if claims['role'] == 'Administrador' or claims['categories_id'] == subcategories_id:
+        if request.method == 'GET':
+            row = SubCategories.query.get(subcategories_id)
+            response_body['message'] = f"Subcategoría {subcategories_id}"
+            response_body['results'] = row.serialize()
             return response_body, 200
-    
-        response_body['message'] = f"La subcategoría con id {subcategories_id} no se encuentra en la base de datos."
-        return response_body, 200
+        
+        if request.method == 'PUT':
+            data = request.json
+            row = SubCategories.query.get(subcategories_id)
+            row.name = data.get('name', row.name)
+            row.description = data.get('description', row.description)
+            row.is_active = data.get('is_active', row.is_active)
+            response_body['message'] = f"Subcategoría {subcategories_id} actualizada correctamente"
+            return response_body, 200
+        
+        if request.method == 'DELETE' and claims['role'] == 'Administrador':
+            row = SubCategories.query.get(subcategories_id)
+
+            if row and row.is_active:
+                row.is_active = False
+                db.session.commit()
+                response_body['message'] = f"La subcategoría con id {subcategories_id} ha sido eliminada correctamente."
+                return response_body, 200
+        
+            response_body['message'] = f"La subcategoría con id {subcategories_id} no se encuentra en la base de datos."
+            return response_body, 200
     
 
 @api.route('subcategories/<int:subcategories_id>/products', methods=['GET'])
 def subcategory_products(subcategories_id):
     response_body = {}
-    response_body['message'] = f"Este es el get de subcategories_id {subcategories_id}"
-    return response_body, 200
+    claims = get_jwt()
+    if claims['role'] == 'Administrador' or claims['subcategories_id'] == subcategories_id:
+        response_body['message'] = f"Este es el get de subcategories_id {subcategories_id}"
+        return response_body, 200
 
 
 @api.route('/branches', methods=['GET', 'POST'])
@@ -411,7 +446,7 @@ def subcategory_products(subcategories_id):
 def branches():
     response_body = {}
     if request.method == 'GET':
-        rows = db.session.execute(db.select(Branches)).scalars()
+        rows = Branches.query.all()
         result = [row.serialize() for row in rows]
         response_body['message'] = "Sucursales"
         response_body['results'] = result
@@ -430,27 +465,32 @@ def branches():
 @api.route('/branches/<int:branches_id>', methods=['GET', 'PUT', 'DELETE'])
 def branch(branches_id):
     response_body = {}
-    if request.method == 'GET':
-        row = Branches.query.get(branches_id)
-        response_body['message'] = "Sucursal."
-        response_body['results'] = row.serialize()
-        return response_body, 200
-    
-    if request.method == 'PUT':
-        response_body['message'] = f"Este es el put de branch {branches_id}"
-        return response_body, 200
-    
-    if request.method == 'DELETE':
-        row = Branches.query.get(branches_id)
-
-        if row and row.is_active:
-            row.is_active = False
-            db.session.commit()
-            response_body['message'] = f"La sucursal con id {branches_id} ha sido eliminada correctamente."
+    claims = get_jwt()
+    if claims['role'] == 'Administrador' or claims['branches_id'] == branches_id:
+        if request.method == 'GET':
+            row = Branches.query.get(branches_id)
+            response_body['message'] = "Sucursal."
+            response_body['results'] = row.serialize()
             return response_body, 200
-    
-        response_body['message'] = f"La sucursal con id {branches_id} no se encuentra en la base de datos."
-        return response_body, 200
+        
+        if request.method == 'PUT':
+            data = request.json
+            row = Branches.query.get(branches_id)
+            row.is_active = data.get('is_active', row.is_active)
+            response_body['message'] = f"Este es el put de branch {branches_id}"
+            return response_body, 200
+        
+        if request.method == 'DELETE' and claims['role'] == 'Administrador':
+            row = Branches.query.get(branches_id)
+
+            if row and row.is_active:
+                row.is_active = False
+                db.session.commit()
+                response_body['message'] = f"La sucursal con id {branches_id} ha sido eliminada correctamente."
+                return response_body, 200
+        
+            response_body['message'] = f"La sucursal con id {branches_id} no se encuentra en la base de datos."
+            return response_body, 200
 
 
 @api.route('/orders', methods=['GET', 'POST'])
@@ -461,7 +501,7 @@ def orders():
     print("current_user", current_user)
     user_id = current_user['user_id']
     if request.method == 'GET':
-        rows = db.session.execute(db.select(Orders)).scalars()
+        rows = Orders.query.all()
         result = [row.serialize() for row in rows]
         response_body['message'] = "Pedidos"
         response_body['results'] = result
@@ -482,47 +522,64 @@ def orders():
 @api.route('/orders/<int:orders_id>', methods=['GET', 'PUT', 'DELETE'])
 def order(orders_id):
     response_body = {}
-    if request.method == 'GET':
-        row = Orders.query.options(joinedload(Orders.orders_products_to)
-                                    .joinedload(ProductsOrders.suppliers_products_to)
-                                    .joinedload(SuppliersProducts.suppliers_to),
-                                    joinedload(Orders.contacts_data_to),
-                                    joinedload(Orders.user_to),
-                                    joinedload(Orders.branch_to)
-                                   ).get(orders_id)
-        if not row:
-            return {"message": "Orden no encontrada"}, 404
+    claims = get_jwt()
+    if claims['role'] == 'Administrador' or claims['orders_id'] == orders_id:
+        if request.method == 'GET':
+            row = Orders.query.options(joinedload(Orders.orders_products_to)
+                                        .joinedload(ProductsOrders.suppliers_products_to)
+                                        .joinedload(SuppliersProducts.suppliers_to),
+                                        joinedload(Orders.contacts_data_to),
+                                        joinedload(Orders.user_to),
+                                        joinedload(Orders.branch_to)
+                                    ).get(orders_id)
+            if not row:
+                return {"message": "Orden no encontrada"}, 404
 
-        order = row.serialize()
-        order['products'] = [product.serialize() for product in row.orders_products_to]
-        order["supplier_name"] = row.orders_products_to[0].suppliers_products_to.suppliers_to.name
-        order["contact_data"] = row.contacts_data_to.serialize()
-        order["user"] = row.user_to.serialize()
-        order["branch"] = row.branch_to.serialize()
-        # OPCION QUE NO ME GUSTA PORQUE HACE DOS CONSULTAS A LA BASE
-        # row = Orders.query.get(orders_id)
-        # order = row.serialize()
-        # order_products = db.session.execute(db.select(ProductsOrders).where(ProductsOrders.orders_id == orders_id)).scalars()
-        # order['products'] = [order_product.serialize() for order_product in order_products ]
-        response_body['message'] = "Pedido"
-        response_body['results'] = order
-        return response_body, 200
-    
-    if request.method == 'PUT':
-        response_body['message'] = f"Este es el put del order {orders_id}"
-        return response_body, 200
-    
-    if request.method == 'DELETE':
-        row = Orders.query.get(orders_id)
-
-        if row and row.is_active:
-            row.is_active = False
-            db.session.commit()
-            response_body['message'] = f"El pedido con id {orders_id} ha sido eliminado correctamente."
+            order = row.serialize()
+            order['products'] = [product.serialize() for product in row.orders_products_to]
+            order["supplier_name"] = row.orders_products_to[0].suppliers_products_to.suppliers_to.name
+            order["contact_data"] = row.contacts_data_to.serialize()
+            order["user"] = row.user_to.serialize()
+            order["branch"] = row.branch_to.serialize()
+            # OPCION QUE NO ME GUSTA PORQUE HACE DOS CONSULTAS A LA BASE
+            # row = Orders.query.get(orders_id)
+            # order = row.serialize()
+            # order_products = db.session.execute(db.select(ProductsOrders).where(ProductsOrders.orders_id == orders_id)).scalars()
+            # order['products'] = [order_product.serialize() for order_product in order_products ]
+            response_body['message'] = "Pedido"
+            response_body['results'] = order
             return response_body, 200
-    
-        response_body['message'] = f"El pedido con id {orders_id} no se encuentra en la base de datos."
-        return response_body, 200
+        
+        if request.method == 'PUT':
+            data = request.json
+            row = Orders.query.get(orders_id)
+            row.order_number = data.get('order_number', row.order_number)
+            row.user_id = data.get('user_id', row.user_id)
+            row.user_to = data.get('user_to', row.user_to)
+            row.start_date = data.get('start_date', row.start_date)
+            row.end_date = data.get('end_date', row.end_date)
+            row.delivery_date = data.get('delivery_date', row.delivery_date)
+            row.active = data.get('active', row.active)
+            row.status = data.get('status', row.status)
+            row.payment_method = data.get('payment_method', row.payment_method)
+            row.amount = data.get('amount', row.amount)
+            row.branch_id = data.get('branch_id', row.branch_id)
+            row.branch_to = data.get('branch_to', row.branch_to)
+            row.is_active = data.get('is_active', row.is_active)
+            response_body['message'] = f"Orden {orders_id} actualizada correctamente"
+            return response_body, 200
+        
+        if request.method == 'DELETE' and claims['role'] == 'Administrador':
+            row = Orders.query.get(orders_id)
+
+            if row and row.is_active:
+                row.is_active = False
+                db.session.commit()
+                response_body['message'] = f"El pedido con id {orders_id} ha sido eliminado correctamente."
+                return response_body, 200
+        
+            response_body['message'] = f"El pedido con id {orders_id} no se encuentra en la base de datos."
+            return response_body, 200
 
 
 @api.route('/orders/filters', methods=['POST'])
@@ -537,8 +594,10 @@ def order_filters():
 @jwt_required()
 def order_send(orders_id):
     response_body = {}
-    response_body['message'] = f"Este es el post de order_send {orders_id}"
-    return response_body, 200
+    claims = get_jwt()
+    if claims['role'] == 'Administrador' or claims['orders_id'] == orders_id:
+        response_body['message'] = f"Orden {orders_id} enviada correctamente"
+        return response_body, 200
 
 
 @api.route('/products-orders', methods=['GET', 'POST'])
@@ -546,7 +605,7 @@ def order_send(orders_id):
 def product_orders():
     response_body = {}
     if request.method == 'GET':
-        rows = db.session.execute(db.select(ProductsOrders)).scalars()
+        rows = ProductsOrders.query.all()
         result = [row.serialize () for row in rows]
         response_body['message'] = "Product orders."
         response_body['results'] = result
@@ -567,24 +626,32 @@ def product_orders():
 @api.route('/products-orders/<int:products_orders_id>', methods=['GET', 'PUT', 'DELETE'])
 def product_order(products_orders_id):
     response_body = {}
-    if request.method == 'GET':
-        row = ProductsOrders.query.get(products_orders_id)
-        response_body['message'] = "Producto"
-        response_body['result'] = row.serialize()
-        return response_body, 200
-    
-    if request.method == 'PUT':
-        response_body['message'] = f"Este es el put del products_orders_id {products_orders_id}"
-        return response_body, 200
-    
-    if request.method == 'DELETE':
-        row = ProductsOrders.query.get(products_orders_id)
-
-        if row and row.is_active:
-            row.is_active = False
-            db.session.commit()
-            response_body['message'] = f"El pedido de producto con id {products_orders_id} ha sido eliminado correctamente."
+    claims = get_jwt()
+    if claims['role'] == 'Administrador' or claims['products_orders_id'] == products_orders_id:
+        if request.method == 'GET':
+            row = ProductsOrders.query.get(products_orders_id)
+            response_body['message'] = "Producto"
+            response_body['result'] = row.serialize()
             return response_body, 200
-    
-        response_body['message'] = f"El pedido de producto con id {products_orders_id} no se encuentra en la base de datos."
-        return response_body, 200
+        
+        if request.method == 'PUT':
+            data = request.json
+            row = ProductsOrders.query.get(products_orders_id)
+            row.presentation =  data.get('presentation', row.presentation)
+            row.quantity =  data.get('quantity', row.quantity)
+            row.unit_price =  data.get('unit_price', row.unit_price)
+            row.is_active = data.get('is_active', row.is_active)
+            response_body['message'] = f"Este es el put del products_orders_id {products_orders_id}"
+            return response_body, 200
+        
+        if request.method == 'DELETE' and claims['role'] == 'Administrador':
+            row = ProductsOrders.query.get(products_orders_id)
+
+            if row and row.is_active:
+                row.is_active = False
+                db.session.commit()
+                response_body['message'] = f"El pedido de producto con id {products_orders_id} ha sido eliminado correctamente."
+                return response_body, 200
+        
+            response_body['message'] = f"El pedido de producto con id {products_orders_id} no se encuentra en la base de datos."
+            return response_body, 200
