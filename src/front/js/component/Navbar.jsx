@@ -15,11 +15,12 @@ export const Navbar = () => {
         <nav className="navbar navbar-light bg-light">
             <div className="container">
                 <Link to="/">
-                    <span className="navbar-brand mb-0 h1">React Boilerplate</span>
+                    <span className="navbar-brand mb-0 h1">ZUPLY</span>
                 </Link>
                 <div className="ml-auto">
                     {store.token ? (
                         <>
+                            <Link to="/order" className="btn btn-success mx-2">Toma de Pedido</Link>
                             <Link to="/profile" className="btn btn-info mx-2">Perfil</Link>
                             <button onClick={handleLogout} className="btn btn-danger">Cerrar sesión</button>
                         </>

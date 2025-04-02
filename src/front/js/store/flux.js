@@ -2,10 +2,40 @@ const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
 			message: null,
-			token : localStorage.getItem("token") || null,
+			token: localStorage.getItem("token") || null,
 			user: localStorage.getItem("token") ? JSON.parse(localStorage.getItem("user")) : null,
+			cart: []
 		},
 		actions: {
+			
+			getMessage: async () => {  },
+
+			getProducts: async () => {
+				try {
+					const resp = await fetch(`${process.env.BACKEND_URL}/api/products`);
+					const data = await resp.json();
+					return data.results || [];
+				} catch {
+					return [];
+				}
+			},
+
+			addToCart: (product) => {
+				const store = getStore();
+				setStore({ cart: [...store.cart, product] });
+			},
+
+			removeFromCart: (index) => {
+				const store = getStore();
+				const newCart = [...store.cart];
+				newCart.splice(index, 1);
+				setStore({ cart: newCart });
+			},
+
+			confirmOrder: () => {
+				setStore({ cart: [] });
+				alert("Pedido confirmado");
+			},
 			getMessage: async () => {
 				const uri = `${process.env.BACKEND_URL}/api/hello`
 				const response = await fetch(uri)
@@ -45,35 +75,35 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 
 			getUserProfile: async () => {
-                const store = getStore();
-                if (!store.token) return;
+				const store = getStore();
+				if (!store.token) return;
 
-                try {
-                    const response = await fetch(`${process.env.BACKEND_URL}/api/users/${store.user.id}`, {
-                        method: "GET",
-                        headers: { "Authorization": `Bearer ${store.token}` },
-                    });
+				try {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/users/${store.user.id}`, {
+						method: "GET",
+						headers: { "Authorization": `Bearer ${store.token}` },
+					});
 
-                    const data = await response.json();
-                    if (response.ok) {
-                        setStore({ user: data.results });
-                        localStorage.setItem("user", JSON.stringify(data.results));
-                    }
-                } catch (error) {
-                    console.error("Error obteniendo el perfil del usuario:", error);
-                }
-            },
+					const data = await response.json();
+					if (response.ok) {
+						setStore({ user: data.results });
+						localStorage.setItem("user", JSON.stringify(data.results));
+					}
+				} catch (error) {
+					console.error("Error obteniendo el perfil del usuario:", error);
+				}
+			},
 
-            updateUserProfile: async (updatedData) => {
+			updateUserProfile: async (updatedData) => {
 				const store = getStore();
 				if (!store.token || !store.user) return { success: false, message: "No autorizado" };
-			
+
 				// No enviar la contraseña si el campo está vacío
 				const dataToSend = { username: updatedData.username };
 				if (updatedData.password.trim() !== "") {
 					dataToSend.password = updatedData.password;
 				}
-			
+
 				try {
 					const response = await fetch(`${process.env.BACKEND_URL}/api/users/${store.user.id}`, {
 						method: "PUT",
@@ -83,7 +113,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						},
 						body: JSON.stringify(dataToSend),
 					});
-			
+
 					const data = await response.json();
 					if (response.ok) {
 						setStore({ user: { ...store.user, ...dataToSend } });
@@ -94,10 +124,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 					}
 				} catch (error) {
 					return { success: false, message: "Error en el servidor." };
-                }
-            }
-        }
-    };
+				}
+			}
+		}
+	};
 };
 
 export default getState;

@@ -8,7 +8,8 @@ import { Footer } from "./component/Footer.jsx";
 import { Home } from "./pages/Home.jsx";
 import { Error404 } from "./pages/Error404.jsx";
 import Login from "./pages/Login.jsx";
-import Profile from "./pages/Profile.jsx"; // Importando el perfil
+import Profile from "./pages/Profile.jsx";
+import { Order } from "./pages/Order.jsx";
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
@@ -23,6 +24,7 @@ const Layout = () => {
                         <Route element={<Home />} path="/" />
                         <Route element={<Login />} path="/login" /> 
                         <Route element={<Profile />} path="/profile" />
+                        <Route element={<Order />} path="/order" />
                         <Route element={<Error404 />} path="*" />
                     </Routes>
                     <Footer />
