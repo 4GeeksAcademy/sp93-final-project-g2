@@ -1,7 +1,106 @@
-/*
-    home.css: This website contains selectors only used in home.css
+.hero-section {
+    background-color: #223650;
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
 
-    All pages share the styles on index.css but you should create 
-    one more css for each page that will contain the selected used 
-    on that page only (the ones not reused in other pages).
-*/
+.hero-title {
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+.hero-title span {
+    color: #95c11f;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    margin-top: 1rem;
+    color: #ddd;
+}
+
+.testimonial-carousel-outer {
+    margin-top: 3rem;
+}
+
+.testimonial-carousel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.testimonial-carousel>div:first-child {
+    display: flex;
+    align-items: center;
+}
+
+.testimonial-card {
+    transition: transform 0.4s ease, box-shadow 0.4s ease, opacity 0.6s ease;
+    opacity: 1;
+    transform: translateY(0);
+    border-radius: 1rem;
+    background: white;
+    padding: 2rem;
+    margin: 0 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid #ddd;
+    width: 300px;
+    max-width: 90%;
+}
+
+.testimonial-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    border: 1px solid #95c11f;
+}
+
+.testimonial-card p {
+    font-style: italic;
+    color: #555;
+}
+
+.testimonial-card small {
+    display: block;
+    margin-top: 0.5rem;
+    font-weight: bold;
+    color: #223650;
+}
+
+.carousel-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #223650;
+    cursor: pointer;
+    margin: 0 10px;
+    transition: transform 0.2s ease;
+}
+
+.carousel-btn:hover {
+    transform: scale(1.2);
+}
+
+.fade-slide {
+    animation: fadeSlide 0.5s ease;
+}
+
+@keyframes fadeSlide {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-logo {
+    border-radius: 15%;
+    margin-bottom: 2rem;
+}

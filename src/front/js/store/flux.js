@@ -3,7 +3,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 		store: {
 			message: null,
 			token : localStorage.getItem("token") || null,
-			user: JSON.parse(localStorage.getItem("user")) || null,
+			user: localStorage.getItem("token") ? JSON.parse(localStorage.getItem("user")) : null,
 		},
 		actions: {
 			getMessage: async () => {
@@ -40,6 +40,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			logout: () => {
 				localStorage.removeItem("token");
+				localStorage.removeItem("user");
 				setStore({ token: null, user: null });
 			},
 
