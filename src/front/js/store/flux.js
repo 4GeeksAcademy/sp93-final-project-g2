@@ -4,18 +4,36 @@ const getState = ({ getStore, getActions, setStore }) => {
 			message: null,
 			token : localStorage.getItem("token") || null,
 			user: localStorage.getItem("token") ? JSON.parse(localStorage.getItem("user")) : null,
+			cart: []
 		},
 		actions: {
-			getMessage: async () => {
-				const uri = `${process.env.BACKEND_URL}/api/hello`
-				const response = await fetch(uri)
-				if (!response.ok) {
-					console.log("Error:", response.status, response.statusText)
-					return
+			getProducts: async () => {
+				try {
+					const resp = await fetch(`${process.env.BACKEND_URL}/api/products`);
+					const data = await resp.json();
+					return data.results || [];
+				} catch {
+					return [];
 				}
-				const data = await response.json()
-				setStore({ message: data.message })
 			},
+		
+			addToCart: (product) => {
+				const store = getStore();
+				setStore({ cart: [...store.cart, product] });
+			},
+		
+			removeFromCart: (index) => {
+				const store = getStore();
+				const newCart = [...store.cart];
+				newCart.splice(index, 1);
+				setStore({ cart: newCart });
+			},
+		
+			confirmOrder: () => {
+				setStore({ cart: [] });
+				alert("Pedido confirmado");
+			},
+			
 			login: async (username, password) => {
 				try {
 					const response = await fetch(`${process.env.BACKEND_URL}/api/login`, {
