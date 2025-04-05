@@ -4,9 +4,21 @@ const getState = ({ getStore, getActions, setStore }) => {
 			message: null,
 			token : localStorage.getItem("token") || null,
 			user: localStorage.getItem("token") ? JSON.parse(localStorage.getItem("user")) : null,
-			cart: []
+			cart: [],
+			testimonials: []
 		},
 		actions: {
+			loadTestimonials: () => {
+				const testimonials = [
+					{ text: "Zuply nos ha ahorrado horas cada semana, ¡lo recomiendo sin dudar!", author: "Restaurante La Cazuela" },
+					{ text: "Desde que usamos Zuply, nuestros pedidos llegan siempre a tiempo.", author: "Bar El Tapeo" },
+					{ text: "Fácil, rápido y sin líos. ¡Perfecto para nuestro equipo!", author: "Pizzería Don Massimo" },
+					{ text: "Zuply ha sido clave para optimizar nuestro tiempo de pedidos.", author: "Hamburguesería El Buen Mordisco" },
+					{ text: "Nunca fue tan fácil gestionar pedidos con múltiples proveedores.", author: "Parrilla Los Amigos" }
+				];
+				setStore({testimonials})
+			},
+			
 			getProducts: async () => {
 				try {
 					const resp = await fetch(`${process.env.BACKEND_URL}/api/products`);
