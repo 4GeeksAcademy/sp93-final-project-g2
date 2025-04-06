@@ -632,6 +632,7 @@ def product_orders():
     
 
 @api.route('/products-orders/<int:products_orders_id>', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
 def product_order(products_orders_id):
     response_body = {}
     claims = get_jwt()
@@ -663,3 +664,24 @@ def product_order(products_orders_id):
         
             response_body['message'] = f"El pedido de producto con id {products_orders_id} no se encuentra en la base de datos."
             return response_body, 200
+
+
+@api.route('/init-admin-data', methods=['GET'])
+@jwt_required()
+def init_admin_data():
+    response_body={}
+    claims = get_jwt()
+    if claims['role'] == 'Administrador':
+        suppliers_bdd = Suppliers.query.all()
+        categories_bdd = Categories.query.all()
+        sub_categories_bdd = SubCategories.query.all()
+        result = {
+            "suppliers": [row.basic_data() for row in suppliers_bdd] ,
+            "categories": [row.basic_data() for row in categories_bdd ],
+            "sub_categories": [row.basic_data() for row in sub_categories_bdd ]
+        }
+        response_body['message'] = 'Hola'
+        response_body['results'] = result
+        return response_body, 200
+    response_body['message'] = 'No sos admin'
+    return response_body, 200

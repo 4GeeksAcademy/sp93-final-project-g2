@@ -29,6 +29,10 @@ class Suppliers(db.Model):
                 "address": self.address,
                 "cuit": self.cuit,
                 "is_active": self.is_active}
+    
+    def basic_data(self):
+        return{"id": self.id,
+               "name": self.name}
 
 
 
@@ -96,6 +100,10 @@ class SubCategories(db.Model):
                 "categories_id": self.categories_id,
                 "is_active": self.is_active}
     
+    def basic_data(self):
+        return{"id": self.id,
+               "name": self.name,
+               "categories_id": self.categories_id}
 
 class Categories(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -112,6 +120,9 @@ class Categories(db.Model):
                 "description": self.description,
                 "is_active": self.is_active}
     
+    def basic_data(self):
+        return{"id": self.id,
+               "name": self.name}
 
 class ProductsOrders(db.Model):
     __tablename__ = "product_order"

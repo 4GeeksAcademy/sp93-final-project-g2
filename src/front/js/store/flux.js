@@ -5,7 +5,14 @@ const getState = ({ getStore, getActions, setStore }) => {
 			token : localStorage.getItem("token") || null,
 			user: localStorage.getItem("token") ? JSON.parse(localStorage.getItem("user")) : null,
 			cart: [],
-			testimonials: []
+			testimonials: [],
+			groups: {
+				suppliers: {title: 'Proveedores', items: []},
+				categories: {title: 'Rubros', items:[]},
+				sub_categories:{title: 'Sub Categorias', items: []}
+			},
+			activeGroup: 'suppliers',
+			isEdit: false
 		},
 		actions: {
 			loadTestimonials: () => {
@@ -19,6 +26,32 @@ const getState = ({ getStore, getActions, setStore }) => {
 				setStore({testimonials})
 			},
 			
+			setGroup: (group)=>{
+				setStore({activeGroup: group})
+			},
+			getInitAdminData: async () => {
+				
+				try {
+					const url = `${process.env.BACKEND_URL}/api/init-admin-data`
+					const options = {
+						method: "GET",
+						headers: { 'Authorization': `Bearer ${getStore().token}`,
+    								'Content-Type': 'application/json'}
+					}
+					const resp = await fetch(url, options);
+					const data = await resp.json();
+					setStore({groups: {
+						'suppliers':{title: 'Proveedores', items: data.results.suppliers},
+						'categories':{title: 'Rubros', items: data.results.categories},
+						'sub_categories':{title: 'Sub Categorias', items: data.results.sub_categories}
+					}})
+					console.log(getStore().groups)
+					return data.results || [];
+				} catch {
+					console.log('tuve un error')
+					return [];
+				}
+			},
 			getProducts: async () => {
 				try {
 					const resp = await fetch(`${process.env.BACKEND_URL}/api/products`);

@@ -143,58 +143,12 @@
     color: #223650;
 }
 
-.carousel-btn:active {
-    transform: scale(0.98);
+.fade-slide {
+    animation: fadeSlide 0.5s ease;
 }
 
-@media (max-width: 992px) {
-    .testimonial-card {
-        width: 240px;
-        min-height: 280px;
-        padding: 1.5rem;
-    }
-}
 
-@media (max-width: 768px) {
-    .hero-title {
-        font-size: 2.2rem;
-    }
-    
-    .hero-subtitle {
-        font-size: 1.1rem;
-    }
-    
-    .testimonial-carousel-track {
-        gap: 0.8rem;
-    }
-    
-    .testimonial-card {
-        width: 200px;
-        min-height: 250px;
-        padding: 1.2rem;
-    }
-    
-    .carousel-btn {
-        width: 50px;
-        height: 50px;
-        font-size: 1.5rem;
-        position: absolute;
-    }
-    
-    .carousel-btn:first-child {
-        left: 0;
-    }
-    
-    .carousel-btn:last-child {
-        right: 0;
-    }
-}
 
-@media (max-width: 576px) {
-    .hero-section {
-        padding: 3rem 1rem;
-    }
-    
     .testimonial-card {
         width: 180px;
         min-height: 220px;
@@ -206,15 +160,29 @@
         height: 40px;
         font-size: 1.2rem;
     }
+
+
+
+.home-bg {
+    background-image: url('../img/mainBackground.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    /* background: rgb(244, 243, 239);
+    background: linear-gradient(135deg, rgba(244, 243, 239, 1) 0%, rgba(123, 134, 147, 1) 27%, rgba(87, 101, 120, 1) 56%, rgba(34, 54, 80, 1) 86%); */
 }
 
-.testimonial-card.loading {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-    background-size: 200% 100%;
-    animation: loading 1.5s infinite;
-}
-
-@keyframes loading {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-}
+.background-mesh {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' id='mesh-gradient' width='1000' height='500' viewBox='0 0 1000 500'%3E%3Cdefs%3E%3Cfilter id='blur' filterUnits='userSpaceOnUse' x='0' y='0' width='1000' height='500'%3E%3CfeGaussianBlur stdDeviation='100' /%3E%3C/filter%3E%3Cfilter id='noise' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1' octaves='3' result='turbulence' stitchTiles='stitch' /%3E%3CfeBlend in='SourceGraphic' in2='turbulence' mode='overlay' /%3E%3C/filter%3E%3C/defs%3E%3Crect id='background' width='100%25' height='100%25' fill='%23374F68' /%3E%3Cg id='swatches' width='1000' height='500' filter='url(%23blur)'%3E%3Crect x='-62.14' y='-201.26' width='497.82' height='446.28' fill='%2376949E' /%3E%3Crect x='199.22' y='-360.39' width='834.05' height='756.22' fill='%2376949E' /%3E%3Crect x='479.74' y='180.83' width='387.48' height='520.47' fill='%23374F68' /%3E%3Crect x='503.61' y='-47.36' width='591.71' height='317.63' fill='%23374F68' /%3E%3C/g%3E%3Crect x='0' y='0' width='1000' height='500' style='mix-blend-mode:soft-light;filter:url(%23noise);opacity:0%25' /%3E%3C/svg%3E");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 50vh;
+  }
+  
