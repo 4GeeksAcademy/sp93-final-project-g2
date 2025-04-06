@@ -107,7 +107,6 @@ const getState = ({ getStore, getActions, setStore }) => {
                 if (!store.token || !store.user) return { success: false, message: "No autorizado" };
             
                 try {
-                    // 1. Actualizar datos de usuario (username/password)
                     const userResponse = await fetch(`${process.env.BACKEND_URL}/api/users/${store.user.id}`, {
                         method: "PUT",
                         headers: {
@@ -120,7 +119,6 @@ const getState = ({ getStore, getActions, setStore }) => {
                         })
                     });
             
-                    // 2. Actualizar datos de contacto
                     const contactResponse = await fetch(`${process.env.BACKEND_URL}/api/contacts-data/${store.user.contacts_data_id}`, {
                         method: "PUT",
                         headers: {
@@ -142,7 +140,6 @@ const getState = ({ getStore, getActions, setStore }) => {
                         return { success: false, message: error.message || "Error al actualizar" };
                     }
             
-                    // Actualizar el store
                     const updatedUser = {
                         ...store.user,
                         username: updatedData.username,
