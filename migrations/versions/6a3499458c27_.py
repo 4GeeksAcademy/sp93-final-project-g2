@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 30c564b08261
+Revision ID: 6a3499458c27
 Revises: 
-Create Date: 2025-04-02 19:06:47.738765
+Create Date: 2025-04-05 17:49:27.307145
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '30c564b08261'
+revision = '6a3499458c27'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -44,7 +44,7 @@ def upgrade():
     sa.Column('whatsapp', sa.String(length=63), nullable=True),
     sa.Column('first_name', sa.String(length=63), nullable=True),
     sa.Column('last_name', sa.String(length=63), nullable=True),
-    sa.Column('active', sa.Boolean(), nullable=True),
+    sa.Column('is_active', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['supplier_id'], ['suppliers.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -93,7 +93,6 @@ def upgrade():
     sa.Column('start_date', sa.DateTime(), nullable=False),
     sa.Column('end_date', sa.DateTime(), nullable=True),
     sa.Column('delivery_date', sa.DateTime(), nullable=True),
-    sa.Column('active', sa.Boolean(), nullable=True),
     sa.Column('status', sa.Enum('pendiente', 'cancelado', 'recibido', 'borrador', 'reprogramado', name='order_status'), nullable=False),
     sa.Column('payment_method', sa.Enum('transferencia', 'efectivo', 'debito', 'credito', 'cheque', name='payment_method'), nullable=True),
     sa.Column('amount', sa.Float(), nullable=True),
