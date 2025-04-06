@@ -18,42 +18,51 @@ export const Home = () => {
         return () => clearInterval(interval);
     }, [current, store.testimonials.length]);
 
+    const getVisibleTestimonials = () => {
+        const total = store.testimonials?.length || 0;
+        if (total === 0) return [];
+    
+        const visible = [];
+    
+        for (let i = -2; i <= 2; i++) {
+            const index = (current + i + total) % total;
+            if (store.testimonials[index]) {
+                visible.push(store.testimonials[index]);
+            }
+        }
+    
+        return visible;
+    };
+
     return (
-        <div className="text-center mt-5" style={{ backgroundColor: '#f4f3ef', minHeight: '100vh', padding: '0' }}>
+        <div className="text-center" style={{ backgroundColor: '#f4f3ef', minHeight: '100vh', padding: '0' }}>
             <div className="hero-section">
-                <img
-                    
-                    alt="Zuply Logo"
-                    className="hero-logo"
-                />
                 <h1 className="hero-title">
                     Bienvenido a Zuply{store.user && <span>, <span style={{ color: '#95c11f' }}>{store.user.username}</span></span>}
                 </h1>
                 <p className="hero-subtitle">Gestión de pedidos sin complicaciones. Sencillo, rápido y efectivo.</p>
             </div>
 
-            <div className="testimonial-carousel-outer">
-                <div className="testimonial-carousel">
-                    <div>
-                        <button className="carousel-btn" onClick={prevSlide}>‹</button>
-                        {store.testimonials.length > 0 && (
-                            <div className="testimonial-card fade-slide">
-                                <p>"{store.testimonials[current].text}"</p>
-                                <small>- {store.testimonials[current].author}</small>
+            <div className="testimonial-carousel-wrapper">
+                <button className="carousel-btn" onClick={prevSlide}>‹</button>
+                <div className="testimonial-carousel-track">
+                    {getVisibleTestimonials().map((testimonial, index) => {
+                        const position = index - 2;
+                        let className = "testimonial-card";
+
+                        if (position === 0) className += " center";
+                        else if (Math.abs(position) === 1) className += " side";
+                        else className += " hidden";
+
+                        return (
+                            <div key={index} className={className}>
+                                <p>"{testimonial.text}"</p>
+                                <small>- {testimonial.author}</small>
                             </div>
-                        )}
-                        <button className="carousel-btn" onClick={nextSlide}>›</button>
-                    </div>
-                    <div className="carousel-indicators">
-                        {store.testimonials.map((_, index) => (
-                            <span
-                                key={index}
-                                className={`indicator-dot ${index === current ? 'active' : ''}`}
-                                onClick={() => setCurrent(index)}
-                            ></span>
-                        ))}
-                    </div>
+                        );
+                    })}
                 </div>
+                <button className="carousel-btn" onClick={nextSlide}>›</button>
             </div>
         </div>
     );

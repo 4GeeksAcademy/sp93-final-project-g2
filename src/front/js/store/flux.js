@@ -47,24 +47,32 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 			
 			login: async (username, password) => {
-				try {
-					const response = await fetch(`${process.env.BACKEND_URL}/api/login`, {
-						method: "POST",
-						headers: { "Content-Type": "application/json" },
-						body: JSON.stringify({ username, password }),
-					});
-
-					const data = await response.json();
-
-					if (response.ok) {
-						localStorage.setItem("token", data.access_token);
-						setStore({ token: data.access_token, user: data.results });
-						return { success: true };
-					} else {
-						return { success: false, message: data.message || "Credenciales incorrectas" };
-					}
-				} catch (error) {
-					return { success: false, message: "Error en el servidor. Intenta más tarde." };
+                try {
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/login`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ username, password }),
+                    });
+            
+                    const data = await response.json();
+            
+                    if (response.ok) {
+                        const normalizedUser = {
+                            ...data.results,
+                            contacts_data: data.results.contact_data,
+                            contacts_data_id: data.results.contact_data.id
+                        };
+            
+                        localStorage.setItem("token", data.access_token);
+                        localStorage.setItem("user", JSON.stringify(normalizedUser));
+                        setStore({ token: data.access_token, user: normalizedUser });
+                        
+                        return { success: true };
+                    } else {
+                        return { success: false, message: data.message || "Credenciales incorrectas" };
+                    }
+                } catch (error) {
+                    return { success: false, message: "Error en el servidor. Intenta más tarde." };
 				}
 			},
 
@@ -95,35 +103,67 @@ const getState = ({ getStore, getActions, setStore }) => {
             },
 
             updateUserProfile: async (updatedData) => {
-				const store = getStore();
-				if (!store.token || !store.user) return { success: false, message: "No autorizado" };
-			
-				// No enviar la contraseña si el campo está vacío
-				const dataToSend = { username: updatedData.username };
-				if (updatedData.password.trim() !== "") {
-					dataToSend.password = updatedData.password;
-				}
-			
-				try {
-					const response = await fetch(`${process.env.BACKEND_URL}/api/users/${store.user.id}`, {
-						method: "PUT",
-						headers: {
-							"Content-Type": "application/json",
-							"Authorization": `Bearer ${store.token}`,
-						},
-						body: JSON.stringify(dataToSend),
-					});
-			
-					const data = await response.json();
-					if (response.ok) {
-						setStore({ user: { ...store.user, ...dataToSend } });
-						localStorage.setItem("user", JSON.stringify({ ...store.user, ...dataToSend }));
-						return { success: true };
-					} else {
-						return { success: false, message: data.message };
-					}
-				} catch (error) {
-					return { success: false, message: "Error en el servidor." };
+                const store = getStore();
+                if (!store.token || !store.user) return { success: false, message: "No autorizado" };
+            
+                try {
+                    // 1. Actualizar datos de usuario (username/password)
+                    const userResponse = await fetch(`${process.env.BACKEND_URL}/api/users/${store.user.id}`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${store.token}`
+                        },
+                        body: JSON.stringify({
+                            username: updatedData.username,
+                            ...(updatedData.password && { password: updatedData.password })
+                        })
+                    });
+            
+                    // 2. Actualizar datos de contacto
+                    const contactResponse = await fetch(`${process.env.BACKEND_URL}/api/contacts-data/${store.user.contacts_data_id}`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${store.token}`
+                        },
+                        body: JSON.stringify({
+                            phone_number: updatedData.phone_number,
+                            address: updatedData.address,
+                            mail: updatedData.mail,
+                            whatsapp: updatedData.whatsapp,
+                            first_name: updatedData.first_name,
+                            last_name: updatedData.last_name
+                        })
+                    });
+            
+                    if (!userResponse.ok || !contactResponse.ok) {
+                        const error = await userResponse.json() || await contactResponse.json();
+                        return { success: false, message: error.message || "Error al actualizar" };
+                    }
+            
+                    // Actualizar el store
+                    const updatedUser = {
+                        ...store.user,
+                        username: updatedData.username,
+                        contacts_data: {
+                            ...store.user.contacts_data,
+                            phone_number: updatedData.phone_number,
+                            address: updatedData.address,
+                            mail: updatedData.mail,
+                            whatsapp: updatedData.whatsapp,
+                            first_name: updatedData.first_name,
+                            last_name: updatedData.last_name
+                        }
+                    };
+            
+                    setStore({ user: updatedUser });
+                    localStorage.setItem("user", JSON.stringify(updatedUser));
+                    
+                    return { success: true };
+                } catch (error) {
+                    console.error("Update error:", error);
+                    return { success: false, message: "Error de conexión" };
                 }
             }
         }

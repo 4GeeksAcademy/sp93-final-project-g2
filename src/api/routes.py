@@ -146,6 +146,8 @@ def contact(contacts_data_id):
             row.first_name = data.get('first_name', row.first_name)
             row.last_name = data.get('last_name', row.last_name)
             row.is_active = data.get('is_active', row.is_active)
+            db.session.commit()
+            db.session.refresh(row)
             response_body['message'] = f"Datos del contacto {contacts_data_id} actualizados correctamente"
             return response_body, 200
         
