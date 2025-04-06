@@ -13,9 +13,10 @@ export const Navbar = () => {
         navigate("/");
     };
 
-    const goHome = () => {
-        navigate("/");
+    const goTo = (route) => {
+        navigate("/" + route);
     }
+    
 
     const role = store.user?.role;
 
@@ -71,7 +72,7 @@ export const Navbar = () => {
                                 </a>
                                 <ul className="dropdown-menu" aria-labelledby="abmDropdown">
                                     <Link to="/admin" className="btn btn-info mx-2">abms</Link> 
-                                    <li><a className="dropdown-item" href="#">Productos</a></li>
+                                    <li><span onClick={() => goTo('admin')} className="dropdown-item" href="#">Productos</span></li>
                                     <li><hr className="dropdown-divider" /></li>
                                     <li><a className="dropdown-item" href="#">Categorías</a></li>
                                     <li><hr className="dropdown-divider" /></li>
@@ -98,7 +99,7 @@ export const Navbar = () => {
 
                 {renderOffcanvasMenu()}
 
-                <LogoNavbar className="logo original" onClick={goHome} />
+                <LogoNavbar className="logo original" onClick={()=> goTo('')} />
 
                 <div className="ml-auto">
                     {store.token ? (
