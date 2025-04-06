@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Context } from "../store/appContext.js";
 import "../../styles/home.css";
-
+import { ReactComponent as Logo } from '../../img/logoZuplySolo.svg';
+import { ReactComponent as LogoText } from '../../img/zuplyText.svg';
 export const Home = () => {
     const { store } = useContext(Context);
     const [current, setCurrent] = useState(0);
@@ -23,17 +24,14 @@ export const Home = () => {
     }, [current]);
 
     return (
-        <div className="text-center mt-5" style={{ backgroundColor: '#f4f3ef', minHeight: '100vh', padding: '0' }}>
-            <div className="hero-section">
+        <div className="text-center ">
+            <div className="py-5 background-mesh">
 
-                <img
-                    src="https://placehold.org/200x200/f4f3ef"
-                    alt="Zuply Logo"
-                    className="hero-logo"
-                />
+                <Logo className="logo claro" />
 
                 <h1 className="hero-title">
-                    Bienvenido a Zuply{store.user && <span>, <span style={{ color: '#95c11f' }}>{store.user.username}</span></span>}
+                    <span className="text-white">Bienvenido a</span> <LogoText className="logo original" />
+                    <span>{store.user && <span>, <span style={{ color: '#95c11f' }}>{store.user.username}</span></span>}</span>
                 </h1>
                 <p className="hero-subtitle">Gestión de pedidos sin complicaciones. Sencillo, rápido y efectivo.</p>
 

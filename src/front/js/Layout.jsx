@@ -10,13 +10,14 @@ import { Error404 } from "./pages/Error404.jsx";
 import Login from "./pages/Login.jsx";
 import Profile from "./pages/Profile.jsx"; 
 import { Order } from "./pages/Order.jsx";
+import { AdminABM } from "./pages/AdminABM.jsx";
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
     if (!process.env.BACKEND_URL || process.env.BACKEND_URL == "") return <BackendURL />;
 
     return (
-        <div>
+        <div className="d-flex flex-column min-vh-100">
             <BrowserRouter basename={basename}>
                 <ScrollToTop>
                     <Navbar />
@@ -25,6 +26,7 @@ const Layout = () => {
                         <Route element={<Login />} path="/login" /> 
                         <Route element={<Profile />} path="/profile" />
                         <Route element={<Order />} path="/order" />
+                        <Route element={<AdminABM />} path="/admin" />
                         <Route element={<Error404 />} path="*" />
                     </Routes>
                     <Footer />

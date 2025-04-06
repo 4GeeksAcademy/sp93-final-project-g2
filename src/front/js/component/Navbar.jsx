@@ -70,6 +70,7 @@ export const Navbar = () => {
                                     ABM
                                 </a>
                                 <ul className="dropdown-menu" aria-labelledby="abmDropdown">
+                                    <Link to="/admin" className="btn btn-info mx-2">abms</Link> 
                                     <li><a className="dropdown-item" href="#">Productos</a></li>
                                     <li><hr className="dropdown-divider" /></li>
                                     <li><a className="dropdown-item" href="#">Categorías</a></li>
