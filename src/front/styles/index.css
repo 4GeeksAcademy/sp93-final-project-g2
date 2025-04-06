@@ -1,3 +1,37 @@
 /* 
     General Styles used on every website (Don't Repeat Yourself)
 */
+
+@media (max-width: 767.98px) {
+    .offcanvas-custom {
+        width: 100%;
+    }
+}
+
+@media (min-width: 768px) {
+    .offcanvas-custom {
+        width: 400px;
+    }
+}
+
+.logo {
+    width: 10rem;
+    height: auto;
+    
+}
+.original{
+    --logo-main-color: #223650;
+    --logo-secondary-color: #95c11f
+}
+.clara{
+    --logo-main-color: #f4f3ef;
+    --logo-secondary-color: #95c11f
+}
+
+.bg-beige {
+    background-color: #f4f3ef;
+}
+
+.offcanvas.custom-bg {
+    background-color: none !important;
+}
