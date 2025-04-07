@@ -5,36 +5,32 @@ import { ItemForm } from "../component/ItemForm.jsx";
 
 export const AdminABM = () => {
     const { store, actions } = useContext(Context)
-    const [isListView, setIsListView] = useState(true)
-    const setGroup = (group) => {
-        actions.setGroup(group)
-    }
-    const handleNew = () => {
-        setIsListView(false)
-    }
-    const handleCancel = () => {
-        setIsListView(true)
-    }
+    
     useEffect(() => {
         actions.getInitAdminData()
     }, [])
+    
     return (
         <div className="p-3">
             <div className="d-flex">
                 <div className="col-3">
                     <h1 className="m-2">ABM Config</h1>
                     <ul className="list-group flex-column">
-                        <li className="list-group-item" onClick={() => setGroup('suppliers')}>Proveedores</li>
-                        <li className="list-group-item" onClick={() => setGroup('categories')}>Rubro</li>
-                        <li className="list-group-item" onClick={() => setGroup('sub_categories')}>Sub categoria</li>
+                        {
+                            Object.keys(store.groups).map((groupKey, index) =>
+                                <li key={index} className="list-group-item" onClick={() => actions.simpleStoreSetter('activeGroup', groupKey)}>
+                                    {store.groups[groupKey].title}
+                                </li>
+                            )
+                        }
                     </ul>
                 </div>
                 <main className="col-9 p-3">
-                    {isListView ?
+                    {store.isListView ?
                         <div>
                             <div className="d-flex justify-content-between">
                                 <h2>Lista de {store.groups[store.activeGroup].title}</h2>
-                                <span className="btn btn-primary btn-circle" onClick={handleNew}>
+                                <span className="btn btn-primary btn-circle" onClick={() => actions.simpleStoreSetter('isListView', false)}>
                                     <i className="fa fa-plus"></i>
                                 </span>
                             </div>
@@ -43,7 +39,7 @@ export const AdminABM = () => {
                         <div>
                             <div className="d-flex justify-content-between">
                                 <h2>Agregar nuevo en {store.groups[store.activeGroup].title}</h2>
-                                <span className="btn btn-danger btn-circle" onClick={handleCancel}>
+                                <span className="btn btn-danger btn-circle" onClick={() => actions.simpleStoreSetter('isListView', true)}>
                                     <i className="fa fa-cancel"></i>
                                 </span>
                             </div>

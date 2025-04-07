@@ -14,6 +14,8 @@ from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import get_jwt
 
+from datetime import timedelta
+
 api = Blueprint('api', __name__)
 CORS(api) 
 
@@ -32,7 +34,7 @@ def login():
     claims = {'user_id': user['id'],
               'role': user['role']}
     
-    access_token = create_access_token(identity=username, additional_claims=claims )
+    access_token = create_access_token(identity=username, additional_claims=claims, expires_delta=timedelta(hours=12) )
     response_body['message'] = f'User {user["username"]} logged'
     response_body['access_token'] = access_token
     response_body['results'] = user

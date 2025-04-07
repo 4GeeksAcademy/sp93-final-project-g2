@@ -51,25 +51,25 @@ const Profile = () => {
 
   return (
     <div style={{ backgroundColor: '#f4f3ef', minHeight: 'calc(100vh - 56px)', paddingTop: '0' }}>
-      <div style={{ 
-        backgroundColor: '#223650', 
-        color: 'white', 
-        padding: '2rem 1rem 1.5rem', 
+      <div style={{
+        backgroundColor: '#223650',
+        color: 'white',
+        padding: '2rem 1rem 1.5rem',
         marginBottom: '2rem',
         textAlign: 'center'
       }}>
-        <h1 style={{ 
-          fontSize: '2.5rem', 
-          fontWeight: '700', 
+        <h1 style={{
+          fontSize: '2.5rem',
+          fontWeight: '700',
           margin: '0 auto 0.5rem',
           maxWidth: '800px'
         }}>
           Mi Perfil {store.user && <span style={{ color: '#95c11f' }}>{store.user.username}</span>}
         </h1>
-        <p style={{ 
-          fontSize: '1.25rem', 
-          color: '#ddd', 
-          maxWidth: '800px', 
+        <p style={{
+          fontSize: '1.25rem',
+          color: '#ddd',
+          maxWidth: '800px',
           margin: '0 auto',
           padding: '0 1rem'
         }}>
@@ -77,14 +77,14 @@ const Profile = () => {
         </p>
       </div>
 
-      <div style={{ 
-        maxWidth: '800px', 
-        margin: '0 auto 2rem', 
-        padding: '0 1rem' 
+      <div style={{
+        maxWidth: '800px',
+        margin: '0 auto 2rem',
+        padding: '0 1rem'
       }}>
-        <div style={{ 
-          background: 'white', 
-          borderRadius: '1rem', 
+        <div style={{
+          background: 'white',
+          borderRadius: '1rem',
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
           padding: '2rem',
           border: '1px solid #ddd'
