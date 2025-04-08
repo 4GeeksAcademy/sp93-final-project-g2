@@ -319,7 +319,21 @@ def product(product_id):
             response_body['message'] = f"El producto con id {product_id} no se encuentra en la base de datos."
             return response_body, 200
 
-
+@api.route('/products/<int:products_id>/suppliers-products', methods=['GET'])
+@jwt_required()
+def product_suppliers(products_id):
+    response_body = {}
+    claims = get_jwt()
+    if claims['role'] == 'Administrador' or claims['products_id'] == products_id:
+        if request.method == 'GET':
+            rows = db.session.execute(db.select(SuppliersProducts).filter_by(products_id=products_id, is_active=True)).scalars()
+            suppliers_products = [row.serialize() for row in rows]
+            row = Products.query.get(products_id)
+            product = row.serialize()
+            response_body['message'] = f"Productos de proveedor del producto {product['name']}"
+            response_body['results'] = {"product": product, "list": suppliers_products}
+            return response_body, 200
+        
 @api.route('/products/search', methods=['POST'])
 def search_products():
     response_body = {}
@@ -381,12 +395,20 @@ def category(categories_id):
         
 
 @api.route('/categories/<int:categories_id>/subcategories', methods=['GET'])
+@jwt_required()
 def category_subcategory(categories_id):
     response_body = {}
     claims = get_jwt()
     if claims['role'] == 'Administrador' or claims['categories_id'] == categories_id:
-        response_body['message'] = f"Este es el get de category_subcategory {categories_id}"
-        return response_body, 200
+        if request.method == 'GET':
+            rows = db.session.execute(db.select(SubCategories).filter_by(categories_id=categories_id, is_active=True)).scalars()
+            subcategories = [row.serialize() for row in rows]
+            row = Categories.query.get(categories_id)
+            category = row.serialize()
+            print("category", category)
+            response_body['message'] = f"Subcategorías de la categoría {category['name']}"
+            response_body['results'] = {"category": category, "list": subcategories}
+            return response_body, 200
 
 
 @api.route('/subcategories', methods=['GET', 'POST'])
@@ -443,12 +465,19 @@ def subcategory(subcategories_id):
     
 
 @api.route('subcategories/<int:subcategories_id>/products', methods=['GET'])
+@jwt_required()
 def subcategory_products(subcategories_id):
     response_body = {}
     claims = get_jwt()
     if claims['role'] == 'Administrador' or claims['subcategories_id'] == subcategories_id:
-        response_body['message'] = f"Este es el get de subcategories_id {subcategories_id}"
-        return response_body, 200
+        if request.method == 'GET':
+            rows = db.session.execute(db.select(Products).filter_by(sub_categories_id=subcategories_id, is_active=True)).scalars()
+            products = [row.serialize() for row in rows]
+            row = SubCategories.query.get(subcategories_id)
+            subcategory = row.serialize()
+            response_body['message'] = f"Productos de la subcategoría {subcategory['name']}"
+            response_body['results'] = {"subcategory": subcategory, "list": products}
+            return response_body, 200
 
 
 @api.route('/branches', methods=['GET', 'POST'])

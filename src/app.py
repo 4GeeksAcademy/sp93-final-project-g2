@@ -120,26 +120,26 @@ def seed():
         db.session.commit()
 
         supliersProducts = [
-            SuppliersProducts(suppliers_id=1, products_id=7, nickname='Tomate redondo', price=0.5), #0
-            SuppliersProducts(suppliers_id=1, products_id=7, nickname='Tomate perita', price=0.7), #1
-            SuppliersProducts(suppliers_id=4, products_id=7, nickname='Tomate Rojo', price=0.65), #2
-            SuppliersProducts(suppliers_id=2, products_id=9, nickname='Cerveza Estrella', price=1), #3
-            SuppliersProducts(suppliers_id=3, products_id=1, nickname='Medallon x10', price=5), #4
-            SuppliersProducts(suppliers_id=5, products_id=1, nickname='Carne circular por unidad', price=1) #5
+            SuppliersProducts(suppliers_id=1, products_id=7, nickname='Tomate redondo', price=0.5, presentation='por kg'), #0
+            SuppliersProducts(suppliers_id=1, products_id=7, nickname='Tomate perita', price=0.7, presentation='por paquete'), #1
+            SuppliersProducts(suppliers_id=4, products_id=7, nickname='Tomate Rojo', price=0.65, presentation='por unidad'), #2
+            SuppliersProducts(suppliers_id=2, products_id=9, nickname='Cerveza Estrella', price=1, presentation='por docena'), #3
+            SuppliersProducts(suppliers_id=3, products_id=1, nickname='Medallon x10', price=5, presentation='por pack de 10'), #4
+            SuppliersProducts(suppliers_id=5, products_id=1, nickname='Carne circular por unidad', price=1, presentation='por radio del circulo de la carne') #5
         ]
         db.session.add_all(supliersProducts)
         db.session.commit()
         contactsData = [
-            ContactsData(order_method='whatsapp', supplier_id=1, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Juan', last_name='Proveedor 1'), #0
-            ContactsData(order_method='mail', supplier_id=2, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Pedro', last_name='Proveedor 2'), #1
-            ContactsData(order_method='telefono', supplier_id=3, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Pablo', last_name='Proveedor 3'), #2
-            ContactsData(order_method='whatsapp', supplier_id=4, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Margarita', last_name='Proveedor 4'), #3
-            ContactsData(order_method='mail', supplier_id=5, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Juan', last_name='Proveedor 5'), #4
-            ContactsData(order_method='none', phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Javi', last_name='ElAdmin'), #5
-            ContactsData(order_method='none', phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Jaime', last_name='ElUser'), #6
-            ContactsData(order_method='none', phone_number='234802343', address='calle 10', mail='mail@mail.com', whatsapp='31894279', first_name='Sucursal 1', last_name='Palermo'), #7
-            ContactsData(order_method='none', phone_number='234802343', address='calle 12', mail='mail@mail.com', whatsapp='31894279', first_name='Sucursal 2', last_name='La Boca'), #8
-            ContactsData(order_method='none', phone_number='234802343', address='calle 16', mail='mail@mail.com', whatsapp='31894279', first_name='Sucursal 3', last_name='Recoleta') #9
+            ContactsData(order_method='whatsapp', supplier_id=1, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Juan', last_name='Proveedor 1', ), #0
+            ContactsData(order_method='mail', supplier_id=2, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Pedro', last_name='Proveedor 2', ), #1
+            ContactsData(order_method='telefono', supplier_id=3, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Pablo', last_name='Proveedor 3', ), #2
+            ContactsData(order_method='whatsapp', supplier_id=4, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Margarita', last_name='Proveedor 4', ), #3
+            ContactsData(order_method='mail', supplier_id=5, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Juan', last_name='Proveedor 5', ), #4
+            ContactsData(order_method='none', phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Javi', last_name='ElAdmin', ), #5
+            ContactsData(order_method='none', phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Jaime', last_name='ElUser', ), #6
+            ContactsData(order_method='none', phone_number='234802343', address='calle 10', mail='mail@mail.com', whatsapp='31894279', first_name='Sucursal 1', last_name='Palermo', ), #7
+            ContactsData(order_method='none', phone_number='234802343', address='calle 12', mail='mail@mail.com', whatsapp='31894279', first_name='Sucursal 2', last_name='La Boca', ), #8
+            ContactsData(order_method='none', phone_number='234802343', address='calle 16', mail='mail@mail.com', whatsapp='31894279', first_name='Sucursal 3', last_name='Recoleta', ) #9
         
         ]
         db.session.add_all(contactsData)
@@ -172,9 +172,9 @@ def seed():
         db.session.commit()
 
         productOrders = [
-            ProductsOrders(suppliers_products_id=supliersProducts[0].id, orders_id=orders[0].id, presentation=1, quantity=1, unit_price=1 ),
-            ProductsOrders(suppliers_products_id=supliersProducts[3].id, orders_id=orders[1].id, presentation=1, quantity=1, unit_price=1 ),
-            ProductsOrders(suppliers_products_id=supliersProducts[5].id, orders_id=orders[2].id, presentation=1, quantity=1, unit_price=1 )
+            ProductsOrders(suppliers_products_id=supliersProducts[0].id, orders_id=orders[0].id, quantity=1, unit_price=1 ),
+            ProductsOrders(suppliers_products_id=supliersProducts[3].id, orders_id=orders[1].id, quantity=1, unit_price=1 ),
+            ProductsOrders(suppliers_products_id=supliersProducts[5].id, orders_id=orders[2].id, quantity=1, unit_price=1 )
         ]
         db.session.add_all(productOrders)
         db.session.commit()

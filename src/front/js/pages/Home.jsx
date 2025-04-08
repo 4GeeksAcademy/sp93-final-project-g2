@@ -36,16 +36,16 @@ export const Home = () => {
     };
 
     return (
-        <div className="text-center" style={{ backgroundColor: '#f4f3ef', minHeight: '100vh', padding: '0' }}>
+        <div className="home-container">
             <div className="py-5 background-mesh">
 
             <Logo className="logo claro" />
 
-                <h1 className="hero-title">
+                <h1 className="banner-title">
                     <span className="text-white">Bienvenido a</span> <LogoText className="logo original" />
-                    <span>{store.user && <span>, <span style={{ color: '#95c11f' }}>{store.user.username}</span></span>}</span>
+                    <span>{store.user && <span>, <span>{store.user.username}</span></span>}</span>
                 </h1>
-                <p className="hero-subtitle">Gestión de pedidos sin complicaciones. Sencillo, rápido y efectivo.</p>
+                <p className="banner-subtitle">Gestión de pedidos sin complicaciones. Sencillo, rápido y efectivo.</p>
             </div>
 
             <div className="testimonial-carousel-wrapper">
