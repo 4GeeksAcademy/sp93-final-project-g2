@@ -47,6 +47,7 @@ class SuppliersProducts(db.Model):
     products_to = db.relationship('Products', foreign_keys=[products_id], backref=db.backref('products_supplier_to', lazy='select'))
     nickname = db.Column(db.String(50))
     price = db.Column(db.Float, nullable=False)
+    presentation = db.Column(db.String())
     is_active = db.Column(db.Boolean, default=True)
 
 
@@ -59,6 +60,7 @@ class SuppliersProducts(db.Model):
                 "products_id": self.products_id,
                 "nickname": self.nickname,
                 "price": self.price,
+                "presentation": self.presentation,
                 "is_active": self.is_active}
 
 
@@ -99,8 +101,7 @@ class SubCategories(db.Model):
         return {"id": self.id,
                 "name": self.name,
                 "description": self.description,
-                "categories_id": self.categories_id,
-                "is_active": self.is_active}
+                "categories_id": self.categories_id}
     
     def basic_data(self):
         return{"id": self.id,
@@ -135,7 +136,6 @@ class ProductsOrders(db.Model):
     suppliers_products_to = db.relationship('SuppliersProducts', foreign_keys=[suppliers_products_id], backref=db.backref('suppliers_product_order_to', lazy='select'))
     orders_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)
     orders_to = db.relationship('Orders', foreign_keys=[orders_id], backref=db.backref('orders_products_to', lazy='select'))
-    presentation = db.Column(db.Integer, nullable=False) #Evaluar si lo hacemos enum o tabla, es para especificar por ej kilogramos, gramos, bultos, paquete, unidad etc
     quantity = db.Column(db.Float, nullable=False)
     unit_price = db.Column(db.Float, nullable=False)
     is_active = db.Column(db.Boolean, default=True)
@@ -147,7 +147,6 @@ class ProductsOrders(db.Model):
         return {"id": self.id,
                 "suppliers_products_id": self.suppliers_products_id,
                 "orders_id": self.orders_id,
-                "presentation": self.presentation,
                 "quantity": self.quantity,
                 "unit_price": self.unit_price,
                 "is_active": self.is_active}
