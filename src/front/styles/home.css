@@ -1,4 +1,11 @@
-.hero-section {
+.home-container{
+    text-align: center;
+    background-color: #f4f3ef;
+    min-height: 100vh;
+    padding: 0;
+}
+
+.banner-section {
     background-color: #223650;
     color: white;
     padding: 4rem 2rem;
@@ -7,17 +14,17 @@
     border-bottom-right-radius: 0;
 }
 
-.hero-title {
+.banner-title {
     font-size: 3rem;
     font-weight: 700;
     margin-bottom: 1rem;
 }
 
-.hero-title span {
+.banner-title span {
     color: #95c11f;
 }
 
-.hero-subtitle {
+.banner-subtitle {
     font-size: 1.25rem;
     margin-top: 1rem;
     color: #ddd;

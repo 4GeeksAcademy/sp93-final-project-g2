@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext.js";
+import "../../styles/login.css"
 
 const Login = () => {
   const { actions } = useContext(Context);
@@ -24,7 +25,7 @@ const Login = () => {
 
   return (
     <div className="d-flex justify-content-center align-items-center min-vh-100 bg-white">
-      <div className="card p-4 shadow-sm" style={{ width: '100%', maxWidth: '400px' }}>
+      <div className="card p-4 shadow-sm login-card">
         <div className="card-body">
           <h2 className="text-center mb-4">Iniciar Sesión</h2>
 
