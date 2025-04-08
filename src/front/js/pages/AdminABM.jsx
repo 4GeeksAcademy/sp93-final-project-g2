@@ -5,7 +5,10 @@ import { ItemForm } from "../component/ItemForm.jsx";
 
 export const AdminABM = () => {
     const { store, actions } = useContext(Context)
-    
+    const handleSelect = (groupKey) => {
+        actions.simpleStoreSetter('activeGroup', groupKey)
+        actions.simpleStoreSetter('isListView', true)
+    }
     useEffect(() => {
         actions.getInitAdminData()
     }, [])
@@ -18,7 +21,7 @@ export const AdminABM = () => {
                     <ul className="list-group flex-column">
                         {
                             Object.keys(store.groups).map((groupKey, index) =>
-                                <li key={index} className="list-group-item" onClick={() => actions.simpleStoreSetter('activeGroup', groupKey)}>
+                                <li key={index} className="list-group-item" onClick={() => handleSelect(groupKey)}>
                                     {store.groups[groupKey].title}
                                 </li>
                             )

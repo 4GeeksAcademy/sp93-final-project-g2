@@ -77,12 +77,37 @@ const getState = ({ getStore, getActions, setStore }) => {
             },
             activeGroup: 'suppliers',
             isEdit: false,
+            itemId: null,
+            editObject: {},
             isListView: true
         },
         actions: {
             // Seters simples
             simpleStoreSetter: (key, value) => { setStore({ [key]: value }) },
-
+            getItems: async () => {
+                const {activeGroup, token, groups} = getStore()
+                const route = activeGroup.replace(/_/g, "-");
+                const url = `${process.env.BACKEND_URL}/api/${route}`
+                const options = {
+                    method: "GET",
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                }
+                const resp = await fetch(url, options)
+                if (!resp.ok){
+                    console.log('Error: ', resp.status, resp.statusText)
+                }
+                const data = await resp.json()
+                console.log('data', data.results)
+                setStore({groups: {
+                    ...groups,
+                    [activeGroup]: {
+                        ...groups[activeGroup],
+                        items: data.results
+                    }}})
+            },
             loadTestimonials: () => {
                 const testimonials = [
                     { text: "Zuply nos ha ahorrado horas cada semana, ¡lo recomiendo sin dudar!", author: "Restaurante La Cazuela" },
@@ -96,12 +121,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 
             //actions para los ABM
             abmCreate: async (dataToSend) => {
-                const {activeGroup} = getStore()
-                const url = `${process.env.BACKEND_URL}/api/${activeGroup}`
+                const {activeGroup, token, groups} = getStore()
+                const route = activeGroup.replace(/_/g, "-");
+                const url = `${process.env.BACKEND_URL}/api/${route}`
                 const options = {
                     method: "POST",
                     headers: {
-                        'Authorization': `Bearer ${getStore().token}`,
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(dataToSend)
@@ -111,8 +137,9 @@ const getState = ({ getStore, getActions, setStore }) => {
                     console.error('Error: ', resp.status, resp.statusText )
                 }
                 
-                const data = await resp.json();
-                setStore(groups[activeGroup]['items'] = data.results)
+                //const data = await resp.json();
+                getActions().getItems()
+               
             },
             abmUpdate: async (dataToSend, id) => { },
             abmDelete: async (id) => { },

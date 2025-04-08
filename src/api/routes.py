@@ -348,6 +348,7 @@ def categories():
      
 
 @api.route('/categories/<int:categories_id>', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
 def category(categories_id):
     response_body = {}
     claims = get_jwt()
@@ -380,7 +381,7 @@ def category(categories_id):
             return response_body, 200
         
 
-@api.route('/categories/<int:categories_id>/subcategories', methods=['GET'])
+@api.route('/categories/<int:categories_id>/sub-categories', methods=['GET'])
 def category_subcategory(categories_id):
     response_body = {}
     claims = get_jwt()
@@ -389,7 +390,7 @@ def category_subcategory(categories_id):
         return response_body, 200
 
 
-@api.route('/subcategories', methods=['GET', 'POST'])
+@api.route('/sub-categories', methods=['GET', 'POST'])
 def subcategories():
     response_body = {}
     if request.method == 'GET':
@@ -409,7 +410,8 @@ def subcategories():
         return response_body, 200
     
 
-@api.route('/subcategories/<int:subcategories_id>', methods=['GET', 'PUT', 'DELETE'])
+@api.route('/sub-categories/<int:subcategories_id>', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
 def subcategory(subcategories_id):
     response_body = {}
     claims = get_jwt()
@@ -442,7 +444,7 @@ def subcategory(subcategories_id):
             return response_body, 200
     
 
-@api.route('subcategories/<int:subcategories_id>/products', methods=['GET'])
+@api.route('sub-categories/<int:subcategories_id>/products', methods=['GET'])
 def subcategory_products(subcategories_id):
     response_body = {}
     claims = get_jwt()

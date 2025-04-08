@@ -4,7 +4,10 @@ import { Context } from "../store/appContext";
 export const ItemList = () => {
     const { store, actions } = useContext(Context)
     const handleDelete = ()=>{}
-    const handleEdit = () => {}
+    const handleEdit = async (itemId) => {
+        actions.simpleStoreSetter('itemId', itemId)
+        actions.simpleStoreSetter('isListView', false)
+    }
     return (
         <ul className="list-group">
             {store.groups[store.activeGroup].items.map((item, index) =>

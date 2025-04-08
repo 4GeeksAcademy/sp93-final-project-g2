@@ -7,12 +7,12 @@ export const ItemForm = () => {
 
     const handleSubmit = (event) => {
         event.preventDefault()
-        if (store.isEdit){
+        if (store.isEdit) {
 
         } else {
             actions.abmCreate(formValues)
+            actions.simpleStoreSetter('isListView', true)
         }
-        console.log('me clickeaste', formValues)
     }
 
     const handleChange = (event) => {
@@ -26,11 +26,11 @@ export const ItemForm = () => {
         const initialValues = {};
         const currentInputs = store.groups[store.activeGroup].formInputs;
         currentInputs.forEach(input => {
-            initialValues[input.accessKey] = input.value;
+            initialValues[input.accessKey] = store.isEdit ? store.groups[store.activeGroup].items.find(el => el.id == store.itemId) : input.value;
         });
         setFormValues(initialValues);
-    }, [store.activeGroup]);
-
+    }, [store.activeGroup, store.itemId]);
+    
     return (
         <div>
             <form onSubmit={handleSubmit}>
@@ -40,16 +40,16 @@ export const ItemForm = () => {
                         <div className="mb-3" key={item.accessKey}>
                             <label htmlFor={item.accessKey} className="form-label">{item.label}</label>
                             {item.type == 'text' &&
-                                    <input
-                                        id={item.accessKey}
-                                        className="form-control"
-                                        type={item.type}
-                                        value={formValues[item.accessKey] || ""}
-                                        onChange={handleChange}
-                                    />
+                                <input
+                                    id={item.accessKey}
+                                    className="form-control"
+                                    type={item.type}
+                                    value={formValues[item.accessKey] || ""}
+                                    onChange={handleChange}
+                                />
                             }
                             {item.type == 'dropdown' &&
-                                <select onChange={handleChange} id={item.accessKey} className="form-select">
+                                <select onChange={handleChange} id={item.accessKey} className="form-select" value={formValues[item.accessKey] || ""}>
                                     {store.groups[item.fatherKey].items.map((optionItem) =>
                                         <option key={item.fatherKey + '-' + optionItem.id} value={optionItem.id}>{optionItem.name}</option>
                                     )}
