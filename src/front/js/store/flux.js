@@ -4,7 +4,11 @@ const getState = ({ getStore, getActions, setStore }) => {
             message: null,
             token: localStorage.getItem("token") || null,
             user: localStorage.getItem("token") ? JSON.parse(localStorage.getItem("user")) : null,
-            cart: [],
+            categories: [],
+            subcategories: [],
+            products: [],
+            suppliersProducts: [],
+            suppliers: [],
             testimonials: [],
             groups: {
                 suppliers: {
@@ -80,7 +84,93 @@ const getState = ({ getStore, getActions, setStore }) => {
             isListView: true
         },
         actions: {
-            // Seters simples
+            getCategories: async () => {
+                try {
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/categories`, {
+                        method: "GET",
+                        headers: { "Authorization": `Bearer ${getStore().token}` },
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        setStore({ categories: data.results });
+                    } else {
+                        console.error("Error al obtener categorías", data.message);
+                    }
+                } catch (error) {
+                    console.error("Error al obtener categorías", error);
+                }
+            },
+
+            getSubcategories: async (categoryId) => {
+                try {
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/categories/${categoryId}/subcategories`, {
+                        method: "GET",
+                        headers: { "Authorization": `Bearer ${getStore().token}` },
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        setStore({ subcategories: data.results.list }); 
+                    } else {
+                        console.error("Error al obtener subcategorías", data.message);
+                    }
+                } catch (error) {
+                    console.error("Error al obtener subcategorías", error);
+                }
+            },
+
+            getProductsBySubcategory: async (subcategoryId) => {
+                try {
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/subcategories/${subcategoryId}/products`, {
+                        method: "GET",
+                        headers: { "Authorization": `Bearer ${getStore().token}` },
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        setStore({ products: data.results.list }); 
+                    } else {
+                        console.error("Error al obtener productos", data.message);
+                    }
+                } catch (error) {
+                    console.error("Error al obtener productos", error);
+                }
+            },
+
+            getSuppliersProductsByProduct: async (productId) => {
+                try {
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/products/${productId}/suppliers-products`, {
+                        method: "GET",
+                        headers: { "Authorization": `Bearer ${getStore().token}` },
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        setStore({ suppliersProducts: data.results.list });
+                    } else {
+                        console.error("Error al obtener productos de proveedor", data.message);
+                    }
+                } catch (error) {
+                    console.error("Error al obtener productos de proveedor", error);
+                }
+            },
+
+            getSupplierById: async (supplierId) => {
+                try {
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/suppliers/${supplierId}`, {
+                        method: "GET",
+                        headers: { "Authorization": `Bearer ${getStore().token}` },
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        setStore({
+                            suppliers: [...getStore().suppliers, data.results]  
+                        });
+                    } else {
+                        console.error("Error al obtener proveedor", data.message);
+                    }
+                } catch (error) {
+                    console.error("Error al obtener proveedor", error);
+                }
+            },
+
             simpleStoreSetter: (key, value) => { setStore({ [key]: value }) },
 
             loadTestimonials: () => {
@@ -143,6 +233,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                     return [];
                 }
             },
+
             getProducts: async () => {
                 try {
                     const resp = await fetch(`${process.env.BACKEND_URL}/api/products`);
@@ -151,23 +242,6 @@ const getState = ({ getStore, getActions, setStore }) => {
                 } catch {
                     return [];
                 }
-            },
-
-            addToCart: (product) => {
-                const store = getStore();
-                setStore({ cart: [...store.cart, product] });
-            },
-
-            removeFromCart: (index) => {
-                const store = getStore();
-                const newCart = [...store.cart];
-                newCart.splice(index, 1);
-                setStore({ cart: newCart });
-            },
-
-            confirmOrder: () => {
-                setStore({ cart: [] });
-                alert("Pedido confirmado");
             },
 
             login: async (username, password) => {
