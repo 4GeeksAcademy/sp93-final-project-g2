@@ -139,14 +139,17 @@ def seed():
             ContactsData(order_method='none', phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Jaime', last_name='ElUser', ), #6
             ContactsData(order_method='none', phone_number='234802343', address='calle 10', mail='mail@mail.com', whatsapp='31894279', first_name='Sucursal 1', last_name='Palermo', ), #7
             ContactsData(order_method='none', phone_number='234802343', address='calle 12', mail='mail@mail.com', whatsapp='31894279', first_name='Sucursal 2', last_name='La Boca', ), #8
-            ContactsData(order_method='none', phone_number='234802343', address='calle 16', mail='mail@mail.com', whatsapp='31894279', first_name='Sucursal 3', last_name='Recoleta', ) #9
-        
+            ContactsData(order_method='none', phone_number='234802343', address='calle 16', mail='mail@mail.com', whatsapp='31894279', first_name='Sucursal 3', last_name='Recoleta', ), #9
+            ContactsData(order_method='none', phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Juan', last_name='ElGestor', ), #10
+            ContactsData(order_method='none', phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Pedro', last_name='ElReceptor', ) #11
         ]
         db.session.add_all(contactsData)
         db.session.commit()
 
         users = [
             Users(username="admin", password=1234, role="Administrador", contacts_data_id=contactsData[5].id),
+            Users(username="Gestor", password=1234, role="Gestor_de_pedidos", contacts_data_id=contactsData[10].id),
+            Users(username="Receptor", password=1234, role="Receptor_de_pedidos", contacts_data_id=contactsData[11].id),
             Users(username="user1", password=1234, contacts_data_id=contactsData[6].id)
         ]
         db.session.add_all(users)

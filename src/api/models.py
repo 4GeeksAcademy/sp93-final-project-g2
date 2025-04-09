@@ -32,7 +32,9 @@ class Suppliers(db.Model):
     
     def basic_data(self):
         return{"id": self.id,
-               "name": self.name}
+               "name": self.name,
+               "address": self.address,
+               "cuit": self.cuit}
 
 
 
@@ -104,6 +106,7 @@ class SubCategories(db.Model):
     def basic_data(self):
         return{"id": self.id,
                "name": self.name,
+               "description": self.description,
                "categories_id": self.categories_id}
 
 class Categories(db.Model):
@@ -123,7 +126,8 @@ class Categories(db.Model):
     
     def basic_data(self):
         return{"id": self.id,
-               "name": self.name}
+               "name": self.name,
+               "description": self.description}
 
 class ProductsOrders(db.Model):
     __tablename__ = "product_order"

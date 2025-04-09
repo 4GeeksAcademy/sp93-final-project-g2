@@ -22,24 +22,24 @@ export const Home = () => {
     const getVisibleTestimonials = () => {
         const total = store.testimonials?.length || 0;
         if (total === 0) return [];
-    
+
         const visible = [];
-    
+
         for (let i = -2; i <= 2; i++) {
             const index = (current + i + total) % total;
             if (store.testimonials[index]) {
                 visible.push(store.testimonials[index]);
             }
         }
-    
+
         return visible;
     };
 
     return (
         <div className="home-container">
-            <div className="py-5 background-mesh">
+            <div className="py-5 background-mesh banner">
 
-            <Logo className="logo claro" />
+                <Logo className="logo claro" />
 
                 <h1 className="banner-title">
                     <span className="text-white">Bienvenido a</span> <LogoText className="logo original" />
