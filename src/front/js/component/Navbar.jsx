@@ -14,7 +14,7 @@ export const Navbar = () => {
     };
 
     return (
-        <nav className="navbar navbar-light bg-light">
+        <nav className="navbar navbar-light zuply-bg-beige">
             <div className="container-fluid">
                 <NavbarMenu />
                 <LogoNavbar className="logo original" onClick={goHome} />

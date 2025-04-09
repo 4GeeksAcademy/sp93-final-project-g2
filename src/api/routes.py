@@ -47,7 +47,7 @@ def users():
     response_body = {}
     claims = get_jwt()
     if request.method == 'GET':
-        rows = Users.query.all()
+        rows = Users.query.filter_by(is_active=True).all()
         response_body['message'] = "Usuarios"
         response_body['results'] = [row.serialize() for row in rows]
         return response_body, 200
@@ -108,7 +108,7 @@ def contacts_data():
     claims = get_jwt()
     if claims['role'] != 'visitante':
         if request.method == 'GET':
-            rows = ContactsData.query.all()
+            rows = ContactsData.query.filter_by(is_active=True).all()
             result = [row.serialize() for row in rows]
             response_body['message'] = "Datos de contacto"
             response_body['results'] = result
@@ -272,7 +272,7 @@ def suppliers_product(suppliers_products_id):
 def products():
     response_body = {}
     if request.method == 'GET':
-        rows = Products.query.all()
+        rows = Products.query.filter_by(is_active=True).all()
         result = [row.serialize() for row in rows]
         response_body['message'] = "Este es el get de products"
         response_body ['results'] = result
@@ -345,7 +345,7 @@ def search_products():
 def categories():
     response_body = {}
     if request.method == 'GET':
-        rows = Categories.query.all()
+        rows = Categories.query.filter_by(is_active=True).all()
         results = [row.serialize() for row in rows]
         response_body['message'] = "Este es el get de categories"
         response_body['results'] = results
@@ -362,6 +362,7 @@ def categories():
      
 
 @api.route('/categories/<int:categories_id>', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
 def category(categories_id):
     response_body = {}
     claims = get_jwt()
@@ -394,7 +395,7 @@ def category(categories_id):
             return response_body, 200
         
 
-@api.route('/categories/<int:categories_id>/subcategories', methods=['GET'])
+@api.route('/categories/<int:categories_id>/sub-categories', methods=['GET'])
 @jwt_required()
 def category_subcategory(categories_id):
     response_body = {}
@@ -411,11 +412,11 @@ def category_subcategory(categories_id):
             return response_body, 200
 
 
-@api.route('/subcategories', methods=['GET', 'POST'])
+@api.route('/sub-categories', methods=['GET', 'POST'])
 def subcategories():
     response_body = {}
     if request.method == 'GET':
-        rows = SubCategories.query.all()
+        rows = SubCategories.query.filter_by(is_active=True).all()
         results = [row.serialize() for row in rows]
         response_body['message'] = "Este es el get de subcategories"
         response_body['results'] = results
@@ -431,7 +432,8 @@ def subcategories():
         return response_body, 200
     
 
-@api.route('/subcategories/<int:subcategories_id>', methods=['GET', 'PUT', 'DELETE'])
+@api.route('/sub-categories/<int:subcategories_id>', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
 def subcategory(subcategories_id):
     response_body = {}
     claims = get_jwt()
@@ -464,7 +466,7 @@ def subcategory(subcategories_id):
             return response_body, 200
     
 
-@api.route('subcategories/<int:subcategories_id>/products', methods=['GET'])
+@api.route('sub-categories/<int:subcategories_id>/products', methods=['GET'])
 @jwt_required()
 def subcategory_products(subcategories_id):
     response_body = {}
@@ -485,7 +487,7 @@ def subcategory_products(subcategories_id):
 def branches():
     response_body = {}
     if request.method == 'GET':
-        rows = Branches.query.all()
+        rows = Branches.query.filter_by(is_active=True).all()
         result = [row.serialize() for row in rows]
         response_body['message'] = "Sucursales"
         response_body['results'] = result
@@ -540,7 +542,7 @@ def orders():
     print("current_user", current_user)
     user_id = current_user['user_id']
     if request.method == 'GET':
-        rows = Orders.query.all()
+        rows = Orders.query.filter_by(is_active=True).all()
         result = [row.serialize() for row in rows]
         response_body['message'] = "Pedidos"
         response_body['results'] = result
@@ -644,7 +646,7 @@ def order_send(orders_id):
 def product_orders():
     response_body = {}
     if request.method == 'GET':
-        rows = ProductsOrders.query.all()
+        rows = ProductsOrders.query.filter_by(is_active=True).all()
         result = [row.serialize () for row in rows]
         response_body['message'] = "Product orders."
         response_body['results'] = result
@@ -703,13 +705,16 @@ def init_admin_data():
     response_body={}
     claims = get_jwt()
     if claims['role'] == 'Administrador':
-        suppliers_bdd = Suppliers.query.all()
-        categories_bdd = Categories.query.all()
-        sub_categories_bdd = SubCategories.query.all()
+        suppliers_bdd = Suppliers.query.filter_by(is_active=True).all()
+        categories_bdd = Categories.query.filter_by(is_active=True).all()
+        sub_categories_bdd = SubCategories.query.filter_by(is_active=True).all()
+        users_bdd = Users.query.filter_by(is_active=True).all()
         result = {
             "suppliers": [row.basic_data() for row in suppliers_bdd] ,
             "categories": [row.basic_data() for row in categories_bdd ],
-            "sub_categories": [row.basic_data() for row in sub_categories_bdd ]
+            "sub_categories": [row.basic_data() for row in sub_categories_bdd ],
+            "users": [row.serialize() for row in users_bdd ]
+
         }
         response_body['message'] = 'Hola'
         response_body['results'] = result
