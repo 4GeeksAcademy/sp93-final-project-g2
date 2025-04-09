@@ -8,7 +8,8 @@ export const ItemForm = () => {
     const handleSubmit = (event) => {
         event.preventDefault()
         if (store.isEdit) {
-
+            actions.abmUpdate(formValues)
+            actions.simpleStoreSetter('isListView', true)   
         } else {
             actions.abmCreate(formValues)
             actions.simpleStoreSetter('isListView', true)
@@ -24,18 +25,19 @@ export const ItemForm = () => {
     };
     useEffect(() => {
         const initialValues = {};
-        const currentInputs = store.groups[store.activeGroup].formInputs;
+        const currentInputs = store.abmGroups[store.activeGroup].formInputs;
+        const objectToEdit = store.activeList.find(el => el.id == store.itemId)
         currentInputs.forEach(input => {
-            initialValues[input.accessKey] = store.isEdit ? store.groups[store.activeGroup].items.find(el => el.id == store.itemId) : input.value;
+            initialValues[input.accessKey] = store.isEdit ? objectToEdit[input.accessKey] : input.value;
         });
         setFormValues(initialValues);
     }, [store.activeGroup, store.itemId]);
-    
+
     return (
         <div>
             <form onSubmit={handleSubmit}>
                 {
-                    store.groups[store.activeGroup].formInputs.map((item) =>
+                    store.abmGroups[store.activeGroup].formInputs.map((item) =>
                     (
                         <div className="mb-3" key={item.accessKey}>
                             <label htmlFor={item.accessKey} className="form-label">{item.label}</label>
@@ -50,8 +52,15 @@ export const ItemForm = () => {
                             }
                             {item.type == 'dropdown' &&
                                 <select onChange={handleChange} id={item.accessKey} className="form-select" value={formValues[item.accessKey] || ""}>
-                                    {store.groups[item.fatherKey].items.map((optionItem) =>
+                                    {store.abmGroups[item.fatherKey].items.map((optionItem) =>
                                         <option key={item.fatherKey + '-' + optionItem.id} value={optionItem.id}>{optionItem.name}</option>
+                                    )}
+                                </select>
+                            }
+                            {item.type == 'enum' &&
+                                <select onChange={handleChange} id={item.accessKey} className="form-select" value={formValues[item.accessKey] || ""}>
+                                    {store.enums[item.accessKey].map((optionItem, index) =>
+                                        <option key={optionItem.value + '-' + index} value={optionItem.value}>{optionItem.label}</option>
                                     )}
                                 </select>
                             }
@@ -59,7 +68,9 @@ export const ItemForm = () => {
                     )
                     )
                 }
-                <button className="btn btn-primary" type="submit">Crear</button>
+                <div className="d-flex">
+                    <button className="btn btn-primary ms-auto" type="submit">{store.isEdit ? 'Guardar' : 'Crear'}</button>
+                </div>
             </form>
 
         </div>

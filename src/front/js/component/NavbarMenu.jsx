@@ -60,14 +60,14 @@ export const NavbarMenu = () => {
 
                                     <ul className="dropdown-menu w-100">
                                         {
-                                            Object.values(store.groups).map((value, index) =>
+                                            Object.values(store.abmGroups).map((value, index) =>
                                                 <>
                                                     <li key={index}>
                                                         <span className="dropdown-item claseA fs-5" onClick={() => goTo('')} >
                                                             {value.title}
                                                         </span>
                                                     </li>
-                                                    {(index + 1) < Object.values(store.groups).length &&
+                                                    {(index + 1) < Object.values(store.abmGroups).length &&
                                                         <li><hr className="dropdown-divider" /></li>
                                                     }
                                                 </>
@@ -93,14 +93,14 @@ export const NavbarMenu = () => {
 
                                 <ul className="dropdown-menu w-100">
                                     {
-                                        Object.values(store.groups).map((value, index) =>
+                                        Object.values(store.abmGroups).map((value, index) =>
                                             <>
                                                 <li key={index}>
                                                     <span className="dropdown-item claseA fs-5" onClick={() => goTo('')} >
                                                         {value.title}
                                                     </span>
                                                 </li>
-                                                {(index + 1) < Object.values(store.groups).length &&
+                                                {(index + 1) < Object.values(store.abmGroups).length &&
                                                     <li><hr className="dropdown-divider" /></li>
                                                 }
                                             </>

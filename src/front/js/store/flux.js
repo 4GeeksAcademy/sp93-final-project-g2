@@ -6,9 +6,38 @@ const getState = ({ getStore, getActions, setStore }) => {
             user: localStorage.getItem("token") ? JSON.parse(localStorage.getItem("user")) : null,
             cart: [],
             testimonials: [],
-            groups: {
+            enums: {
+                role: [
+                    {label: 'Administrador', value: 'Administrador'},
+                    {label: 'Gestor de pedidos', value: 'Gestor_de_pedidos'},
+                    {label: 'Receptor de pedidos', value: 'Receptor_de_pedidos'},
+                    {label: 'Visitante', value: 'visitante'}
+                ],
+                status: [
+                    {label: 'Pendiente', value: 'pendiente'},
+                    {label: 'Cancelado', value: 'cancelado'},
+                    {label: 'Recibido', value: 'recibido'},
+                    {label: 'Borrador', value: 'borrador'},
+                    {label: 'Reprogramado', value: 'reprogramado'}
+                ],
+                payment_method: [
+                    {label: 'Transferencia', value: 'transferencia'},
+                    {label: 'Efectivo', value: 'efectivo'},
+                    {label: 'Débito', value: 'debito'},
+                    {label: 'Crédito', value: 'credito'},
+                    {label: 'Cheque', value: 'cheque'}
+                ],
+                order_method: [
+                    {label: 'Whatsapp', value: 'whatsapp'},
+                    {label: 'Mail', value: 'mail'},
+                    {label: 'Teléfono', value: 'telefono'}
+                ],
+            },
+            abmGroups: {
                 suppliers: {
                     title: 'Proveedores',
+                    showKey: 'name',
+                    icon: 'truck',
                     items: [],
                     formInputs: [
                         {
@@ -32,7 +61,9 @@ const getState = ({ getStore, getActions, setStore }) => {
                     ]
                 },
                 categories: {
-                    title: 'Rubros',
+                    title: 'Categoria',
+                    showKey: 'name',
+                    icon: 'tags',
                     items: [],
                     formInputs: [
                         {
@@ -51,6 +82,8 @@ const getState = ({ getStore, getActions, setStore }) => {
                 },
                 sub_categories: {
                     title: 'Sub Categorias',
+                    showKey: 'name',
+                    icon: 'puzzle-piece',
                     items: [],
                     formInputs: [
                         {
@@ -73,19 +106,46 @@ const getState = ({ getStore, getActions, setStore }) => {
                             value: '1'
                         },
                     ]
+                },
+                users: {
+                    title: 'Usuarios',
+                    showKey: 'username',
+                    icon: 'user',
+                    items: [],
+                    formInputs: [
+                        {
+                            type: 'text',
+                            accessKey: 'username',
+                            label: 'Nombre de Usuario',
+                            value: ''
+                        },
+                        {
+                            type: 'text',
+                            accessKey: 'password',
+                            label: 'Password',
+                            value: ''
+                        },
+                        {
+                            type: 'enum',
+                            accessKey: 'role',
+                            label: 'Rol',
+                            value: ''
+                        },
+                    ]
                 }
             },
             activeGroup: 'suppliers',
             isEdit: false,
             itemId: null,
             editObject: {},
-            isListView: true
+            isListView: true,
+            activeList: []
         },
         actions: {
             // Seters simples
             simpleStoreSetter: (key, value) => { setStore({ [key]: value }) },
             getItems: async () => {
-                const {activeGroup, token, groups} = getStore()
+                const {activeGroup, token, abmGroups} = getStore()
                 const route = activeGroup.replace(/_/g, "-");
                 const url = `${process.env.BACKEND_URL}/api/${route}`
                 const options = {
@@ -101,12 +161,13 @@ const getState = ({ getStore, getActions, setStore }) => {
                 }
                 const data = await resp.json()
                 console.log('data', data.results)
-                setStore({groups: {
-                    ...groups,
+                setStore({abmGroups: {
+                    ...abmGroups,
                     [activeGroup]: {
-                        ...groups[activeGroup],
+                        ...abmGroups[activeGroup],
                         items: data.results
                     }}})
+                    setStore({activeList: data.results})
             },
             loadTestimonials: () => {
                 const testimonials = [
@@ -121,7 +182,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
             //actions para los ABM
             abmCreate: async (dataToSend) => {
-                const {activeGroup, token, groups} = getStore()
+                const {activeGroup, token, abmGroups} = getStore()
                 const route = activeGroup.replace(/_/g, "-");
                 const url = `${process.env.BACKEND_URL}/api/${route}`
                 const options = {
@@ -141,10 +202,44 @@ const getState = ({ getStore, getActions, setStore }) => {
                 getActions().getItems()
                
             },
-            abmUpdate: async (dataToSend, id) => { },
-            abmDelete: async (id) => { },
+            abmUpdate: async (dataToSend) => {
+                const {activeGroup, token, itemId} = getStore()
+                const route = activeGroup.replace(/_/g, "-");
+                const url = `${process.env.BACKEND_URL}/api/${route}/${itemId}`
+                const options = {
+                    method: "PUT",
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(dataToSend)
+                }
+                const resp = await fetch(url, options);
+                if(!resp.ok){
+                    console.error('Error: ', resp.status, resp.statusText )
+                }
+                getActions().getItems()
+             },
+            abmDelete: async (id) => {
+                const {activeGroup, token} = getStore()
+                const route = activeGroup.replace(/_/g, "-");
+                const url = `${process.env.BACKEND_URL}/api/${route}/${id}`
+                const options = {
+                    method: "DELETE",
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                }
+                const resp = await fetch(url, options);
+                if(!resp.ok){
+                    console.error('Error: ', resp.status, resp.statusText )
+                }
+                getActions().getItems()
+             },
             
             getInitAdminData: async () => {
+                const {abmGroups} = getStore()
                 try {
                     const url = `${process.env.BACKEND_URL}/api/init-admin-data`
                     const options = {
@@ -156,14 +251,14 @@ const getState = ({ getStore, getActions, setStore }) => {
                     }
                     const resp = await fetch(url, options);
                     const data = await resp.json();
-                    setStore({
-                        groups: {
-                            'suppliers': { ...getStore().groups.suppliers, items: data.results.suppliers },
-                            'categories': { ...getStore().groups.categories, items: data.results.categories },
-                            'sub_categories': { ...getStore().groups.sub_categories, items: data.results.sub_categories }
-                        }
+                    const objectToSave = {}
+                   
+                    Object.keys(abmGroups).map((groupKey) => {
+                        console.log('aca', data.results[groupKey])
+                        objectToSave[groupKey] = { ...abmGroups[groupKey], items: data.results[groupKey] }
                     })
-                    console.log(getStore().groups)
+                    setStore({abmGroups: objectToSave})
+                    console.log('abmGroups', getStore().abmGroups)
                     return data.results || [];
                 } catch {
                     console.log('tuve un error')
