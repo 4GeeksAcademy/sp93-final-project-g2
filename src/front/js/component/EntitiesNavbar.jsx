@@ -4,9 +4,7 @@ import "../../styles/entitiesNavbar.css";
 export const EntitiesNavbar = () => {
     const { store, actions } = useContext(Context)
     const handleSelect = (groupKey) => {
-        actions.simpleStoreSetter('activeGroup', groupKey)
-        actions.simpleStoreSetter('isListView', true)
-        actions.simpleStoreSetter('activeList', store.abmGroups[store.activeGroup].items)
+        actions.setListViewConfig(groupKey, 'list', store.abmGroups[groupKey].items)
     }
     return (
         <div className="col-12 col-sm-4 col-md-3 col-lg-2 entities-navbar p-sm-2">

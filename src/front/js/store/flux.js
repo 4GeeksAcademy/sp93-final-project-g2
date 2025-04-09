@@ -134,16 +134,19 @@ const getState = ({ getStore, getActions, setStore }) => {
                     ]
                 }
             },
-            activeGroup: 'suppliers',
+            activeGroup: '',
             isEdit: false,
             itemId: null,
             editObject: {},
-            isListView: true,
+            viewType: 'list',
             activeList: []
         },
         actions: {
             // Seters simples
             simpleStoreSetter: (key, value) => { setStore({ [key]: value }) },
+            setListViewConfig: (activeGroup, viewType, activeList) => {
+                setStore({activeGroup, viewType, activeList})
+            },
             getItems: async () => {
                 const {activeGroup, token, abmGroups} = getStore()
                 const route = activeGroup.replace(/_/g, "-");

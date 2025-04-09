@@ -9,10 +9,10 @@ export const ItemForm = () => {
         event.preventDefault()
         if (store.isEdit) {
             actions.abmUpdate(formValues)
-            actions.simpleStoreSetter('isListView', true)   
+            actions.simpleStoreSetter('viewType', 'list')
         } else {
             actions.abmCreate(formValues)
-            actions.simpleStoreSetter('isListView', true)
+            actions.simpleStoreSetter('viewType', 'list')
         }
     }
 
@@ -35,6 +35,12 @@ export const ItemForm = () => {
 
     return (
         <div>
+            <div className="d-flex justify-content-between">
+                <h2>{store.isEdit ? 'Editar ' : 'Agregar'} {store.abmGroups[store.activeGroup].title}</h2>
+                <span className="btn btn-danger btn-circle" onClick={() => actions.simpleStoreSetter('viewType', 'list')}>
+                    <i className="fa fa-cancel"></i>
+                </span>
+            </div>
             <form onSubmit={handleSubmit}>
                 {
                     store.abmGroups[store.activeGroup].formInputs.map((item) =>
