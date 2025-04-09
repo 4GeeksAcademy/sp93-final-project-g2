@@ -165,7 +165,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
             getSubcategories: async (categoryId) => {
                 try {
-                    const response = await fetch(`${process.env.BACKEND_URL}/api/categories/${categoryId}/subcategories`, {
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/categories/${categoryId}/sub-categories`, {
                         method: "GET",
                         headers: { "Authorization": `Bearer ${getStore().token}` },
                     });
@@ -182,7 +182,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
             getProductsBySubcategory: async (subcategoryId) => {
                 try {
-                    const response = await fetch(`${process.env.BACKEND_URL}/api/subcategories/${subcategoryId}/products`, {
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/sub-categories/${subcategoryId}/products`, {
                         method: "GET",
                         headers: { "Authorization": `Bearer ${getStore().token}` },
                     });

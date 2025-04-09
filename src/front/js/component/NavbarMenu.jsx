@@ -8,7 +8,9 @@ export const NavbarMenu = () => {
     const navigate = useNavigate();
 
     const goTo = (navigateTo, groupKey) => {
-        actions.setListViewConfig(groupKey, 'list', store.abmGroups[groupKey].items);
+        if(groupKey !== ''){
+            actions.setListViewConfig(groupKey, 'list', store.abmGroups[groupKey].items);
+        }
         navigate('/' + navigateTo);
     }
 
@@ -43,7 +45,8 @@ export const NavbarMenu = () => {
                                     <ul className="dropdown-menu w-100">
                                         {(role === "Administrador" || role === "Gestor_de_pedidos") && (
                                             <>
-                                                <li><Link className="dropdown-item fs-5" to="#" data-bs-dismiss="offcanvas">Generar pedidos</Link></li>
+                                            
+                                                <li><span onClick={() => goTo('order', '')} className="dropdown-item fs-5" data-bs-dismiss="offcanvas">Generar pedidos</span></li>
                                                 <li><hr className="dropdown-divider" /></li>
                                             </>
                                         )}

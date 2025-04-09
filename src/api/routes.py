@@ -466,7 +466,7 @@ def subcategory(subcategories_id):
             return response_body, 200
     
 
-@api.route('subcategories/<int:subcategories_id>/products', methods=['GET'])
+@api.route('sub-categories/<int:subcategories_id>/products', methods=['GET'])
 @jwt_required()
 def subcategory_products(subcategories_id):
     response_body = {}

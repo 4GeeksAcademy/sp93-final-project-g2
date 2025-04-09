@@ -1,7 +1,19 @@
-import React from "react";
+import React, { useContext } from "react";
+import { Context } from "../store/appContext";
 
 export const PageTitle = (props)=>{
+    const {store, actions} = useContext(Context)
+
     return (
-        <h1 className="text-center my-4">{props.title}</h1>
+        <>
+        <div className="profile-header">
+        <h1 className="profile-title">
+         {props.title}
+        </h1>
+        <p className="profile-subtitle">
+          {props.subtitle}
+        </p>
+      </div>
+      </>
     )
 }
