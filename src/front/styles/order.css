@@ -1,0 +1,157 @@
+.order-container {
+    padding: 20px;
+    background-color: #f4f4f4;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+}
+
+h2 {
+    color: #2b3e50;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.back-button {
+    background-color: #95c11f;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 20px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.back-button:hover {
+    background-color: #7c9f18;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.category-item,
+.subcategory-item,
+.product-item,
+.supplier-product-item {
+    background-color: #ffffff;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.category-item:hover,
+.subcategory-item:hover,
+.product-item:hover,
+.supplier-product-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.button-order {
+    background-color: #95c11f;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+}
+
+.button-order:hover {
+    background-color: #7c9f18;
+}
+
+.categories-list,
+.subcategories-list,
+.products-list,
+.suppliers-products-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    justify-content: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+h3 {
+    color: #2b3e50;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+p {
+    color: #666;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin: 5px 0;
+}
+
+.supplier-product-item h4 {
+    font-size: 1.25rem;
+    color: #2b3e50;
+}
+
+.supplier-product-item p {
+    font-size: 1rem;
+    color: #555;
+}
+
+.supplier-product-item .price {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #95c11f;
+}
+
+.no-items,
+.loading-message {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #666;
+    margin-top: 20px;
+}
+
+.search-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.search-input {
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    width: 50%;
+    max-width: 400px;
+    margin-right: 10px;
+    box-sizing: border-box;
+}
+
+.search-button {
+    padding: 10px 20px;
+    background-color: #95c11f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.search-button:hover {
+    background-color: #7c9f18;
+}

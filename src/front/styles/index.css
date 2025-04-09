@@ -1,3 +1,199 @@
-/* 
-    General Styles used on every website (Don't Repeat Yourself)
-*/
+:root {
+    --zupli-azul: #223650;
+    --zupli-verde: #95c11f;
+    --zupli-beige: #f4f3ef;
+    --zupli-danger: #d7625a;
+}
+
+.zuply-bg-azul {
+    background-color: var(--zupli-azul);
+}
+
+.zuply-bg-verde {
+    background-color: var(--zupli-verde);
+}
+
+.zuply-bg-beige {
+    background-color: var(--zupli-beige);
+}
+.zuply-bg-danger {
+    background-color: var(--zupli-danger);
+}
+
+.zuply-text-azul {
+    color: var(--zupli-azul);
+}
+
+.zuply-text-verde {
+    color: var(--zupli-verde);
+}
+
+.zuply-text-beige {
+    color: var(--zupli-beige);
+}
+.zuply-text-danger {
+    color: var(--zupli-danger);
+}
+
+body {
+    font-family: "Figtree", sans-serif;
+}
+
+
+@media (max-width: 767.98px) {
+    .offcanvas-custom {
+        width: 100%;
+    }
+}
+
+@media (min-width: 768px) {
+    .offcanvas-custom {
+        width: 400px;
+    }
+}
+
+.btn-circle {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    font-size: 1rem;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo {
+    width: 10rem;
+    height: auto;
+
+}
+
+.original {
+    --logo-main-color: #223650;
+    --logo-secondary-color: #95c11f
+}
+
+.claro {
+    --logo-main-color: #f4f3ef;
+    --logo-secondary-color: #95c11f
+}
+
+.bg-text-zuply-blue {
+    background-color: #223650;
+    color: #f4f3ef;
+}
+
+.background-mesh {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' id='mesh-gradient' width='1000' height='500' viewBox='0 0 1000 500'%3E%3Cdefs%3E%3Cfilter id='blur' filterUnits='userSpaceOnUse' x='0' y='0' width='1000' height='500'%3E%3CfeGaussianBlur stdDeviation='100' /%3E%3C/filter%3E%3Cfilter id='noise' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1' octaves='3' result='turbulence' stitchTiles='stitch' /%3E%3CfeBlend in='SourceGraphic' in2='turbulence' mode='overlay' /%3E%3C/filter%3E%3C/defs%3E%3Crect id='background' width='100%25' height='100%25' fill='%23374F68' /%3E%3Cg id='swatches' width='1000' height='500' filter='url(%23blur)'%3E%3Crect x='-62.14' y='-201.26' width='497.82' height='446.28' fill='%2376949E' /%3E%3Crect x='199.22' y='-360.39' width='834.05' height='756.22' fill='%2376949E' /%3E%3Crect x='479.74' y='180.83' width='387.48' height='520.47' fill='%23374F68' /%3E%3Crect x='503.61' y='-47.36' width='591.71' height='317.63' fill='%23374F68' /%3E%3C/g%3E%3Crect x='0' y='0' width='1000' height='500' style='mix-blend-mode:soft-light;filter:url(%23noise);opacity:0%25' /%3E%3C/svg%3E");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 100%;
+}
+
+.list-view-container {
+    max-height: 60vh;
+    overflow: auto;
+}
+
+
+/*item list */
+.has-search .form-control {
+    padding-left: 2.375rem;
+}
+
+.has-search .form-control-feedback {
+    position: absolute;
+    z-index: 2;
+    display: block;
+    width: 2.375rem;
+    height: 2.375rem;
+    line-height: 2.375rem;
+    text-align: center;
+    pointer-events: none;
+    color: #aaa;
+}
+
+.zuply-square-btn {
+    min-width: 30px;
+    min-height: 30px;
+    border-radius: 5px;
+    display: flex;
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+}
+
+.zupli-text-overflow {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* modal de confirmacion de eliminacion */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+}
+
+.modal-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    text-align: center;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-body {
+    margin: 20px 0;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: space-around;
+}
+
+.close-btn {
+    font-size: 20px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-cancel {
+    background-color: var(--zupli-danger);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.btn-delete {
+    background-color: var(--zupli-verde);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.btn-cancel:hover, .btn-delete:hover {
+    opacity: 0.8;
+}

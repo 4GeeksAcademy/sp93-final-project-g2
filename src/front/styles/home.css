@@ -1,7 +1,190 @@
-/*
-    home.css: This website contains selectors only used in home.css
+.home-container {
+    text-align: center;
+    background-color: #f4f3ef;
+    min-height: 100vh;
+    padding: 0;
+}
 
-    All pages share the styles on index.css but you should create 
-    one more css for each page that will contain the selected used 
-    on that page only (the ones not reused in other pages).
-*/
+.banner-section {
+    background-color: #223650;
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.banner-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.banner-title span {
+    color: #95c11f;
+}
+
+.banner-subtitle {
+    font-size: 1.25rem;
+    margin-top: 1rem;
+    color: #ddd;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.testimonial-carousel-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 3rem auto;
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 2rem;
+}
+
+.testimonial-carousel-track {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 1.5rem;
+    transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+    width: 100%;
+    padding: 2rem 0;
+}
+
+.testimonial-card {
+    background: white;
+    border-radius: 1rem;
+    border: 1px solid #ddd;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    opacity: 0;
+    transform: scale(0.8);
+    width: 280px;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.testimonial-card p {
+    font-style: italic;
+    color: #555;
+    margin: 0;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.testimonial-card small {
+    display: block;
+    margin-top: 1.5rem;
+    font-weight: bold;
+    color: #223650;
+}
+
+.testimonial-card.center {
+    opacity: 1;
+    transform: scale(1);
+    z-index: 2;
+}
+
+.testimonial-card.side {
+    opacity: 0.7;
+    transform: scale(0.9);
+}
+
+.testimonial-card.hidden {
+    opacity: 0;
+    transform: scale(0.7);
+    pointer-events: none;
+}
+
+.testimonial-card.side:hover,
+.testimonial-card.center:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    border-color: #95c11f;
+}
+
+.carousel-btn {
+    background: #ffffff;
+    border: 2px solid #95c11f;
+    border-radius: 8px;
+    width: 60px;
+    height: 60px;
+    font-size: 1.8rem;
+    color: #223650;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(149, 193, 31, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.carousel-btn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(149, 193, 31, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+    border-radius: 6px;
+}
+
+.carousel-btn:hover {
+    transform: scale(1.05);
+    background: #f8ffeb;
+    box-shadow: 0 6px 16px rgba(149, 193, 31, 0.3);
+    color: #223650;
+}
+
+.fade-slide {
+    animation: fadeSlide 0.5s ease;
+}
+
+
+
+.testimonial-card {
+    width: 180px;
+    min-height: 220px;
+    padding: 1rem;
+}
+
+.carousel-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+}
+
+
+
+.home-bg {
+    background-image: url('../img/mainBackground.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    /* background: rgb(244, 243, 239);
+    background: linear-gradient(135deg, rgba(244, 243, 239, 1) 0%, rgba(123, 134, 147, 1) 27%, rgba(87, 101, 120, 1) 56%, rgba(34, 54, 80, 1) 86%); */
+}
+
+
+.banner{
+    height: 50vh
+}

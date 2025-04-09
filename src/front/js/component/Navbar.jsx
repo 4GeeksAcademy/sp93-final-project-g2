@@ -1,21 +1,25 @@
-import React from "react";
-import { Link } from "react-router-dom";
-
+import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { Context } from "../store/appContext.js";
+import { ReactComponent as LogoNavbar } from "../../img/logoZuplyHorizontal.svg";
+import { NavbarMenu } from "./NavbarMenu.jsx";
+import { NavbarLogin } from "./NavbarLogin.jsx";
 
 export const Navbar = () => {
+    const { store } = useContext(Context);
+    const navigate = useNavigate();
 
-	return (
-		<nav className="navbar navbar-light bg-light">
-			<div className="container">
-				<Link to="/">
-					<span className="navbar-brand mb-0 h1">React Boilerplate</span>
-				</Link>
-				<div className="ml-auto">
-					<Link to="/">
-						<button className="btn btn-primary">Link Example</button>
-					</Link>
-				</div>
-			</div>
-		</nav>
-	);
+    const goHome = () => {
+        navigate("/");
+    };
+
+    return (
+        <nav className="navbar navbar-light zuply-bg-beige">
+            <div className="container-fluid">
+                <NavbarMenu />
+                <LogoNavbar className="logo original" onClick={goHome} />
+                <NavbarLogin />
+            </div>
+        </nav>
+    );
 };
