@@ -1,0 +1,27 @@
+.username-header {
+    background-color: #223650;
+    color: white;
+    padding: 2rem 1rem 1.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.username-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 auto 0.5rem;
+    max-width: 800px;
+}
+
+.username-subtitle {
+    font-size: 1.25rem;
+    color: #ddd;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.username-highlight {
+    color: #95c11f;
+    margin-left: 10px;
+}

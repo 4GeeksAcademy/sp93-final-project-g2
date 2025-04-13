@@ -445,7 +445,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                         method: "PUT",
                         headers: {
                             "Content-Type": "application/json",
-                            "Authorization": `Bearer ${store.token}`
+                            "Authorization": `Bearer ${token}`
                         },
                         body: JSON.stringify({
                             phone_number: updatedData.phone_number,

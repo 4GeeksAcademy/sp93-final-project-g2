@@ -2,14 +2,21 @@ import React, { useContext, useState, useEffect } from "react";
 import { Context } from "../store/appContext";
 import { useNavigate } from "react-router-dom";
 import "../../styles/profile.css";
-
+import { PageTitle } from "../component/PageTitle.jsx";
+import Tabs from "../component/Tabs.jsx";
+import UserProfileForm from "../component/UserProfileForm.jsx";
+import ContactProfileForm from "../component/ContactProfileForm.jsx";
+import SuccessMessage from "../component/SuccessMessage.jsx";
+import VerifyCredentials from "../component/VerifyCredentials.jsx";
 
 const Profile = () => {
   const { store, actions } = useContext(Context);
   const navigate = useNavigate();
+  const [activateTab, setActiveTab] = useState("user");
   const [formData, setFormData] = useState({
     username: "",
     password: "",
+    confirmPassword: "",
     first_name: "",
     last_name: "",
     phone_number: "",
@@ -20,6 +27,8 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState({});
+  const [isVerified, setIsVerified] = useState(false);
+  const [wantsToEditCredentials, setWantsToEditCredentials] = useState(false);
 
   useEffect(() => {
     if (!store.token) navigate("/login");
@@ -27,6 +36,7 @@ const Profile = () => {
       setFormData({
         username: store.user.username,
         password: "",
+        confirmPassword: "",
         ...store.user.contacts_data
       });
     }
@@ -40,6 +50,22 @@ const Profile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (formData.password && formData.password !== formData.confirmPassword) {
+      setErrors({
+        password: "Las contraseñas no coinciden",
+        confirmPassword: "Las contraseñas no coinciden",
+      });
+      return;
+    }
+
+    if (formData.password && formData.password.length < 6) {
+      setErrors({
+        password: "La contraseña debe tener al menos 6 caracteres",
+      });
+      return;
+    }
+
     setLoading(true);
     const response = await actions.updateUserProfile(formData);
     if (response.success) {
@@ -51,139 +77,67 @@ const Profile = () => {
     setLoading(false);
   };
 
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  };
+
   return (
     <div className="profile-container">
-      <div className="profile-header">
-        <h1 className="profile-title">
-          Mi Perfil {store.user && <span className="username-highlight">{store.user.username}</span>}
-        </h1>
-        <p className="profile-subtitle">
-          Administra tu información personal y preferencias de contacto
-        </p>
-      </div>
-
+      <PageTitle
+        title="Mi Perfil"
+        subtitle="Administra tu información personal y preferencias de contacto"
+      />
       <div className="profile-content-container">
         <div className="profile-card">
-          {success && (
-            <div className="success-message">
-              ¡Perfil actualizado correctamente!
-            </div>
+          {success && <SuccessMessage />}
+
+          {!wantsToEditCredentials && (
+            <button className="btn verify-button-toggle" onClick={() => setWantsToEditCredentials(true)}>
+              Cambiar mis datos
+            </button>
           )}
 
-          <form onSubmit={handleSubmit}>
-            <div className="profile-form-grid">
-              <div>
-                <label className="profile-form-label">Nombre</label>
-                <input
-                  type="text"
-                  name="first_name"
-                  value={formData.first_name}
-                  onChange={handleChange}
-                  className={`profile-form-input ${errors.first_name ? 'profile-form-input-error' : ''}`}
-                />
-                {errors.first_name && <span className="error-message">{errors.first_name}</span>}
-              </div>
+          {wantsToEditCredentials && !isVerified && (
+            <VerifyCredentials onSuccess={() => setIsVerified(true)} />
+          )}
 
-              <div>
-                <label className="profile-form-label">Apellido</label>
-                <input
-                  type="text"
-                  name="last_name"
-                  value={formData.last_name}
-                  onChange={handleChange}
-                  className={`profile-form-input ${errors.last_name ? 'profile-form-input-error' : ''}`}
-                />
-              </div>
-            </div>
+          {(isVerified || activateTab === "contact") && (
+            <>
+              <Tabs activeTab={activateTab} onTabChange={handleTabChange} />
 
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label className="profile-form-label">Email</label>
-              <input
-                type="email"
-                name="mail"
-                value={formData.mail}
-                onChange={handleChange}
-                className={`profile-form-input ${errors.mail ? 'profile-form-input-error' : ''}`}
-              />
-              {errors.mail && <span className="error-message">{errors.mail}</span>}
-            </div>
+              <form onSubmit={handleSubmit}>
+                {activateTab === "user" && isVerified && (
+                  <UserProfileForm
+                    formData={formData}
+                    handleChange={handleChange}
+                    errors={errors}
+                  />
+                )}
+                {activateTab === "contact" && (
+                  <ContactProfileForm
+                    formData={formData}
+                    handleChange={handleChange}
+                    errors={errors}
+                  />
+                )}
 
-            <div className="profile-form-grid">
-              <div>
-                <label className="profile-form-label">Teléfono</label>
-                <input
-                  type="tel"
-                  name="phone_number"
-                  value={formData.phone_number}
-                  onChange={handleChange}
-                  className={`profile-form-input ${errors.phone_number ? 'profile-form-input-error' : ''}`}
-                />
-              </div>
-
-              <div>
-                <label className="profile-form-label">WhatsApp</label>
-                <input
-                  type="tel"
-                  name="whatsapp"
-                  value={formData.whatsapp}
-                  onChange={handleChange}
-                  className={`profile-form-input ${errors.whatsapp ? 'profile-form-input-error' : ''}`}
-                />
-              </div>
-            </div>
-
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label className="profile-form-label">Dirección</label>
-              <input
-                type="text"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                className={`profile-form-input ${errors.address ? 'profile-form-input-error' : ''}`}
-              />
-            </div>
-
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label className="profile-form-label">Nombre de Usuario</label>
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                className={`profile-form-input ${errors.username ? 'profile-form-input-error' : ''}`}
-              />
-              {errors.username && <span className="error-message">{errors.username}</span>}
-            </div>
-
-            <div style={{ marginBottom: '2rem' }}>
-              <label className="profile-form-label">Nueva Contraseña</label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Dejar vacío para mantener la actual"
-                className={`profile-form-input ${errors.password ? 'profile-form-input-error' : ''}`}
-              />
-              {errors.password && <span className="error-message">{errors.password}</span>}
-              <small className="form-hint">Mínimo 6 caracteres</small>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="submit-button"
-            >
-              {loading ? (
-                <>
-                  <span className="spinner-border spinner-border-sm"></span>
-                  Guardando...
-                </>
-              ) : (
-                'Guardar Cambios'
-              )}
-            </button>
-          </form>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="submit-button"
+                >
+                  {loading ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm"></span>
+                      Guardando...
+                    </>
+                  ) : (
+                    "Guardar Cambios"
+                  )}
+                </button>
+              </form>
+            </>
+          )}
         </div>
       </div>
     </div>
