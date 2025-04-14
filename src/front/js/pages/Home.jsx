@@ -1,15 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Context } from "../store/appContext.js";
 import "../../styles/home.css";
-import { ReactComponent as Logo } from '../../img/logoZuplySolo.svg';
-import { ReactComponent as LogoText } from '../../img/zuplyText.svg';
+import Logo  from '../../img/logoZuplySolo.svg';
+import LogoText from '../../img/zuplyText.svg';
 export const Home = () => {
     const { store, actions } = useContext(Context);
     const [current, setCurrent] = useState(0);
-
-    useEffect(() => {
-        actions.loadTestimonials();
-    }, []);
 
     const nextSlide = () => setCurrent((current + 1) % store.testimonials.length);
     const prevSlide = () => setCurrent((current - 1 + store.testimonials.length) % store.testimonials.length);

@@ -54,7 +54,7 @@ def users():
 
     if request.method == 'POST' and claims['role'] == 'Administrador':
         data = request.json
-        row = Users(username= data.get('username', ''), password=data.get('password', 1234))
+        row = Users(username= data.get('username', ''), password=data.get('password', 1234), role=data.get('role', 1234) )
         db.session.add(row)
         db.session.commit()
         response_body['message'] = "Usuario cargado correctamente"
@@ -67,7 +67,6 @@ def users():
 def user(users_id):
     response_body = {}
     claims = get_jwt()
-    print('claims', claims)
     if claims['role'] == 'Administrador' or claims['user_id'] == users_id:
         if request.method == 'GET':
             row = Users.query.get(users_id)
@@ -172,12 +171,10 @@ def contact(contacts_data_id):
 def suppliers():
     response_body = {}
     if request.method == 'GET':
-        
         rows = Suppliers.query.options(joinedload(Suppliers.supplier_contact_data_to))
         results = []
         for row in rows:
             data = row.serialize()
-            print('data', data)
             data['supplier_contact_data'] = [contact.serialize() for contact in row.supplier_contact_data_to]
             results.append(data)
         response_body['message'] = "Listado de proveedores"
@@ -185,7 +182,6 @@ def suppliers():
         return response_body, 200
     
     if request.method == 'POST':
-        # Debo verificar si el rol que viene en el token es admin.
         data = request.json
         row = Suppliers(name=data.get('name', ''), address=data.get('address', ''), cuit=data.get('cuit', ''))
         db.session.add(row)
@@ -245,7 +241,6 @@ def suppliers_product(suppliers_products_id):
     response_body = {}
     if request.method == 'GET':
         row = SuppliersProducts.query.get(suppliers_products_id)
-        print("row", row)
         response_body['message'] = f"Este es el get de suppliers-product {suppliers_products_id}"
         response_body['results'] = row.serialize()
         return response_body, 200
@@ -289,6 +284,7 @@ def products():
 
 
 @api.route('/products/<int:product_id>', methods=['PUT', 'GET', 'DELETE'])
+@jwt_required()
 def product(product_id):
     response_body = {}
     claims = get_jwt()
@@ -406,7 +402,6 @@ def category_subcategory(categories_id):
             subcategories = [row.serialize() for row in rows]
             row = Categories.query.get(categories_id)
             category = row.serialize()
-            print("category", category)
             response_body['message'] = f"Subcategorías de la categoría {category['name']}"
             response_body['results'] = {"category": category, "list": subcategories}
             return response_body, 200
@@ -539,7 +534,6 @@ def branch(branches_id):
 def orders():
     response_body = {}
     current_user = get_jwt()
-    print("current_user", current_user)
     user_id = current_user['user_id']
     if request.method == 'GET':
         rows = Orders.query.filter_by(is_active=True).all()
@@ -703,25 +697,23 @@ def product_order(products_orders_id):
 @jwt_required()
 def init_admin_data():
     response_body={}
-    claims = get_jwt()
-    if claims['role'] == 'Administrador':
-        suppliers_bdd = Suppliers.query.filter_by(is_active=True).all()
-        categories_bdd = Categories.query.filter_by(is_active=True).all()
-        sub_categories_bdd = SubCategories.query.filter_by(is_active=True).all()
-        users_bdd = Users.query.filter_by(is_active=True).all()
-        result = {
-            "suppliers": [row.basic_data() for row in suppliers_bdd] ,
-            "categories": [row.basic_data() for row in categories_bdd ],
-            "sub_categories": [row.basic_data() for row in sub_categories_bdd ],
-            "users": [row.serialize() for row in users_bdd ]
+    suppliers_bdd = Suppliers.query.filter_by(is_active=True).all()
+    categories_bdd = Categories.query.filter_by(is_active=True).all()
+    sub_categories_bdd = SubCategories.query.filter_by(is_active=True).all()
+    users_bdd = Users.query.filter_by(is_active=True).all()
+    products_bdd = Products.query.filter_by(is_active=True).all()
 
-        }
-        response_body['message'] = 'Hola'
-        response_body['results'] = result
-        return response_body, 200
-    response_body['message'] = 'No sos admin'
+    result = {
+        "suppliers": [row.basic_data() for row in suppliers_bdd] ,
+        "categories": [row.basic_data() for row in categories_bdd ],
+        "sub_categories": [row.basic_data() for row in sub_categories_bdd ],
+        "users": [row.serialize() for row in users_bdd ],
+        "products": [row.serialize() for row in products_bdd ]
+    }
+    response_body['message'] = 'Informacion Inicial'
+    response_body['results'] = result
     return response_body, 200
-
+    
 
 @api.route('/seed', methods=['GET'])
 def toSeed():
@@ -844,5 +836,4 @@ def toSeed():
     ]
     db.session.add_all(productOrders)
     db.session.commit()
-    print("Seed cargado")
     return {}, 200

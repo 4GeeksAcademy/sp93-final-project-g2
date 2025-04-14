@@ -7,17 +7,22 @@
 
 .zuply-bg-azul {
     background-color: var(--zupli-azul);
+    color: var(--zupli-beige)
 }
 
 .zuply-bg-verde {
     background-color: var(--zupli-verde);
+    color: var(--zupli-beige)
 }
 
 .zuply-bg-beige {
     background-color: var(--zupli-beige);
+    color: var(--zupli-azul)
 }
+
 .zuply-bg-danger {
     background-color: var(--zupli-danger);
+    color: var(--zupli-beige)
 }
 
 .zuply-text-azul {
@@ -31,6 +36,7 @@
 .zuply-text-beige {
     color: var(--zupli-beige);
 }
+
 .zuply-text-danger {
     color: var(--zupli-danger);
 }
@@ -194,6 +200,16 @@ body {
     border-radius: 5px;
 }
 
-.btn-cancel:hover, .btn-delete:hover {
+.btn-cancel:hover,
+.btn-delete:hover {
     opacity: 0.8;
 }
+
+.breadcrum-divider-zuply {
+    --bs-breadcrumb-divider: '>'
+}
+
+.fix-btn-hover:hover {
+    color: var(--zupli-beige);
+    opacity: .8;
+}  

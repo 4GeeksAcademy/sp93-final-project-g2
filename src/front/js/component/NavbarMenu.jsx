@@ -8,8 +8,8 @@ export const NavbarMenu = () => {
     const navigate = useNavigate();
 
     const goTo = (navigateTo, groupKey) => {
-        if(groupKey !== ''){
-            actions.setListViewConfig(groupKey, 'list', store.abmGroups[groupKey].items);
+        if (groupKey !== '') {
+            actions.setListViewConfig(groupKey, 'list', store.entitiesData[groupKey]);
         }
         navigate('/' + navigateTo);
     }
@@ -45,7 +45,7 @@ export const NavbarMenu = () => {
                                     <ul className="dropdown-menu w-100">
                                         {(role === "Administrador" || role === "Gestor_de_pedidos") && (
                                             <>
-                                            
+
                                                 <li><span onClick={() => goTo('order', '')} className="dropdown-item fs-5" data-bs-dismiss="offcanvas">Generar pedidos</span></li>
                                                 <li><hr className="dropdown-divider" /></li>
                                             </>
@@ -66,11 +66,11 @@ export const NavbarMenu = () => {
 
                                     <ul className="dropdown-menu w-100">
                                         {
-                                            Object.entries(store.abmGroups).map(([key, value], index) => {
-                                                const isLastItem = index === Object.keys(store.abmGroups).length - 1;
+                                            Object.entries(store.entitiesConfigData).map(([key, value], index) => {
+                                                const isLastItem = index === Object.keys(store.entitiesConfigData).length - 1;
                                                 return (
                                                     <li key={'Items-' + key + ' - ' + index}>
-                                                        <span className={`dropdown-item fs-5 ${!isLastItem && 'border-bottom'}`} onClick={() => goTo('admin', key)} data-bs-dismiss="offcanvas">
+                                                        <span className={`dropdown-item fs-5 ${!isLastItem && 'border-bottom'}`} onClick={() => goTo('entities', key)} data-bs-dismiss="offcanvas">
                                                             {value.title}
                                                         </span>
                                                     </li>
@@ -96,11 +96,11 @@ export const NavbarMenu = () => {
 
                                 <ul className="dropdown-menu w-100">
                                     {
-                                        Object.entries(store.abmGroups).map(([key, value], index) => {
-                                            const isLastItem = index === Object.keys(store.abmGroups).length - 1;
+                                        Object.entries(store.entitiesConfigData).map(([key, value], index) => {
+                                            const isLastItem = index === Object.keys(store.entitiesConfigData).length - 1;
                                             return (
                                                 <li key={'ABM-' + key + ' - ' + index}>
-                                                    <span className={`dropdown-item fs-5 ${!isLastItem && 'border-bottom'}`} onClick={() => goTo('admin', key)} data-bs-dismiss="offcanvas">
+                                                    <span className={`dropdown-item fs-5 ${!isLastItem && 'border-bottom'}`} onClick={() => goTo('entities', key)} data-bs-dismiss="offcanvas">
                                                         {value.title}
                                                     </span>
                                                 </li>

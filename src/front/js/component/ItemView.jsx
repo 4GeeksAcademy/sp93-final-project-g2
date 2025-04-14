@@ -8,12 +8,11 @@ export const ItemView = () => {
     useEffect(() => {
 
         const initialValues = {};
-        const currentInputs = store.abmGroups[store.activeGroup].formInputs;
+        const currentInputs = store.entitiesConfigData[store.activeGroup].formInputs;
         const objectToEdit = store.activeList.find(el => el.id == store.itemId)
         currentInputs.forEach(input => {
-            initialValues[input.accessKey] = {label: input.label, value: objectToEdit[input.accessKey]};
+            initialValues[input.accessKey] = { label: input.label, value: objectToEdit[input.accessKey] };
         });
-        console.log('initialValues', initialValues)
         setFormValues(initialValues);
     }, [store.activeGroup, store.itemId]);
 

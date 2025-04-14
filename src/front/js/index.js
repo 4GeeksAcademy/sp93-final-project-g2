@@ -1,3 +1,7 @@
+import "primereact/resources/themes/saga-blue/theme.css";
+import "primereact/resources/primereact.min.css";
+import "primeicons/primeicons.css";
+
 import React from "react";  // Import react into the bundle
 import ReactDOM from "react-dom";
 import "../styles/index.css";  // Include your index.scss file into the bundle

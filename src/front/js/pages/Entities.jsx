@@ -5,10 +5,9 @@ import { ItemForm } from "../component/ItemForm.jsx";
 import { EntitiesNavbar } from "../component/EntitiesNavbar.jsx";
 import { ItemView } from "../component/ItemView.jsx";
 
-export const AdminABM = () => {
+export const Entities = () => {
     const { store } = useContext(Context)
     const renderView = () => {
-        if (store.activeList.length == 0) return <h1 className="w-100 d-flex justify-content-center align-items-center">Seleccione Entidad</h1>
         switch (store.viewType) {
             case 'list':
                 return <ItemList />;

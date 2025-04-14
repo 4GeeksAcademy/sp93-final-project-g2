@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext.js";
-import { ReactComponent as LogoNavbar } from "../../img/logoZuplyHorizontal.svg";
 import { NavbarMenu } from "./NavbarMenu.jsx";
 import { NavbarLogin } from "./NavbarLogin.jsx";
+import LogoNavbar from "../../img/logoZuplyHorizontal.svg";
 
 export const Navbar = () => {
     const { store } = useContext(Context);

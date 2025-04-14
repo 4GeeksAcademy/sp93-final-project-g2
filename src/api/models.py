@@ -56,7 +56,7 @@ class SuppliersProducts(db.Model):
 
     def serialize(self):
         return {"id": self.id,
-                "suppliers_id": self.suppliers_id,
+                "suppliers": self.suppliers_to.basic_data(),
                 "products_id": self.products_id,
                 "nickname": self.nickname,
                 "price": self.price,
@@ -165,17 +165,12 @@ class Users(db.Model):
             return f'<Users {self.username}>'
     
     def serialize(self):
-        if self.role != 'visitante':
-                return {"id": self.id,
-                        "contact_data": self.contacts_data_to.serialize(),
-                        "username": self.username,
-                        "role": self.role,
-                        "is_active": self.is_active}
         return {"id": self.id,
                 "contacts_data_id": self.contacts_data_id,
+                "contacts_data": self.contacts_data_to.serialize() if self.contacts_data_id else 'Sin datos de contacto',
                 "username": self.username,
                 "role": self.role}
-    
+        
 
 class Branches(db.Model):
     id = db.Column(db.Integer, primary_key=True)
