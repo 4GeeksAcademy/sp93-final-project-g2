@@ -16,6 +16,11 @@ from flask_jwt_extended import get_jwt
 
 from datetime import timedelta
 
+import os
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 api = Blueprint('api', __name__)
 CORS(api) 
 
@@ -499,6 +504,7 @@ def branches():
     
 
 @api.route('/branches/<int:branches_id>', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
 def branch(branches_id):
     response_body = {}
     claims = get_jwt()
@@ -555,6 +561,7 @@ def orders():
     
 
 @api.route('/orders/<int:orders_id>', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
 def order(orders_id):
     response_body = {}
     claims = get_jwt()
@@ -714,6 +721,47 @@ def init_admin_data():
     response_body['results'] = result
     return response_body, 200
     
+
+@api.route('/orders/<int:order_id>/send-email', methods=['POST'])
+# @jwt_required()
+def send_order_email(order_id):
+    try:
+        from_ = os.getenv("EMAIL_SENDER")
+        password = os.getenv("EMAIL_PASSWORD")
+        to = "jfuentescasta.m@gmail.com" 
+
+        subject = "Ejemplo de pedido de Zuply"
+        body = f"""\
+                    <html>
+                        <body>
+                            <h2>📦 Pedido Zuply</h2>
+                            <p><strong>Cliente:</strong> Restaurante de Ejemplo</p>
+                            <p><strong>Productos:</strong></p>
+                            <ul>
+                            <li>10kg de pollo</li>
+                            <li>5kg de ternera</li>
+                            </ul>
+                            <p><strong>Fecha de entrega:</strong> 21/04/2025</p>
+                            <p><strong>Dirección de entrega:</strong> C/ Restaurantes de Ejemplo, nº7</p>
+                        </body>
+                    </html>
+                """
+
+        msg = MIMEMultipart()
+        msg["From"] = from_
+        msg["To"] = to
+        msg["Subject"] = subject
+        msg.attach(MIMEText(body, "html"))
+
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(from_, password)
+            server.sendmail(from_, to, msg.as_string())
+
+        return jsonify({"message": "Correo de prueba enviado"}), 200
+
+    except Exception as e:
+        return jsonify({"message": "Error al enviar el correo", "error": str(e)}), 500
+
 
 @api.route('/seed', methods=['GET'])
 def toSeed():
