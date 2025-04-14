@@ -9,9 +9,9 @@ import { Home } from "./pages/Home.jsx";
 import { Error404 } from "./pages/Error404.jsx";
 import Login from "./pages/Login.jsx";
 import Profile from "./pages/Profile.jsx";
-import { Order } from "./pages/Order.jsx";
+import { Orders } from "./pages/Orders.jsx";
 import { Entities } from "./pages/Entities.jsx";
-import { OrderCard } from "./component/order/OrderCard.jsx";
+import { OrderNavbar } from "./component/order/OrderNavbar.jsx";
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
@@ -26,10 +26,7 @@ const Layout = () => {
                         <Route element={<Home />} path="/" />
                         <Route element={<Login />} path="/login" />
                         <Route element={<Profile />} path="/profile" />
-                        <Route element={<Order />} path="/order" />
-                        {/* quitar al terminar */}
-                        <Route element={<OrderCard />} path="/orderNew" />
-                        
+                        <Route element={<Orders />} path="/order" />
                         <Route element={<Entities />} path="/entities" />
                         <Route element={<Error404 />} path="*" />
                     </Routes>

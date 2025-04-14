@@ -44,37 +44,29 @@ const getState = ({ getStore, getActions, setStore }) => {
                 ],
             },
             entitiesConfigData: {
-                products: {
-                    title: 'Productos',
-                    showKey: 'name',
-                    relationshipKey: 'sub_categories_id',
-                    icon: 'utensils',
+                users: {
+                    title: 'Usuarios',
+                    showKey: 'username',
+                    icon: 'user',
                     formInputs: [
                         {
                             type: 'text',
-                            accessKey: 'name',
-                            label: 'Nombre',
+                            accessKey: 'username',
+                            label: 'Nombre de Usuario',
                             value: ''
                         },
                         {
                             type: 'text',
-                            accessKey: 'description',
-                            label: 'Descripción',
+                            accessKey: 'password',
+                            label: 'Password',
                             value: ''
                         },
                         {
-                            type: 'text',
-                            accessKey: 'image',
-                            label: 'Imagen',
+                            type: 'enum',
+                            accessKey: 'role',
+                            label: 'Rol',
                             value: ''
                         },
-                        {
-                            type: 'dropdown',
-                            accessKey: 'sub_categories_id',
-                            label: 'Categoria',
-                            fatherKey: 'sub_categories',
-                            value: '1'
-                        }
                     ]
                 },
                 suppliers: {
@@ -148,33 +140,41 @@ const getState = ({ getStore, getActions, setStore }) => {
                         }
                     ]
                 },
-                users: {
-                    title: 'Usuarios',
-                    showKey: 'username',
-                    icon: 'user',
+                products: {
+                    title: 'Productos',
+                    showKey: 'name',
+                    relationshipKey: 'sub_categories_id',
+                    icon: 'utensils',
                     formInputs: [
                         {
                             type: 'text',
-                            accessKey: 'username',
-                            label: 'Nombre de Usuario',
+                            accessKey: 'name',
+                            label: 'Nombre',
                             value: ''
                         },
                         {
                             type: 'text',
-                            accessKey: 'password',
-                            label: 'Password',
+                            accessKey: 'description',
+                            label: 'Descripción',
                             value: ''
                         },
                         {
-                            type: 'enum',
-                            accessKey: 'role',
-                            label: 'Rol',
+                            type: 'text',
+                            accessKey: 'image',
+                            label: 'Imagen',
                             value: ''
                         },
+                        {
+                            type: 'dropdown',
+                            accessKey: 'sub_categories_id',
+                            label: 'Categoria',
+                            fatherKey: 'sub_categories',
+                            value: '1'
+                        }
                     ]
                 },
                 suppliers_products: {
-                    title: 'Proveedor/Productos ',
+                    title: 'Artículos',
                     showKey: 'nickname',
                     relationshipKey: 'products_id',
                     icon: 'user',
@@ -215,10 +215,19 @@ const getState = ({ getStore, getActions, setStore }) => {
                 }
             },
             entitiesRoleList: {
-                'Administrador': ['products', 'categories', 'sub_categories', 'users', 'suppliers', 'suppliers_products']
+                'Administrador': ['users', 'categories', 'sub_categories', 'suppliers', 'products', 'suppliers_products']
             },
-            orderFlow: ['categories', 'sub_categories', 'products', 'suppliers_products'],
+            entitiesListActive: [],
+            orderFlow: ['general', 'categories', 'sub_categories', 'products', 'suppliers_products'],
             orderFlowActive: {},
+            orderFlowGeneralItem: {
+                title: 'Seleccione',
+                id: 0,
+                entityKey: 'general',
+                itemList: [{ name: 'Proveedor', id: 0 }, { name: 'Categoria', id: 1 }],
+                showKey: 'name'
+            },
+            breadcrumItems: [],
             entitiesData: {},
             activeGroup: '',
             isEdit: false,
@@ -244,11 +253,17 @@ const getState = ({ getStore, getActions, setStore }) => {
                 }
                 return options
             },
-            normalizeUrl: (uri, withId=false)=>{
-                    uri = uri != '' ? uri : getStore().activeGroup
-                    const route = uri.replace(/_/g, "-");
-                    const url = `${process.env.BACKEND_URL}/api/${route}${withId ? '/' + getStore().itemId : ''}`
-                    return url
+            normalizeUrl: (uri, withId = false) => {
+                uri = uri != '' ? uri : getStore().activeGroup
+                const route = uri.replace(/_/g, "-");
+                const url = `${process.env.BACKEND_URL}/api/${route}${withId ? '/' + getStore().itemId : ''}`
+                return url
+            },
+            updateBreadcrums: (breadcrum) => {
+                const { breadcrumItems } = getStore()
+                const breadcrumIndex = breadcrumItems.indexOf(breadcrum)
+                const breadcrumsAux = breadcrum == 'back' ? breadcrumItems.slice(0, -1) : breadcrumIndex == -1 ? [...breadcrumItems, breadcrum] : breadcrumItems.slice(0, breadcrumIndex)
+                setStore({ breadcrumItems: breadcrumsAux })
             },
             getItems: async (entityKey, setActiveList = false, setFirtsOrderFlow = false) => {
                 try {
@@ -258,15 +273,10 @@ const getState = ({ getStore, getActions, setStore }) => {
                     const data = await response.json()
                     setStore({ entitiesData: { ...getStore().entitiesData, [entityKey]: data.results } })
                     if (setActiveList) setStore({ activeList: data.results })
-                    if (setFirtsOrderFlow && entityKey == getStore().orderFlow[0]) {
+                    if (setFirtsOrderFlow) {
                         setStore({
-                             orderFlowActive: { 
-                                title: 'Categorias', 
-                                id: 0, 
-                                entityKey: 'categories', 
-                                itemList: data.results,
-                                showKey:  'name'
-                            } })
+                            orderFlowActive: getStore().orderFlowGeneralItem
+                        })
                     }
                 } catch (error) {
                     console.error(`Error al obtener ${entityKey}`, error);
@@ -381,7 +391,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                 if (!response.ok) { consoleError(response); return }
                 getActions().getItems('activeGroup', true)
             },
-            
+
             login: async (username, password) => {
                 try {
                     const response = await fetch(`${process.env.BACKEND_URL}/api/login`, {

@@ -38,8 +38,11 @@ const injectContext = PassedComponent => {
 		useEffect(() => {
 			const user = state.store.user
 			if (user) {
-				state.store.entitiesRoleList[user['role']].forEach((entity) => {
-					state.actions.getItems(entity, false, true)
+				const entities = state.store.entitiesRoleList[user['role']];
+				state.actions.simpleStoreSetter('entitiesListActive', entities)
+				entities.forEach((entity, index) => {
+					const setFirtsOrderFlow = index === entities.length - 1;
+					state.actions.getItems(entity, false, setFirtsOrderFlow);
 				});
 			}
 		}, [state.store.user]);

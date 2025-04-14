@@ -205,6 +205,16 @@ body {
     opacity: 0.8;
 }
 
+/* breadcrumb-nav */
+.breadcrumb {
+    display: flex;
+    padding: 1rem
+}
+.breadcrumb-nav{
+    display: flex;
+    align-items: center;
+    margin-left: 2rem;
+}
 .breadcrum-divider-zuply {
     --bs-breadcrumb-divider: '>'
 }

@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
-import { Context } from "../../store/appContext";
+import { Context } from "../store/appContext";
 
-export const OrderABM = (props) => {
+export const SupplierProductCard = (props) => {
     const { store, actions } = useContext(Context)
     return (
         <div key={props.item.id} className="supplier-product-item">

@@ -66,12 +66,12 @@ export const NavbarMenu = () => {
 
                                     <ul className="dropdown-menu w-100">
                                         {
-                                            Object.entries(store.entitiesConfigData).map(([key, value], index) => {
-                                                const isLastItem = index === Object.keys(store.entitiesConfigData).length - 1;
+                                            store.entitiesListActive.map((groupKey, index) => {
+                                                const isLastItem = index === store.entitiesListActive.length - 1;
                                                 return (
-                                                    <li key={'Items-' + key + ' - ' + index}>
-                                                        <span className={`dropdown-item fs-5 ${!isLastItem && 'border-bottom'}`} onClick={() => goTo('entities', key)} data-bs-dismiss="offcanvas">
-                                                            {value.title}
+                                                    <li key={'Items-' + groupKey + ' - ' + index}>
+                                                        <span className={`dropdown-item fs-5 ${!isLastItem && 'border-bottom'}`} onClick={() => goTo('entities', groupKey)} data-bs-dismiss="offcanvas">
+                                                            {store.entitiesConfigData[groupKey].title}
                                                         </span>
                                                     </li>
                                                 )
@@ -96,12 +96,12 @@ export const NavbarMenu = () => {
 
                                 <ul className="dropdown-menu w-100">
                                     {
-                                        Object.entries(store.entitiesConfigData).map(([key, value], index) => {
-                                            const isLastItem = index === Object.keys(store.entitiesConfigData).length - 1;
+                                        store.entitiesListActive.map((groupKey, index) => {
+                                            const isLastItem = index === store.entitiesListActive.length - 1;
                                             return (
-                                                <li key={'ABM-' + key + ' - ' + index}>
-                                                    <span className={`dropdown-item fs-5 ${!isLastItem && 'border-bottom'}`} onClick={() => goTo('entities', key)} data-bs-dismiss="offcanvas">
-                                                        {value.title}
+                                                <li key={'ABM-' + groupKey + ' - ' + index}>
+                                                    <span className={`dropdown-item fs-5 ${!isLastItem && 'border-bottom'}`} onClick={() => goTo('entities', groupKey)} data-bs-dismiss="offcanvas">
+                                                        {store.entitiesConfigData[groupKey].title}
                                                     </span>
                                                 </li>
                                             )

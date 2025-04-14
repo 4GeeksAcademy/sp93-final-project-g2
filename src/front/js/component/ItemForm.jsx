@@ -142,8 +142,7 @@ export const ItemForm = () => {
                                 ))}
                             </select>
                         )}
-                        {item.type === "autocomplete" && autocompleteData[item.fatherKey]?.fullData && (
-                            
+                        {item.type === "autocomplete" && autocompleteData[item.fatherKey]?.fullData && ( 
                             <AutoComplete
                                 field="name"
                                 id={item.accessKey}
@@ -153,7 +152,6 @@ export const ItemForm = () => {
                                 dropdown
                                 dropdownMode = 'current'
                                 forceSelection
-                                loading={false}
                                 onDropdownClick={() => {search({ query: "" }, item.fatherKey), console.log('hola', autocompleteData[item.fatherKey] )}}
                                 onChange={(e) => {
                                     const newValue = e.value;

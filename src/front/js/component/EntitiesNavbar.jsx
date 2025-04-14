@@ -10,8 +10,8 @@ export const EntitiesNavbar = () => {
         <div className="col-12 col-sm-4 col-md-3 col-lg-2 entities-navbar p-sm-2">
             <ul className="entities-navbar-group d-flex flex-row flex-sm-column justify-content-center justify-content-sm-start">
                 {
-                    Object.keys(store.entitiesConfigData).map((groupKey, index) => {
-                        const isLastItem = index === Object.keys(store.entitiesConfigData).length - 1;
+                    store.entitiesListActive.map((groupKey, index) => {
+                        const isLastItem = index === store.entitiesListActive.length - 1;
                         const isActive = groupKey === store.activeGroup;
                         return (
                             <li
