@@ -504,6 +504,7 @@ def branches():
     
 
 @api.route('/branches/<int:branches_id>', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
 def branch(branches_id):
     response_body = {}
     claims = get_jwt()
@@ -561,6 +562,7 @@ def orders():
     
 
 @api.route('/orders/<int:orders_id>', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
 def order(orders_id):
     response_body = {}
     claims = get_jwt()
