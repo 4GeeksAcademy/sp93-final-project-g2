@@ -11,7 +11,7 @@ import Login from "./pages/Login.jsx";
 import Profile from "./pages/Profile.jsx"; 
 import { Order } from "./pages/Order.jsx";
 import { AdminABM } from "./pages/AdminABM.jsx";
-import { SendWhatsApp } from "./component/SendWhatsApp.jsx"
+import { SendOrder } from "./component/SendOrder.jsx"
 
 
 const Layout = () => {
@@ -30,7 +30,7 @@ const Layout = () => {
                         <Route element={<Order />} path="/order" />
                         <Route element={<AdminABM />} path="/admin" />
                         <Route element={<Error404 />} path="*" />
-                        <Route element={<SendWhatsApp />} path="/send-whatsapp" />
+                        <Route element={<SendOrder />} path="/send-order" />
                     </Routes>
                     <Footer />
                 </ScrollToTop>

@@ -16,6 +16,11 @@ from flask_jwt_extended import get_jwt
 
 from datetime import timedelta
 
+import os
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 api = Blueprint('api', __name__)
 CORS(api) 
 
@@ -699,25 +704,42 @@ def product_order(products_orders_id):
             return response_body, 200
 
 
-@api.route('/init-admin-data', methods=['GET'])
-@jwt_required()
-def init_admin_data():
-    response_body={}
-    claims = get_jwt()
-    if claims['role'] == 'Administrador':
-        suppliers_bdd = Suppliers.query.filter_by(is_active=True).all()
-        categories_bdd = Categories.query.filter_by(is_active=True).all()
-        sub_categories_bdd = SubCategories.query.filter_by(is_active=True).all()
-        users_bdd = Users.query.filter_by(is_active=True).all()
-        result = {
-            "suppliers": [row.basic_data() for row in suppliers_bdd] ,
-            "categories": [row.basic_data() for row in categories_bdd ],
-            "sub_categories": [row.basic_data() for row in sub_categories_bdd ],
-            "users": [row.serialize() for row in users_bdd ]
+@api.route('/orders/<int:order_id>/send-email', methods=['POST'])
+# @jwt_required()
+def send_order_email(order_id):
+    try:
+        from_ = os.getenv("EMAIL_SENDER")
+        password = os.getenv("EMAIL_PASSWORD")
+        to = "jfuentescasta.m@gmail.com" 
 
-        }
-        response_body['message'] = 'Hola'
-        response_body['results'] = result
-        return response_body, 200
-    response_body['message'] = 'No sos admin'
-    return response_body, 200
+        subject = "Ejemplo de pedido de Zuply"
+        body = f"""\
+                    <html>
+                        <body>
+                            <h2>📦 Pedido Zuply</h2>
+                            <p><strong>Cliente:</strong> Restaurante de Ejemplo</p>
+                            <p><strong>Productos:</strong></p>
+                            <ul>
+                            <li>10kg de pollo</li>
+                            <li>5kg de ternera</li>
+                            </ul>
+                            <p><strong>Fecha de entrega:</strong> 21/04/2025</p>
+                            <p><strong>Dirección de entrega:</strong> C/ Restaurantes de Ejemplo, nº7</p>
+                        </body>
+                    </html>
+                """
+
+        msg = MIMEMultipart()
+        msg["From"] = from_
+        msg["To"] = to
+        msg["Subject"] = subject
+        msg.attach(MIMEText(body, "html"))
+
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(from_, password)
+            server.sendmail(from_, to, msg.as_string())
+
+        return jsonify({"message": "Correo de prueba enviado"}), 200
+
+    except Exception as e:
+        return jsonify({"message": "Error al enviar el correo", "error": str(e)}), 500
