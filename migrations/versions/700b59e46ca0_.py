@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 6a3499458c27
+Revision ID: 700b59e46ca0
 Revises: 
-Create Date: 2025-04-05 17:49:27.307145
+Create Date: 2025-04-13 14:54:34.355724
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '6a3499458c27'
+revision = '700b59e46ca0'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -110,6 +110,7 @@ def upgrade():
     sa.Column('products_id', sa.Integer(), nullable=False),
     sa.Column('nickname', sa.String(length=50), nullable=True),
     sa.Column('price', sa.Float(), nullable=False),
+    sa.Column('presentation', sa.String(), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['products_id'], ['products.id'], ),
     sa.ForeignKeyConstraint(['suppliers_id'], ['suppliers.id'], ),
@@ -119,7 +120,6 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('suppliers_products_id', sa.Integer(), nullable=False),
     sa.Column('orders_id', sa.Integer(), nullable=False),
-    sa.Column('presentation', sa.Integer(), nullable=False),
     sa.Column('quantity', sa.Float(), nullable=False),
     sa.Column('unit_price', sa.Float(), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=True),

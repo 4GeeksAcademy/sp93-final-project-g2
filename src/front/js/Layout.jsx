@@ -13,6 +13,7 @@ import { Order } from "./pages/Order.jsx";
 import { AdminABM } from "./pages/AdminABM.jsx";
 import { SendOrder } from "./component/SendOrder.jsx"
 
+import PendingOrders from "./pages/PendingOrders.jsx";
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
@@ -29,6 +30,7 @@ const Layout = () => {
                         <Route element={<Profile />} path="/profile" />
                         <Route element={<Order />} path="/order" />
                         <Route element={<AdminABM />} path="/admin" />
+                        <Route element={<PendingOrders />} path="/orders/pending" />
                         <Route element={<Error404 />} path="*" />
                         <Route element={<SendOrder />} path="/send-order" />
                     </Routes>
