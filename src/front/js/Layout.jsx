@@ -11,6 +11,7 @@ import Login from "./pages/Login.jsx";
 import Profile from "./pages/Profile.jsx"; 
 import { Order } from "./pages/Order.jsx";
 import { AdminABM } from "./pages/AdminABM.jsx";
+import PendingOrders from "./pages/PendingOrders.jsx";
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
@@ -27,6 +28,7 @@ const Layout = () => {
                         <Route element={<Profile />} path="/profile" />
                         <Route element={<Order />} path="/order" />
                         <Route element={<AdminABM />} path="/admin" />
+                        <Route element={<PendingOrders />} path="/orders/pending" />
                         <Route element={<Error404 />} path="*" />
                     </Routes>
                     <Footer />
