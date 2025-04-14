@@ -34,9 +34,24 @@ module.exports = {
       },
       {
         test: /\.svg$/,
-        use: ['@svgr/webpack'],
+        issuer: /\.[jt]sx?$/,
+        use: ['@svgr/webpack']
+      },
+      {
+        test: /\.svg$/,
+        type: 'asset/resource',
+        issuer: /\.(css|scss)$/,
+        generator: {
+          filename: 'icons/[name][ext]'
+        }
       }, //for images
-      { test: /\.woff($|\?)|\.woff2($|\?)|\.ttf($|\?)|\.eot($|\?)|\.svg($|\?)/, use: ['file-loader'] } //for fonts
+      {
+        test: /\.(woff(2)?|eot|ttf|otf)$/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'fonts/[name][ext]'
+        }
+      },
     ]
   },
   resolve: {

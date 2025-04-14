@@ -1,4 +1,4 @@
-import React from "react"; 
+import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import injectContext from "./store/appContext.js";
 import ScrollToTop from "./component/ScrollToTop.jsx";
@@ -8,9 +8,10 @@ import { Footer } from "./component/Footer.jsx";
 import { Home } from "./pages/Home.jsx";
 import { Error404 } from "./pages/Error404.jsx";
 import Login from "./pages/Login.jsx";
-import Profile from "./pages/Profile.jsx"; 
-import { Order } from "./pages/Order.jsx";
-import { AdminABM } from "./pages/AdminABM.jsx";
+import Profile from "./pages/Profile.jsx";
+import { Orders } from "./pages/Orders.jsx";
+import { Entities } from "./pages/Entities.jsx";
+import { OrderNavbar } from "./component/order/OrderNavbar.jsx";
 import { SendOrder } from "./component/SendOrder.jsx"
 
 import PendingOrders from "./pages/PendingOrders.jsx";
@@ -26,10 +27,10 @@ const Layout = () => {
                     <Navbar />
                     <Routes>
                         <Route element={<Home />} path="/" />
-                        <Route element={<Login />} path="/login" /> 
+                        <Route element={<Login />} path="/login" />
                         <Route element={<Profile />} path="/profile" />
-                        <Route element={<Order />} path="/order" />
-                        <Route element={<AdminABM />} path="/admin" />
+                        <Route element={<Orders />} path="/order" />
+                        <Route element={<Entities />} path="/entities" />
                         <Route element={<PendingOrders />} path="/orders/pending" />
                         <Route element={<Error404 />} path="*" />
                         <Route element={<SendOrder />} path="/send-order" />

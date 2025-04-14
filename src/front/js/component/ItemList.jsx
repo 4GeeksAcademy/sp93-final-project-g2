@@ -13,12 +13,14 @@ export const ItemList = () => {
         actions.simpleStoreSetter('itemId', null);
     }
     const handleSearch = (event) => {
-        const inputText = event.target.value
-        setInputSearch(inputText)
-        const filterResult = store.abmGroups[store.activeGroup].items.filter((item) =>
-            item[store.abmGroups[store.activeGroup].showKey].toLowerCase().includes(inputText.toLowerCase())
-        )
-        actions.simpleStoreSetter('activeList', filterResult)
+        if (store.activeGroup && store.entitiesData[store.activeGroup].length > 1) {
+            const inputText = event.target.value
+            setInputSearch(inputText)
+            const filterResult = store.entitiesData[store.activeGroup].filter((item) =>
+                item[store.entitiesConfigData[store.activeGroup].showKey].toLowerCase().includes(inputText.toLowerCase())
+            )
+            actions.simpleStoreSetter('activeList', filterResult)
+        }
     }
     const handleEdit = async (itemId) => {
         actions.simpleStoreSetter('itemId', itemId);
@@ -38,9 +40,10 @@ export const ItemList = () => {
 
     const handleDeleteConfirm = async () => {
         if (itemToDelete) {
-            actions.abmDelete(itemToDelete); // Elimina el item
+            actions.simpleStoreSetter('itemId', itemToDelete);
+            actions.abmDelete();
         }
-        setShowDeleteModal(false); // Cierra el modal después de eliminar
+        setShowDeleteModal(false);
     };
 
     const handleDeleteCancel = () => {
@@ -50,23 +53,24 @@ export const ItemList = () => {
     return (
         <>
             <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-2">
-                <h2 className="m-0 mb-3 mb-md-0">{store.abmGroups[store.activeGroup].title}</h2>
-                <div className="d-flex justify-content-between align-items-center">
-                    <div className="form-group has-search me-3 col-10 col-md-auto">
-                        <span className="fa fa-search form-control-feedback"></span>
-                        <input type="text" onChange={handleSearch} className="form-control" value={inputSearch} placeholder="filtrar" />
+                <h2 className="m-0 mb-3 mb-md-0">{store.activeGroup ? store.entitiesConfigData[store.activeGroup].title : 'Seleccione Entidad'}</h2>
+                {store.activeGroup &&
+                    <div className="d-flex justify-content-between align-items-center">
+                        <div className="form-group has-search me-3 col-10 col-md-auto">
+                            <span className="fa fa-search form-control-feedback"></span>
+                            <input type="text" onChange={handleSearch} className="form-control" value={inputSearch} placeholder="filtrar" />
+                        </div>
+                        <span className="btn btn-primary btn-circle" onClick={handleNew}>
+                            <i className="fa fa-plus"></i>
+                        </span>
                     </div>
-                    <span className="btn btn-primary btn-circle" onClick={handleNew}>
-                        <i className="fa fa-plus"></i>
-                    </span>
-                </div>
+                }
             </div>
             <ul className="list-group list-view-container">
-                {store.activeList.map((item, index) => (
+                {store.activeList && store.activeList.length > 0 && store.activeList.map((item, index) => (
                     <li key={`${index}-${item.id}`} className="list-group-item d-flex justify-content-between align-items-center">
-                        <span>{item[store.abmGroups[store.activeGroup].showKey]}</span>
-
-                        <span className="col-md-2">
+                        <span >{item[store.entitiesConfigData[store.activeGroup].showKey]}</span>
+                        <span className="col-2">
                             <div className="d-flex justify-content-end">
                                 <span className="zuply-square-btn zuply-bg-verde text-white me-2" onClick={() => handleView(item.id)}>
                                     <i className="fa fa-eye"></i>

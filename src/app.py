@@ -66,11 +66,11 @@ def seed():
 
         
         suppliers = [
-            Suppliers(name='Fuentes de Naturaleza', address='Avenida de sonrisas 24', cuit='302412267280'),
-            Suppliers(name='MoJa i me', address='Calle cortada 10', cuit='272412567240'),
-            Suppliers(name='Las Carnes de Juancito', address='Pasillo 34', cuit='40390239029'),
-            Suppliers(name='Las Verduras', address='Pasillo 347', cuit='41390239029'),
-            Suppliers(name='Carnitas', address='Avenida 2 3472', cuit='5637289190')
+            Suppliers(name='Fuentes de Naturaleza', address='Avenida de sonrisas 24', cuit='302412267280'), #0
+            Suppliers(name='MoJa i me', address='Calle cortada 10', cuit='272412567240'), #1
+            Suppliers(name='Las Carnes de Juancito', address='Pasillo 34', cuit='40390239029'), #2
+            Suppliers(name='Las Verduras', address='Pasillo 347', cuit='41390239029'), #3
+            Suppliers(name='Carnitas', address='Avenida 2 3472', cuit='5637289190') #4
         ]
         categories = [
             Categories(name="Carniceria", description="Productos Carnicos"), #0
@@ -120,21 +120,21 @@ def seed():
         db.session.commit()
 
         supliersProducts = [
-            SuppliersProducts(suppliers_id=1, products_id=7, nickname='Tomate redondo', price=0.5, presentation='por kg'), #0
-            SuppliersProducts(suppliers_id=1, products_id=7, nickname='Tomate perita', price=0.7, presentation='por paquete'), #1
-            SuppliersProducts(suppliers_id=4, products_id=7, nickname='Tomate Rojo', price=0.65, presentation='por unidad'), #2
-            SuppliersProducts(suppliers_id=2, products_id=9, nickname='Cerveza Estrella', price=1, presentation='por docena'), #3
-            SuppliersProducts(suppliers_id=3, products_id=1, nickname='Medallon x10', price=5, presentation='por pack de 10'), #4
-            SuppliersProducts(suppliers_id=5, products_id=1, nickname='Carne circular por unidad', price=1, presentation='por radio del circulo de la carne') #5
+            SuppliersProducts(suppliers_id=suppliers[0].id, products_id=products[7].id, nickname='Tomate redondo', price=0.5, presentation='por kg'), #0
+            SuppliersProducts(suppliers_id=suppliers[0].id, products_id=products[7].id, nickname='Tomate perita', price=0.7, presentation='por paquete'), #1
+            SuppliersProducts(suppliers_id=suppliers[3].id, products_id=products[7].id, nickname='Tomate Rojo', price=0.65, presentation='por unidad'), #2
+            SuppliersProducts(suppliers_id=suppliers[1].id, products_id=products[9].id, nickname='Cerveza Estrella', price=1, presentation='por docena'), #3
+            SuppliersProducts(suppliers_id=suppliers[2].id, products_id=products[0].id, nickname='Medallon x10', price=5, presentation='por pack de 10'), #4
+            SuppliersProducts(suppliers_id=suppliers[4].id, products_id=products[0].id, nickname='Carne circular por unidad', price=1, presentation='por radio del circulo de la carne') #5
         ]
         db.session.add_all(supliersProducts)
         db.session.commit()
         contactsData = [
-            ContactsData(order_method='whatsapp', supplier_id=1, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Juan', last_name='Proveedor 1', ), #0
-            ContactsData(order_method='mail', supplier_id=2, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Pedro', last_name='Proveedor 2', ), #1
-            ContactsData(order_method='telefono', supplier_id=3, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Pablo', last_name='Proveedor 3', ), #2
-            ContactsData(order_method='whatsapp', supplier_id=4, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Margarita', last_name='Proveedor 4', ), #3
-            ContactsData(order_method='mail', supplier_id=5, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Juan', last_name='Proveedor 5', ), #4
+            ContactsData(order_method='whatsapp', supplier_id=suppliers[0].id, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Juan', last_name='Proveedor 1', ), #0
+            ContactsData(order_method='mail', supplier_id=suppliers[1].id, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Pedro', last_name='Proveedor 2', ), #1
+            ContactsData(order_method='telefono', supplier_id=suppliers[2].id, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Pablo', last_name='Proveedor 3', ), #2
+            ContactsData(order_method='whatsapp', supplier_id=suppliers[3].id, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Margarita', last_name='Proveedor 4', ), #3
+            ContactsData(order_method='mail', supplier_id=suppliers[4].id, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Juan', last_name='Proveedor 5', ), #4
             ContactsData(order_method='none', phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Javi', last_name='ElAdmin', ), #5
             ContactsData(order_method='none', phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Jaime', last_name='ElUser', ), #6
             ContactsData(order_method='none', phone_number='234802343', address='calle 10', mail='mail@mail.com', whatsapp='31894279', first_name='Sucursal 1', last_name='Palermo', ), #7
