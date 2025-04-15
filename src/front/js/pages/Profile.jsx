@@ -85,6 +85,7 @@ const Profile = () => {
     <div className="profile-container">
       <PageTitle
         title="Mi Perfil"
+        titleGreen = {store.user && store.user.username}
         subtitle="Administra tu información personal y preferencias de contacto"
       />
       <div className="profile-content-container">

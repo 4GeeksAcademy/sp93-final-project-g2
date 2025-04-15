@@ -50,7 +50,7 @@ export const NavbarMenu = () => {
                                                 <li><hr className="dropdown-divider" /></li>
                                             </>
                                         )}
-                                        <li><Link className="dropdown-item fs-5" to="#" data-bs-dismiss="offcanvas">Ver pedidos</Link></li>
+                                        <li><span onClick={() => goTo('orders-list', '')} className="dropdown-item fs-5" data-bs-dismiss="offcanvas">Ver pedidos</span></li>
                                     </ul>
                                 </li>
                                 <li key="Items" className="nav-item dropdown w-100 pb-3">

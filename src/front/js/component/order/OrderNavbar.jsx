@@ -6,19 +6,17 @@ export const OrderNavbar = () => {
     const { store, actions } = useContext(Context)
     const [history, setHistory] = useState({})
 
-    const handleHistory = (selectedId, prevNext) => {
+    const handleHistory = (nextEntityKey, relationshipKey, idTofilter, prevNext) => {
         if (prevNext < 0) {
-            const newHistory = delete history[store.orderFlowActive.entityKey];
-            setHistory(newHistory)
+            const activeEntityKey = store.orderFlowActive.entityKey
+            setHistory({...history, [activeEntityKey]: null})
             return
+        } else {
+            setHistory({ ...history, [nextEntityKey]: {idToFilter: idTofilter, keyTofilter:  relationshipKey } });
         }
-        if (selectedId > -1) {
-            setHistory({ ...history, [store.orderFlowActive.entityKey]: selectedId });
-        }
+
     }
     const setList = (selectedId, prevNext) => {
-
-        handleHistory(selectedId, prevNext)
 
         const nextFlowId = store.orderFlowActive.id + prevNext
 
@@ -26,33 +24,38 @@ export const OrderNavbar = () => {
             actions.simpleStoreSetter('orderFlowActive', store.orderFlowGeneralItem)
             return
         }
-
-
+        
         const nextEntityKey = store.orderFlow[nextFlowId]
         const nextEntityConfig = store.entitiesConfigData[nextEntityKey]
-        const prevRelationshipKey = nextEntityConfig['relationshipKey'] || false
         
-        
-        
-        let idTofilter = null
-        if (prevNext < 0) {
-            idTofilter = history[store.orderFlow[nextFlowId] - 1]
-        } else {
-            if (nextFlowId == 0 || nextFlowId == 1) idTofilter = null
-            else if (selectedId) idTofilter = selectedId
-            else idTofilter = history[nextEntityKey]
+
+        if(nextEntityKey == 'categories'){
+            const orderFlowCategories = {
+                id: nextFlowId,
+                title: nextEntityConfig['title'],
+                entityKey: nextEntityKey,
+                showKey: nextEntityConfig['showKey'],
+                itemList: store.entitiesData[nextEntityKey],
+            }
+            actions.simpleStoreSetter('orderFlowActive', orderFlowCategories)
+            return
         }
-
-
-        const idTofilter2 = nextFlowId == 0 || nextFlowId == 1 ? null : selectedId ? selectedId : history[nextEntityKey]
-
-        console.log('nextEntityKey', nextEntityKey)
-        console.log('nextEntityConfig', nextEntityConfig)
-        console.log('prevRelationshipKey', prevRelationshipKey)
-        console.log('idTofilter', idTofilter)
-
-        const nextItemList = idTofilter ? store.entitiesData[nextEntityKey].filter((item) => item[prevRelationshipKey] == idTofilter) : store.entitiesData[nextEntityKey]
-
+        let idTofilter = null
+        let nextItemList = []
+        let relationshipKey = ''
+        console.log('history', history)
+        if (prevNext > 0){
+            idTofilter = selectedId
+            relationshipKey = nextEntityConfig['relationshipKey'] || false
+            nextItemList = relationshipKey ? store.entitiesData[nextEntityKey].filter((item) => item[relationshipKey] == idTofilter) : store.entitiesData[nextEntityKey]
+        } else {
+            idTofilter = history[nextEntityKey].idToFilter
+            relationshipKey = history[nextEntityKey].keyTofilter
+            nextItemList = idTofilter ? store.entitiesData[nextEntityKey].filter((item) => item[relationshipKey] == idTofilter) : store.entitiesData[nextEntityKey]
+        }
+        
+        handleHistory(nextEntityKey, relationshipKey, idTofilter, prevNext)
+       
         const orderFlowActiveNew = {
             id: nextFlowId,
             title: nextEntityConfig['title'],
@@ -62,7 +65,6 @@ export const OrderNavbar = () => {
         }
         actions.simpleStoreSetter('orderFlowActive', orderFlowActiveNew)
 
-        console.log('==================================')
     }
     const handleSelect = (selectedId = null, breadcrum) => {
         if (store.orderFlow.length - 1 > store.orderFlowActive.id) {

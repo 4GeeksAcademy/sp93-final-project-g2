@@ -44,6 +44,7 @@ const injectContext = PassedComponent => {
 					const setFirtsOrderFlow = index === entities.length - 1;
 					state.actions.getItems(entity, false, setFirtsOrderFlow);
 				});
+				state.actions.getItems('orders', false, false);
 			}
 		}, [state.store.user]);
 

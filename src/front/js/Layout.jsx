@@ -11,10 +11,8 @@ import Login from "./pages/Login.jsx";
 import Profile from "./pages/Profile.jsx";
 import { Orders } from "./pages/Orders.jsx";
 import { Entities } from "./pages/Entities.jsx";
-import { OrderNavbar } from "./component/order/OrderNavbar.jsx";
 import { SendOrder } from "./component/SendOrder.jsx"
-
-import PendingOrders from "./pages/PendingOrders.jsx";
+import { OrdersList } from "./pages/OrdersList.jsx";
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
@@ -31,7 +29,7 @@ const Layout = () => {
                         <Route element={<Profile />} path="/profile" />
                         <Route element={<Orders />} path="/order" />
                         <Route element={<Entities />} path="/entities" />
-                        <Route element={<PendingOrders />} path="/orders/pending" />
+                        <Route element={<OrdersList />} path="/orders-list" />
                         <Route element={<Error404 />} path="*" />
                         <Route element={<SendOrder />} path="/send-order" />
                     </Routes>

@@ -234,7 +234,8 @@ const getState = ({ getStore, getActions, setStore }) => {
             itemId: null,
             editObject: {},
             viewType: 'list',
-            activeList: []
+            activeList: [],
+            statusFilter: "pendiente"
         },
         actions: {
             //Helpers
@@ -265,6 +266,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                 const breadcrumsAux = breadcrum == 'back' ? breadcrumItems.slice(0, -1) : breadcrumIndex == -1 ? [...breadcrumItems, breadcrum] : breadcrumItems.slice(0, breadcrumIndex)
                 setStore({ breadcrumItems: breadcrumsAux })
             },
+            capitaliseText: (str)=>{ return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()},
             getItems: async (entityKey, setActiveList = false, setFirtsOrderFlow = false) => {
                 try {
                     entityKey = entityKey == 'activeGroup' ? getStore().activeGroup : entityKey
