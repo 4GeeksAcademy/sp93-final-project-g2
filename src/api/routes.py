@@ -608,6 +608,8 @@ def order(orders_id):
             row.branch_id = data.get('branch_id', row.branch_id)
             row.branch_to = data.get('branch_to', row.branch_to)
             row.is_active = data.get('is_active', row.is_active)
+
+            db.session.commit()
             response_body['message'] = f"Orden {orders_id} actualizada correctamente"
             return response_body, 200
         
@@ -725,6 +727,7 @@ def init_admin_data():
 @api.route('/orders/<int:order_id>/send-email', methods=['POST'])
 # @jwt_required()
 def send_order_email(order_id):
+    data = request.json
     try:
         from_ = os.getenv("EMAIL_SENDER")
         password = os.getenv("EMAIL_PASSWORD")

@@ -62,7 +62,9 @@ class SuppliersProducts(db.Model):
                 "price": self.price,
                 "presentation": self.presentation,
                 "is_active": self.is_active}
-
+    
+    def nicknameFn(self): 
+        return self.nickname
 
 class Products(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -146,6 +148,7 @@ class ProductsOrders(db.Model):
     def serialize(self):
         return {"id": self.id,
                 "suppliers_products_id": self.suppliers_products_id,
+                "nickname": self.suppliers_products_to.nicknameFn(),
                 "orders_id": self.orders_id,
                 "quantity": self.quantity,
                 "unit_price": self.unit_price,
@@ -184,6 +187,8 @@ class Branches(db.Model):
     def serialize(self):
         return {"id": self.id,
                 "contacts_data_id": self.contacts_data_id,
+                "contacts_data": self.contacts_data_to.serialize(),
+                
                 "is_active": self.is_active}
 
 
@@ -210,6 +215,7 @@ class Orders(db.Model):
     def serialize(self):
         return {"id": self.id,
                 "contacts_data_id": self.contacts_data_id,
+                "contacts_data": self.contacts_data_to.serialize(),
                 "order_number": self.order_number,
                 "user_id": self.user_id,
                 "start_date": self.start_date,
@@ -220,6 +226,7 @@ class Orders(db.Model):
                 "payment_method": self.payment_method,
                 "amount": self.amount,
                 "branch_id": self.branch_id,
+                "branch": self.branch_to.serialize(),
                 "is_active": self.is_active}
     
 
