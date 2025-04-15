@@ -5,7 +5,7 @@ import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-mod
 import { ModuleRegistry } from "@ag-grid-community/core";
 import "@ag-grid-community/styles/ag-grid.css";
 import "@ag-grid-community/styles/ag-theme-alpine.css";
-import "../../styles/ordersList.css"
+import "../../styles/ordersList.css";
 import { PageTitle } from "../component/PageTitle.jsx";
 
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
@@ -13,32 +13,69 @@ ModuleRegistry.registerModules([ClientSideRowModelModule]);
 export const OrdersList = () => {
   const { store, actions } = useContext(Context);
   const [rowData, setRowData] = useState([]);
+  const [statusFilter, setStatusFilter] = useState(store.statusFilter);
 
   useEffect(() => {
-
     let allOrders = store.entitiesData?.orders || [];
     if (allOrders.length > 0) {
-      const rowDataPrev = allOrders.filter((order) => order.status?.toLowerCase() === store.statusFilter);
-      let rowDataToSet = []
+      const rowDataPrev = allOrders.filter((order) => order.status?.toLowerCase() === statusFilter);
+      let rowDataToSet = [];
       if (rowDataPrev) {
         rowDataPrev.map((dataToMap) => {
-          rowDataToSet = [...rowDataToSet,
-          {
-            id: dataToMap.id,
-            proveedor: dataToMap.contacts_data.supplier.name,
-            sucursal: dataToMap.branch.contacts_data.first_name,
-            pago: dataToMap.payment_method,
-            total: `${dataToMap.amount} €`,
-            accion: 'accion'
-          }
-          ]
-        })
-        setRowData(rowDataToSet)
+          rowDataToSet = [
+            ...rowDataToSet,
+            {
+              id: dataToMap.id,
+              proveedor: dataToMap.contacts_data.supplier.name,
+              sucursal: dataToMap.branch.contacts_data.first_name,
+              pago: dataToMap.payment_method,
+              total: `${dataToMap.amount} €`,
+              accion: "accion",
+              status: dataToMap.status,
+            },
+          ];
+        });
+        setRowData(rowDataToSet);
+      }
+    }
+  }, [store.entitiesData, statusFilter]);
+
+  const handleMarkAsReceived = async (orderId) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        console.error("Token no encontrado");
+        return;
       }
 
-    }
-  }, [store.entitiesData]);
+      const response = await fetch(`${process.env.BACKEND_URL}/api/orders/${orderId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: "recibido" }),
+      });
 
+      if (response.ok) {
+        const updatedOrder = await response.json();
+        console.log("Estado de la orden actualizado:", updatedOrder);
+        window.location.reload();
+      } else {
+        const data = await response.json();
+        console.error("Error al cambiar el estado de la orden:", data.message);
+      }
+    } catch (error) {
+      console.error("Error al cambiar el estado de la orden:", error);
+    }
+  };
+
+  const handelStatusChange = (e) => {
+    const newStatus = e.target.value;
+    setStatusFilter(newStatus);
+    actions.simpleStoreSetter("statusFilter", newStatus);
+  };
 
   const columnDefs = [
     { headerName: "Proveedor", field: "proveedor", flex: 1 },
@@ -46,13 +83,19 @@ export const OrdersList = () => {
     { headerName: "Forma de Pago", field: "pago", flex: 1 },
     { headerName: "Total", field: "total", flex: 1 },
     {
-      headerName: "Acción", field: "accion", flex: 1,
-      cellRenderer: () => (
-        <button className="btn btn-success" >
-          Marcar como Recibido
-        </button>
-      )
-    }
+      headerName: "Acción",
+      field: "accion",
+      flex: 1,
+      cellRenderer: (params) =>
+        params.data.status.toLowerCase() === "pendiente" ? (
+          <button
+            className="btn btn-success order-btn"
+            onClick={() => handleMarkAsReceived(params.data.id)}
+          >
+            Marcar como Recibido
+          </button>
+        ) : null,
+    },
   ];
 
   return (
@@ -61,15 +104,25 @@ export const OrdersList = () => {
         title="Pedidos con estado "
         titleGreen={store.statusFilter && actions.capitaliseText(store.statusFilter)}
       />
+
+      <div className="dropdown-container">
+        <label htmlFor="status-dropdown">Filtrar Pedidos por Estado: </label>
+        <select
+          className="status-dropdown"
+          value={statusFilter}
+          onChange={handelStatusChange}
+        >
+          {store.enums.status.map((status) => (
+            <option key={status.value} value={status.value}>
+              {status.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div className="ag-theme-alpine orders-grid-container m-3">
-        <AgGridReact
-          rowData={rowData}
-          columnDefs={columnDefs}
-          domLayout="autoHeight"
-        />
+        <AgGridReact rowData={rowData} columnDefs={columnDefs} domLayout="autoHeight" />
       </div>
     </>
   );
 };
-
-
