@@ -12,6 +12,7 @@ export const ItemList = () => {
         actions.simpleStoreSetter('isEdit', false);
         actions.simpleStoreSetter('itemId', null);
     }
+    
     const handleSearch = (event) => {
         if (store.activeGroup && store.entitiesData[store.activeGroup].length > 1) {
             const inputText = event.target.value

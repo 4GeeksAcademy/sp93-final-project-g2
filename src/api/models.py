@@ -57,6 +57,7 @@ class SuppliersProducts(db.Model):
     def serialize(self):
         return {"id": self.id,
                 "suppliers": self.suppliers_to.basic_data(),
+                "suppliers_id": self.suppliers_id,
                 "products_id": self.products_id,
                 "nickname": self.nickname,
                 "price": self.price,
@@ -177,6 +178,7 @@ class Users(db.Model):
 
 class Branches(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
     contacts_data_id = db.Column(db.Integer, db.ForeignKey('contacts_data.id'))
     contacts_data_to = db.relationship('ContactsData', foreign_keys=[contacts_data_id], backref=db.backref('contact_data_branches_to', lazy='select'))
     is_active = db.Column(db.Boolean, default=True)
@@ -186,10 +188,10 @@ class Branches(db.Model):
 
     def serialize(self):
         return {"id": self.id,
+                "name": self.name,
                 "contacts_data_id": self.contacts_data_id,
                 "contacts_data": self.contacts_data_to.serialize(),
-                
-                "is_active": self.is_active}
+                }
 
 
 class Orders(db.Model):
