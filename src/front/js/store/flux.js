@@ -4,11 +4,6 @@ const getState = ({ getStore, getActions, setStore }) => {
             message: null,
             token: localStorage.getItem("token") || null,
             user: localStorage.getItem("token") ? JSON.parse(localStorage.getItem("user")) : null,
-            categories: [],
-            subcategories: [],
-            products: [],
-            suppliersProducts: [],
-            suppliers: [],
             testimonials: [
                 { text: "Zuply nos ha ahorrado horas cada semana, ¡lo recomiendo sin dudar!", author: "Restaurante La Cazuela" },
                 { text: "Desde que usamos Zuply, nuestros pedidos llegan siempre a tiempo.", author: "Bar El Tapeo" },
@@ -176,7 +171,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                 suppliers_products: {
                     title: 'Artículos',
                     showKey: 'nickname',
-                    relationshipKey: 'products_id',
+                    relationshipKey: 'suppliers_id',
                     icon: 'user',
                     formInputs: [
                         {
@@ -212,19 +207,37 @@ const getState = ({ getStore, getActions, setStore }) => {
                             value: ''
                         }
                     ]
+                },
+                branches: {
+                    title: 'Sucursales',
+                    showKey: 'name',
+                    icon: 'store',
+                    formInputs: [
+                        {
+                            type: 'text',
+                            accessKey: 'name',
+                            label: 'Nombre Sucursal',
+                            value: ''
+                        }
+                    ]
                 }
             },
             entitiesRoleList: {
-                'Administrador': ['users', 'categories', 'sub_categories', 'suppliers', 'products', 'suppliers_products']
+                'Administrador': ['users', 'branches', 'categories', 'sub_categories', 'suppliers', 'products', 'suppliers_products']
             },
             entitiesListActive: [],
-            orderFlow: ['general', 'categories', 'sub_categories', 'products', 'suppliers_products'],
-            orderFlowActive: {},
+            orderFlow: {
+                categories: ['general', 'categories', 'sub_categories', 'products', 'suppliers_products'],
+                suppliers: ['general', 'suppliers', 'suppliers_products']
+            },
+            activeOrderFlow: [],
+            orderFlowActiveObject: {},
+            orderFlowActiveItemList: [],
             orderFlowGeneralItem: {
                 title: 'Seleccione',
                 id: 0,
                 entityKey: 'general',
-                itemList: [{ name: 'Proveedor', id: 0 }, { name: 'Categoria', id: 1 }],
+                itemList: [{ name: 'Proveedor', id: 'suppliers' }, { name: 'Categoria', id: 'categories' }],
                 showKey: 'name'
             },
             breadcrumItems: [],
@@ -235,12 +248,23 @@ const getState = ({ getStore, getActions, setStore }) => {
             editObject: {},
             viewType: 'list',
             activeList: [],
-            statusFilter: "pendiente"
+            statusFilter: "pendiente",
+            actualCart: {
+                supplierName: '',
+                supplierContact: '',
+                deliveryDate: '',
+                orderMethod: '',
+                orderDirection: '',
+                paymentMethod: '',
+                deliveryDirection: '',
+                products: []
+            }
         },
         actions: {
             //Helpers
             simpleStoreSetter: (key, value) => { setStore({ [key]: value }) },
             consoleError: response => console.error("Error: ", response.status, response.statusText),
+            capitaliseText: (str) => { return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() },
             optionsAuth: (method, body = null) => {
                 const options = {
                     method: method,
@@ -260,13 +284,14 @@ const getState = ({ getStore, getActions, setStore }) => {
                 const url = `${process.env.BACKEND_URL}/api/${route}${withId ? '/' + getStore().itemId : ''}`
                 return url
             },
+
             updateBreadcrums: (breadcrum) => {
                 const { breadcrumItems } = getStore()
                 const breadcrumIndex = breadcrumItems.indexOf(breadcrum)
                 const breadcrumsAux = breadcrum == 'back' ? breadcrumItems.slice(0, -1) : breadcrumIndex == -1 ? [...breadcrumItems, breadcrum] : breadcrumItems.slice(0, breadcrumIndex)
                 setStore({ breadcrumItems: breadcrumsAux })
             },
-            capitaliseText: (str)=>{ return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()},
+
             getItems: async (entityKey, setActiveList = false, setFirtsOrderFlow = false) => {
                 try {
                     entityKey = entityKey == 'activeGroup' ? getStore().activeGroup : entityKey
@@ -277,8 +302,9 @@ const getState = ({ getStore, getActions, setStore }) => {
                     if (setActiveList) setStore({ activeList: data.results })
                     if (setFirtsOrderFlow) {
                         setStore({
-                            orderFlowActive: getStore().orderFlowGeneralItem
+                            orderFlowActiveObject: getStore().orderFlowGeneralItem
                         })
+                        setStore({ orderFlowActiveItemList: getStore().orderFlowGeneralItem.itemList })
                     }
                 } catch (error) {
                     console.error(`Error al obtener ${entityKey}`, error);
@@ -287,92 +313,12 @@ const getState = ({ getStore, getActions, setStore }) => {
             getItemById: (entityKey, id) => {
 
             },
-            getCategories: async () => {
-                try {
-                    const url = `${process.env.BACKEND_URL}/api/categories`
-                    const response = await fetch(url, getActions().optionsAuth('GET'));
-                    const data = await response.json();
-                    if (response.ok) {
-                        setStore({ categories: data.results });
-                    } else {
-                        console.error("Error al obtener categorías", data.message);
-                    }
-                } catch (error) {
-                    console.error("Error al obtener categorías", error);
-                }
+            getSupplierContacts: async (supplierId)=>{
+                const response = await fetch(getActions().normalizeUrl(`suppliers/${supplierId}/contacts-data`), getActions().optionsAuth('GET'))
+                    if (!response.ok) { consoleError(response); return }
+                    const data = await response.json()
+                    setStore({ entitiesData: { ...getStore().entitiesData, ['supplierContacts']: data.results } })
             },
-
-            getSubcategories: async (categoryId) => {
-                try {
-                    const url = `${process.env.BACKEND_URL}/api/categories/${categoryId}/sub-categories`
-                    const response = await fetch(url, getActions().optionsAuth('GET'));
-                    const data = await response.json();
-                    if (response.ok) {
-                        setStore({ subcategories: data.results.list });
-                    } else {
-                        console.error("Error al obtener subcategorías", data.message);
-                    }
-                } catch (error) {
-                    console.error("Error al obtener subcategorías", error);
-                }
-            },
-
-            getProductsBySubcategory: async (subcategoryId) => {
-                try {
-                    const url = `${process.env.BACKEND_URL}/api/sub-categories/${subcategoryId}/products`
-                    const response = await fetch(url, getActions().optionsAuth('GET'));
-                    const data = await response.json();
-                    if (response.ok) {
-                        setStore({ products: data.results.list });
-                    } else {
-                        console.error("Error al obtener productos", data.message);
-                    }
-                } catch (error) {
-                    console.error("Error al obtener productos", error);
-                }
-            },
-
-            getSuppliersProductsByProduct: async (productId) => {
-                try {
-                    const url = `${process.env.BACKEND_URL}/api/products/${productId}/suppliers-products`
-                    const response = await fetch(url, getActions().optionsAuth('GET'));
-                    const data = await response.json();
-                    if (response.ok) {
-                        setStore({ suppliersProducts: data.results.list });
-                    } else {
-                        console.error("Error al obtener productos de proveedor", data.message);
-                    }
-                } catch (error) {
-                    console.error("Error al obtener productos de proveedor", error);
-                }
-            },
-
-            getSupplierById: async (supplierId) => {
-                try {
-                    const url = `${process.env.BACKEND_URL}/api/suppliers/${supplierId}`
-                    const response = await fetch(url, getActions().optionsAuth('GET'));
-                    const data = await response.json();
-                    if (response.ok) {
-                        setStore({
-                            suppliers: [...getStore().suppliers, data.results]
-                        });
-                    } else {
-                        console.error("Error al obtener proveedor", data.message);
-                    }
-                } catch (error) {
-                    console.error("Error al obtener proveedor", error);
-                }
-            },
-            getProducts: async () => {
-                try {
-                    const response = await fetch(`${process.env.BACKEND_URL}/api/products`);
-                    const data = await response.json();
-                    return data.results || [];
-                } catch {
-                    return [];
-                }
-            },
-
             setListViewConfig: (activeGroup, viewType, activeList) => {
                 setStore({ activeGroup, viewType, activeList })
             },

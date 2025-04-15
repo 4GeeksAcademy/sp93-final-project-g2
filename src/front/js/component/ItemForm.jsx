@@ -61,7 +61,6 @@ export const ItemForm = () => {
 
     const search = React.useCallback((event, fatherKey) => {
         setAutocompleteData((prevData) => { 
-            console.log('soy search con prevData', prevData)   
             const fullData = prevData[fatherKey]?.fullData || [];
             const _filteredData = !event.query?.trim()?.length
                 ? fullData
@@ -152,7 +151,7 @@ export const ItemForm = () => {
                                 dropdown
                                 dropdownMode = 'current'
                                 forceSelection
-                                onDropdownClick={() => {search({ query: "" }, item.fatherKey), console.log('hola', autocompleteData[item.fatherKey] )}}
+                                onDropdownClick={() => {search({ query: "" }, item.fatherKey)}}
                                 onChange={(e) => {
                                     const newValue = e.value;
                                     setSelectedValues((prev) => ({

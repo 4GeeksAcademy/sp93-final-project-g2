@@ -219,7 +219,16 @@ def supplier(supplier_id):
     
         response_body['message'] = f"El proveedor con id {supplier_id} no se encuentra en la base de datos."
         return response_body, 200
-    
+
+
+@api.route('/suppliers/<int:supplier_id>/contacts-data', methods=['GET'])
+def suppliers_contacts(supplier_id):
+    response_body = {}
+    rows = ContactsData.query.filter_by(is_active=True, supplier_id=supplier_id).all()
+    results = [row.serialize() for row in rows]
+    response_body['message'] = "Listado de contactos del proveedor"
+    response_body['results'] = results
+    return response_body, 200
 
 @api.route('/suppliers-products', methods=['GET', 'POST'])
 def suppliers_products():
@@ -836,18 +845,20 @@ def toSeed():
     db.session.add_all(supliersProducts)
     db.session.commit()
     contactsData = [
-        ContactsData(order_method='whatsapp', supplier_id=1, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Juan', last_name='Proveedor 1', ), #0
-        ContactsData(order_method='mail', supplier_id=2, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Pedro', last_name='Proveedor 2', ), #1
-        ContactsData(order_method='telefono', supplier_id=3, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Pablo', last_name='Proveedor 3', ), #2
-        ContactsData(order_method='whatsapp', supplier_id=4, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Margarita', last_name='Proveedor 4', ), #3
-        ContactsData(order_method='mail', supplier_id=5, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Juan', last_name='Proveedor 5', ), #4
-        ContactsData(order_method='none', phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Javi', last_name='ElAdmin', ), #5
-        ContactsData(order_method='none', phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Jaime', last_name='ElUser', ), #6
-        ContactsData(order_method='none', phone_number='234802343', address='calle 10', mail='mail@mail.com', whatsapp='31894279', first_name='Sucursal 1', last_name='Palermo', ), #7
-        ContactsData(order_method='none', phone_number='234802343', address='calle 12', mail='mail@mail.com', whatsapp='31894279', first_name='Sucursal 2', last_name='La Boca', ), #8
-        ContactsData(order_method='none', phone_number='234802343', address='calle 16', mail='mail@mail.com', whatsapp='31894279', first_name='Sucursal 3', last_name='Recoleta', ), #9
-        ContactsData(order_method='none', phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Juan', last_name='ElGestor', ), #10
-        ContactsData(order_method='none', phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Pedro', last_name='ElReceptor', ) #11
+        ContactsData(order_method='whatsapp', supplier_id=suppliers[0].id, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Juan', last_name='Proveedor 1'), #0
+        ContactsData(order_method='mail', supplier_id=suppliers[1].id, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Pedro', last_name='Proveedor 2'), #1
+        ContactsData(order_method='telefono', supplier_id=suppliers[2].id, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Pablo', last_name='Proveedor 3'), #2
+        ContactsData(order_method='whatsapp', supplier_id=suppliers[3].id, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Margarita', last_name='Proveedor 4'), #3
+        ContactsData(order_method='mail', supplier_id=suppliers[4].id, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Juan', last_name='Proveedor 5'), #4
+        ContactsData(order_method='none', phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Javi', last_name='ElAdmin'), #5
+        ContactsData(order_method='none', phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Jaime', last_name='ElUser'), #6
+        ContactsData(order_method='none', phone_number='234802343', address='calle 10', mail='mail@mail.com', whatsapp='31894279', first_name='Sucursal 1', last_name='Palermo'), #7
+        ContactsData(order_method='none', phone_number='234802343', address='calle 12', mail='mail@mail.com', whatsapp='31894279', first_name='Sucursal 2', last_name='La Boca'), #8
+        ContactsData(order_method='none', phone_number='234802343', address='calle 16', mail='mail@mail.com', whatsapp='31894279', first_name='Sucursal 3', last_name='Recoleta'), #9
+        ContactsData(order_method='none', phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Juan', last_name='ElGestor'), #10
+        ContactsData(order_method='none', phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Pedro', last_name='ElReceptor'), #11
+        ContactsData(order_method='mail', supplier_id=suppliers[0].id, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Margarita', last_name='Herrera'), #12
+        ContactsData(order_method='telefono', supplier_id=suppliers[0].id, phone_number='234802343', address='calle 1', mail='mail@mail.com', whatsapp='31894279', first_name='Fernando', last_name='Fernandez') #13
     ]
     db.session.add_all(contactsData)
     db.session.commit()
@@ -862,9 +873,9 @@ def toSeed():
     db.session.commit()
 
     branches = [
-        Branches(contacts_data_id=contactsData[7].id),
-        Branches(contacts_data_id=contactsData[8].id),
-        Branches(contacts_data_id=contactsData[9].id)
+        Branches(contacts_data_id=contactsData[7].id, name='Malaga'),
+        Branches(contacts_data_id=contactsData[8].id, name='Madrid'),
+        Branches(contacts_data_id=contactsData[9].id, name='Barcelona')
     ]
 
     db.session.add_all(branches)
