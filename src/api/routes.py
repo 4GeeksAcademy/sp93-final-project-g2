@@ -222,6 +222,7 @@ def supplier(supplier_id):
     
 
 @api.route('/suppliers-products', methods=['GET', 'POST'])
+@jwt_required()
 def suppliers_products():
     response_body = {}
     if request.method == 'GET':
@@ -242,6 +243,7 @@ def suppliers_products():
 
 
 @api.route('/suppliers-products/<int:suppliers_products_id>', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
 def suppliers_product(suppliers_products_id):
     response_body = {}
     if request.method == 'GET':
@@ -725,30 +727,15 @@ def init_admin_data():
     
 
 @api.route('/orders/<int:order_id>/send-email', methods=['POST'])
-# @jwt_required()
 def send_order_email(order_id):
-    data = request.json
     try:
         from_ = os.getenv("EMAIL_SENDER")
         password = os.getenv("EMAIL_PASSWORD")
-        to = "jfuentescasta.m@gmail.com" 
 
-        subject = "Ejemplo de pedido de Zuply"
-        body = f"""\
-                    <html>
-                        <body>
-                            <h2>📦 Pedido Zuply</h2>
-                            <p><strong>Cliente:</strong> Restaurante de Ejemplo</p>
-                            <p><strong>Productos:</strong></p>
-                            <ul>
-                            <li>10kg de pollo</li>
-                            <li>5kg de ternera</li>
-                            </ul>
-                            <p><strong>Fecha de entrega:</strong> 21/04/2025</p>
-                            <p><strong>Dirección de entrega:</strong> C/ Restaurantes de Ejemplo, nº7</p>
-                        </body>
-                    </html>
-                """
+        data = request.json
+        to = data.get("to")
+        subject = data.get("subject", "Pedido Zuply")
+        body = data.get("html", "<p>Pedido sin contenido</p>")
 
         msg = MIMEMultipart()
         msg["From"] = from_
@@ -760,7 +747,7 @@ def send_order_email(order_id):
             server.login(from_, password)
             server.sendmail(from_, to, msg.as_string())
 
-        return jsonify({"message": "Correo de prueba enviado"}), 200
+        return jsonify({"message": "Correo enviado correctamente"}), 200
 
     except Exception as e:
         return jsonify({"message": "Error al enviar el correo", "error": str(e)}), 500
