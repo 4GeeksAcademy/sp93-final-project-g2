@@ -71,7 +71,38 @@ export const OrdersList = () => {
     }
   };
 
-  const handelStatusChange = (e) => {
+  const handleMarkAsCancelled = async (orderId) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        console.error("Token no encontrado");
+        return;
+      }
+
+      const response = await fetch(`${process.env.BACKEND_URL}/api/orders/${orderId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: "cancelado" }),
+      });
+
+      if (response.ok) {
+        const updatedOrder = await response.json();
+        console.log("Estado de la orden actualizado:", updatedOrder);
+        window.location.reload();
+      } else {
+        const data = await response.json();
+        console.error("Error al cambiar el estado de la orden:", data.message);
+      }
+    } catch (error) {
+      console.error("Error al cambiar el estado de la orden:", error);
+    }
+  };
+
+  const handleStatusChange = (e) => {
     const newStatus = e.target.value;
     setStatusFilter(newStatus);
     actions.simpleStoreSetter("statusFilter", newStatus);
@@ -88,12 +119,20 @@ export const OrdersList = () => {
       flex: 1,
       cellRenderer: (params) =>
         params.data.status.toLowerCase() === "pendiente" ? (
-          <button
-            className="btn btn-success order-btn"
-            onClick={() => handleMarkAsReceived(params.data.id)}
-          >
-            Marcar como Recibido
-          </button>
+          <>
+            <button
+              className="received-btn"
+              onClick={() => handleMarkAsReceived(params.data.id)}
+            >
+              ✔
+            </button>
+            <button
+              className="cancelled-btn"
+              onClick={() => handleMarkAsCancelled(params.data.id)}
+            >
+              ❌
+            </button>
+          </>
         ) : null,
     },
   ];
@@ -110,7 +149,7 @@ export const OrdersList = () => {
         <select
           className="status-dropdown"
           value={statusFilter}
-          onChange={handelStatusChange}
+          onChange={handleStatusChange}
         >
           {store.enums.status.map((status) => (
             <option key={status.value} value={status.value}>
